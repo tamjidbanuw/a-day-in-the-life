@@ -262,6 +262,42 @@ body {
 .compare-pick select option { color: var(--ink); }
 .compare .bars { padding: 1.6rem 1.2rem 0.4rem; gap: 1.6rem; }
 
+/* ─── SECTION 3: WORK RANKING ───────────────────────────── */
+.rank { padding: 1.5rem 1.5rem 0.6rem; display: flex; flex-direction: column; gap: 0.75rem; }
+.rank-row { display: grid; grid-template-columns: 120px 1fr auto; align-items: center; gap: 0.9rem; }
+.rank-name { font-size: 0.9rem; font-weight: 600; color: var(--ink); text-align: right; }
+.rank-track {
+    display: flex; height: 20px; border-radius: 999px;
+    background: #fff; overflow: hidden;
+}
+.rank-fill {
+    height: 100%;
+    transform-origin: left;
+    animation: rank-grow 0.9s cubic-bezier(0.4,0,0.2,1) both;
+}
+.rank-fill:first-child { border-radius: 999px 0 0 999px; }
+@keyframes rank-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.rank-val {
+    font-size: 0.88rem; font-weight: 700; color: var(--ink);
+    font-variant-numeric: tabular-nums; min-width: 56px; text-align: right;
+}
+.rank-legend {
+    display: flex; gap: 1.6rem; flex-wrap: wrap;
+    padding: 0.6rem 1.5rem 0.2rem; font-size: 0.82rem; color: var(--ink-soft);
+}
+.rank-legend span { display: inline-flex; align-items: center; gap: 0.5rem; }
+.rank-key { width: 12px; height: 12px; border-radius: 3px; }
+@media (max-width: 560px) {
+    .rank-row { grid-template-columns: 84px 1fr auto; gap: 0.5rem; }
+    .rank-name { font-size: 0.8rem; }
+}
+
+/* ─── SECTION 5: THRIVE SCATTER ─────────────────────────── */
+.scatter-wrap { padding: 1.6rem 1.5rem; }
+.scatter { width: 100%; aspect-ratio: 3/2; overflow: visible; }
+.sc-label { font-size: 3.4px; font-weight: 700; fill: var(--ink); font-family: var(--font); }
+.sc-axis  { font-size: 3px; fill: var(--ink-faint); font-family: var(--font); letter-spacing: 0.02em; }
+
 /* ─── PLACEHOLDER (unbuilt sections) ────────────────────── */
 .bars-placeholder {
     padding: 3rem 1.5rem;

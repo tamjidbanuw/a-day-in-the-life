@@ -100,6 +100,65 @@ function renderCompareCallout(el, left, right) {
         </div>`;
 }
 
+// ── Section 3: work ranking — all countries as paid+unpaid split bars ──
+function renderWorkRank(container) {
+    const rows = COUNTRIES.map(c => {
+        const m = ADL.countries[c].minutes;
+        return { c, paid: m.PAW || 0, unpaid: m.UPW || 0, total: (m.PAW || 0) + (m.UPW || 0) };
+    }).sort((a, b) => b.total - a.total);
+    const max = rows[0].total;
+
+    container.innerHTML = rows.map(r => `<div class="rank-row">
+        <span class="rank-name">${nice(r.c)}</span>
+        <div class="rank-track">
+            <span class="rank-fill" style="width:${(r.paid / max) * 100}%; background:var(--magenta)" title="Paid: ${fmtH(r.paid)}"></span>
+            <span class="rank-fill" style="width:${(r.unpaid / max) * 100}%; background:var(--purple-light)" title="Unpaid: ${fmtH(r.unpaid)}"></span>
+        </div>
+        <span class="rank-val">${fmtH(r.total)}</span>
+    </div>`).join('');
+}
+
+// ── Generic single-metric ranking (Rest, Connect) ──
+// valueFn(country)->number; fmt(n)->label; color; highlight = country to accent
+function renderRank(container, valueFn, fmt, color, highlight) {
+    const rows = COUNTRIES.map(c => ({ c, v: valueFn(c) })).sort((a, b) => b.v - a.v);
+    const max = rows[0].v;
+    container.innerHTML = rows.map(r => {
+        const on = r.c === highlight;
+        return `<div class="rank-row">
+            <span class="rank-name">${nice(r.c)}</span>
+            <div class="rank-track">
+                <span class="rank-fill" style="width:${(r.v / max) * 100}%; background:${on ? 'var(--pink)' : color}"></span>
+            </div>
+            <span class="rank-val">${fmt(r.v)}</span>
+        </div>`;
+    }).join('');
+}
+
+// ── Section 5: Thrive — scatter of life expectancy (x) vs happiness (y) ──
+function renderThrive(container) {
+    const W = 100, H = 100, pad = 8;               // viewBox units (%)
+    const pts = COUNTRIES.map(c => ({ c, x: ADL.countries[c].life, y: ADL.countries[c].happiness }));
+    const xs = pts.map(p => p.x), ys = pts.map(p => p.y);
+    const x0 = Math.min(...xs) - 1, x1 = Math.max(...xs) + 1;
+    const y0 = Math.min(...ys) - 0.3, y1 = Math.max(...ys) + 0.3;
+    const sx = v => pad + ((v - x0) / (x1 - x0)) * (W - pad * 2);
+    const sy = v => (H - pad) - ((v - y0) / (y1 - y0)) * (H - pad * 2);
+
+    const dots = pts.map(p => {
+        const big = ['Japan', 'India', 'Mexico', 'Australia'].includes(p.c);
+        return `<circle cx="${sx(p.x).toFixed(1)}" cy="${sy(p.y).toFixed(1)}" r="${big ? 1.8 : 1.4}"
+            fill="${big ? 'var(--magenta)' : 'var(--blue)'}"><title>${nice(p.c)}: ${p.x} yrs, ${p.y}/10 happy</title></circle>
+            ${big ? `<text x="${sx(p.x).toFixed(1)}" y="${(sy(p.y) - 3).toFixed(1)}" class="sc-label" text-anchor="middle">${nice(p.c)}</text>` : ''}`;
+    }).join('');
+
+    container.innerHTML = `<svg viewBox="0 0 100 100" class="scatter" preserveAspectRatio="none" aria-label="Life expectancy versus happiness by country">
+        <text x="${W / 2}" y="99" class="sc-axis" text-anchor="middle">Life expectancy →</text>
+        <text x="1.5" y="${H / 2}" class="sc-axis" text-anchor="middle" transform="rotate(-90 1.5 ${H / 2})">Happiness →</text>
+        ${dots}
+    </svg>`;
+}
+
 // ── wire everything up ──
 (function init() {
     if (!ADL) return;
@@ -132,6 +191,26 @@ function renderCompareCallout(el, left, right) {
         pickerR.addEventListener('change', drawCompare);
         drawCompare();
     }
+
+    // Section 3 — work ranking
+    const workRank = document.getElementById('work-rank');
+    if (workRank) renderWorkRank(workRank);
+
+    // Section 4 — rest (leisure ranking)
+    const restRank = document.getElementById('rest-rank');
+    if (restRank) renderRank(restRank,
+        c => ADL.countries[c].minutes.LEI,
+        m => fmtH(m), 'var(--blue)', 'Italy');
+
+    // Section 5 — thrive (life vs happiness scatter)
+    const thrive = document.getElementById('thrive-scatter');
+    if (thrive) renderThrive(thrive);
+
+    // Section 6 — connect (tourism ranking)
+    const connRank = document.getElementById('connect-rank');
+    if (connRank) renderRank(connRank,
+        c => ADL.countries[c].tourism,
+        v => v + 'M', 'var(--purple)', 'France');
 
     // scroll reveal
     const obs = new IntersectionObserver((entries) => {

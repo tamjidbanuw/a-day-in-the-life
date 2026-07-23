@@ -32,12 +32,13 @@ gap over a lifetime.
       as a standalone prototype — NOT yet wired into index.html cover.
 - [x] **0. Cover** — curved blue panel, "A Day in the Life of the World." (placeholder gradient; dot-field will likely replace/precede it)
 - [~] **1. The Day** — 3 bars (Sleep / Work / Leisure) for one country + picker. (done, single-country)
-- [ ] **2. Two lives, side by side** — THE core: two countries' day bars in parallel. ← the "wow"
-- [ ] **3. Work** — who works most; paid vs hidden/unpaid labor.
-- [ ] **4. Rest & leisure** — who protects rest; sleep & downtime.
-- [ ] **5. Thrive** — life expectancy + happiness (payoff layer).
-- [ ] **6. Connect** — tourism / migration (theme's "connects").
-- [ ] **7. Closing** — the day's gap multiplied over a lifetime (adaptive punchline).
+- [x] **2. Two lives, side by side** — two countries' day bars + adaptive callout. ✓
+- [x] **3. Work** — ranking of all 12 countries, paid vs unpaid split bars. ✓
+- [x] **4. Rest & leisure** — leisure ranking (Italy highlighted). ✓
+- [x] **5. Thrive** — life expectancy vs happiness scatter. ✓
+- [x] **6. Connect** — tourism arrivals ranking (France highlighted). ✓
+- [x] **7. Closing** — "same 24 hours, a different life" text payoff. ✓
+      (Note: closing is text-only for now; could add the lifetime dot-field later.)
 
 ## Data (have it, cited in SOURCES.md)
 - Day bars: OECD Time Use (35 countries; Sleep / Work / Leisure).
