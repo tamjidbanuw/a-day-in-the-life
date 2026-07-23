@@ -1,0 +1,13 @@
+# ── Large raw data sources (not needed in the repo; documented in SOURCES.md) ──
+data/time_use_atus/
+data/time_use_atus_metadata.json
+data/population_projections_un.xlsx
+data/flights_routes.csv
+data/spice.csv
+data/Resmed+Sleep+Survey+2026+White+Paper+Report.pdf
+data/city_happiness/
+
+# OS / editor cruft
+.DS_Store
+*.log
+node_modules/

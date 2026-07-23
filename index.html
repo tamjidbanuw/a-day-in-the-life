@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Day in the Life of the World</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="top-banner" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+
+    <!-- ═══ COVER ═══════════════════════════════════════════ -->
+    <header class="cover">
+        <div class="cover-photo"><p class="cover-kicker">A data story · VizCon 2026</p></div>
+        <div class="cover-panel">
+            <h1 class="cover-title">A Day in the Life<br>of the World</h1>
+            <p class="cover-sub">Eight billion people. The same 24 hours.
+                No two lives spend them the same way.</p>
+            <span class="cover-scroll">Scroll to begin ↓</span>
+        </div>
+    </header>
+
+    <main>
+        <!-- ═══ OPENER · PEOPLE DOT-FIELD ═══════════════════ -->
+        <section class="section reveal" id="sec-people">
+            <span class="sec-num">The world</span>
+            <h2 class="sec-title">Eight billion lives,<br>one shared world</h2>
+            <hr class="rule">
+            <p class="lead">Every dot is a slice of humanity — eight billion of us,
+                sharing one world and the same 24 hours.</p>
+            <div class="df-legend">
+                <span><i class="df-key" style="background:#1e6ef0"></i>Lives this story tracks</span>
+                <span><i class="df-key" style="background:#c6bedc"></i>Untracked</span>
+            </div>
+            <div class="df-stage"><canvas id="df-canvas"></canvas></div>
+            <p class="df-note">Illustrative — each dot represents millions of people.</p>
+        </section>
+
+        <!-- ═══ 1 · THE DAY ═════════════════════════════════ -->
+        <section class="section reveal" id="sec-day">
+            <span class="sec-num">01 — The day</span>
+            <h2 class="sec-title">Everyone gets 24 hours —<br>almost no one spends them alike</h2>
+            <hr class="rule">
+            <p class="lead">Sleep, work, rest. The same handful of demands fills every day on
+                Earth — but how much each one takes depends entirely on where you wake up.</p>
+            <p class="body">
+                Take <strong data-slot="name">France</strong>. The average person here spends
+                <strong data-slot="work">?</strong> of the day working and protects
+                <strong data-slot="leisure">?</strong> for leisure — one of the most rest-heavy
+                days measured anywhere.
+            </p>
+
+            <label class="picker">
+                <span>Choose a country</span>
+                <select data-picker="A"></select>
+            </label>
+
+            <div class="day-card">
+                <div class="card-head">A day in <span data-slot="name">France</span></div>
+                <div class="bars" data-bars="A" role="img" aria-label="How a day's hours are spent"></div>
+            </div>
+
+        </section>
+
+        <!-- ═══ 2 · TWO LIVES, SIDE BY SIDE (the core) ══════ -->
+        <section class="section reveal" id="sec-compare">
+            <span class="sec-num">02 — Two lives</span>
+            <h2 class="sec-title">The same day,<br>a world apart</h2>
+            <hr class="rule">
+            <p class="lead">Put two countries side by side and the differences stop being
+                numbers — they become two completely different lives.</p>
+
+            <div class="compare">
+                <div class="compare-col">
+                    <label class="compare-pick"><select data-picker="L"></select></label>
+                    <div class="bars" data-bars="L"></div>
+                </div>
+                <div class="compare-col">
+                    <label class="compare-pick"><select data-picker="R"></select></label>
+                    <div class="bars" data-bars="R"></div>
+                </div>
+            </div>
+
+            <div class="callout" data-callout="compare"></div>
+        </section>
+
+        <!-- ═══ 3 · WORK ════════════════════════════════════ -->
+        <section class="section reveal" id="sec-work">
+            <span class="sec-num">03 — Work</span>
+            <h2 class="sec-title">Who works the most —<br>and who barely stops</h2>
+            <hr class="rule">
+            <p class="lead">Placeholder lead for the work section.</p>
+            <p class="body">Placeholder body — this section will rank countries by total working
+                time and reveal how much of it is unpaid.</p>
+            <div class="day-card"><div class="card-head">Coming next</div>
+                <div class="bars-placeholder">Work ranking chart</div></div>
+        </section>
+
+        <!-- ═══ 4 · REST ════════════════════════════════════ -->
+        <section class="section reveal" id="sec-rest">
+            <span class="sec-num">04 — Rest</span>
+            <h2 class="sec-title">Who protects their rest</h2>
+            <hr class="rule">
+            <p class="lead">Placeholder lead for the rest & leisure section.</p>
+            <div class="day-card"><div class="card-head">Coming next</div>
+                <div class="bars-placeholder">Leisure & sleep chart</div></div>
+        </section>
+
+        <!-- ═══ 5 · THRIVE ══════════════════════════════════ -->
+        <section class="section reveal" id="sec-thrive">
+            <span class="sec-num">05 — Thrive</span>
+            <h2 class="sec-title">A longer day, a longer life?</h2>
+            <hr class="rule">
+            <p class="lead">Placeholder lead — life expectancy and happiness as the payoff of
+                how a day is lived.</p>
+            <div class="day-card"><div class="card-head">Coming next</div>
+                <div class="bars-placeholder">Life expectancy + happiness</div></div>
+        </section>
+
+        <!-- ═══ 6 · CONNECT ═════════════════════════════════ -->
+        <section class="section reveal" id="sec-connect">
+            <span class="sec-num">06 — Connect</span>
+            <h2 class="sec-title">Where the world goes</h2>
+            <hr class="rule">
+            <p class="lead">Placeholder lead — tourism and how these lives connect across borders.</p>
+            <div class="day-card"><div class="card-head">Coming next</div>
+                <div class="bars-placeholder">Tourism / connection chart</div></div>
+        </section>
+
+        <!-- ═══ 7 · CLOSING ═════════════════════════════════ -->
+        <section class="section closing reveal" id="sec-close">
+            <h2 class="sec-title closing-title">The same 24 hours.<br>A different life.</h2>
+            <p class="lead">Placeholder closing — the day's biggest gap, multiplied over a lifetime.</p>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>A Day in the Life of the World · A VizCon 2026 entry</p>
+        <p class="src">Sources — Daily time use: OECD Time Use Database (minutes per day, both
+            sexes; “Work” combines paid and unpaid work). Life expectancy: Our World in Data.
+            Happiness: World Happiness Report. Tourism: World Bank (international arrivals, 2019).</p>
+    </footer>
+
+    <script src="data/adl-data.js"></script>
+    <script src="js/dotfield.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
