@@ -190,9 +190,26 @@ function renderThrive(container) {
     </svg>`;
 }
 
+// ── Cover: build the 24-hour clock arc SVG ──
+function buildCoverClock(svg) {
+    const cx = 150, cy = 150, r = 120;
+    const circ = 2 * Math.PI * r;
+    svg.innerHTML = `
+        <circle class="cc-track" cx="${cx}" cy="${cy}" r="${r}" stroke-width="3"/>
+        <circle class="cc-arc" cx="${cx}" cy="${cy}" r="${r}" stroke-width="4"
+            stroke-dasharray="${circ}" stroke-dashoffset="${circ}"
+            transform="rotate(-90 ${cx} ${cy})"/>
+        <line class="cc-hand" x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy - r + 14}"/>
+        <circle class="cc-hub" cx="${cx}" cy="${cy}" r="4"/>`;
+}
+
 // ── wire everything up ──
 (function init() {
     if (!ADL) return;
+
+    // Cover clock
+    const coverClock = document.getElementById('cover-clock');
+    if (coverClock) buildCoverClock(coverClock);
 
     // Section 1 — single country
     const pickerA = document.querySelector('[data-picker="A"]');
