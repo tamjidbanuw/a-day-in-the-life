@@ -156,12 +156,68 @@ body {
     background: linear-gradient(90deg, var(--blue), var(--purple), var(--magenta));
 }
 
-/* ─── SECTION (the ResMed page rhythm) ──────────────────── */
+/* ─── SECTION (wide editorial canvas) ───────────────────── */
 .section {
-    max-width: 760px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 5rem 1.5rem;
+    padding: clamp(3.5rem, 7vw, 6rem) clamp(1.5rem, 4vw, 3rem);
 }
+
+/* centered editorial sections (opener, quiz, closing) */
+.section.center { text-align: center; }
+.section.center .sec-num,
+.section.center .sec-title,
+.section.center .lead,
+.section.center .body,
+.section.center .source,
+.section.center .rule { margin-left: auto; margin-right: auto; }
+.section.center .sec-title { max-width: 18ch; }
+.section.center .lead { max-width: 640px; }
+.section.center .body { max-width: 620px; }
+.section.center .rule { max-width: 640px; }
+
+/* two-column split: readable text column + full-width visual */
+.section.split {
+    display: grid;
+    grid-template-columns: minmax(300px, 440px) 1fr;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+}
+.section.split.flip { grid-template-columns: 1fr minmax(300px, 440px); }
+.section.split.flip .txt { order: 2; }
+.section.split .txt { position: sticky; top: 2rem; }
+.section.split .viz { min-width: 0; }
+.section.split .viz > :first-child { margin-top: 0; }
+@media (max-width: 840px) {
+    .section.split, .section.split.flip { display: block; }
+    .section.split .txt { position: static; }
+    .section.split .viz > :first-child { margin-top: 2.2rem; }
+}
+
+/* ─── FULL-BLEED STAT BAND (light rhythm breaker) ───────── */
+.band {
+    background: var(--lav-card);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+}
+.band-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: clamp(2.5rem, 5vw, 4rem) clamp(1.5rem, 4vw, 3rem);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem 3rem;
+}
+.stat b {
+    display: block;
+    font-size: clamp(2.6rem, 5vw, 3.6rem);
+    font-weight: 800;
+    line-height: 1;
+    color: var(--copper);
+    font-variant-numeric: tabular-nums;
+}
+.stat p { margin-top: 0.5rem; color: var(--ink-soft); font-size: 0.98rem; line-height: 1.45; }
+.stat strong { color: var(--ink); font-weight: 600; }
 
 .sec-num {
     display: inline-block;
@@ -205,6 +261,73 @@ body {
     font-weight: 600;
     font-size: 1.05rem;
     padding: 0.85rem 1.3rem;
+}
+
+/* ─── SECTION 1: "THE DAY" HERO — giant 24 + inline split bar ─── */
+.day-hero {
+    max-width: 860px;
+    margin: 2.4rem auto 1.4rem;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: clamp(2rem, 5vw, 3.4rem);
+    text-align: center;
+    box-shadow: 0 30px 60px -40px rgba(51,65,85,0.3);
+}
+.dh-big {
+    font-size: clamp(4rem, 13vw, 8.5rem);
+    font-weight: 800;
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+    color: var(--copper);
+    font-variant-numeric: tabular-nums;
+}
+.dh-big small {
+    display: block;
+    font-size: 0.16em;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-top: 0.5rem;
+}
+.dh-line {
+    max-width: 560px;
+    margin: 1.4rem auto 2rem;
+    color: var(--ink-soft);
+    font-size: 1.15rem;
+}
+.dh-line strong { color: var(--ink); font-weight: 600; }
+.dh-bar {
+    max-width: 640px;
+    margin: 0 auto;
+    display: flex;
+    height: 26px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--track);
+}
+.dh-bar span {
+    display: block;
+    height: 100%;
+    transform-origin: left;
+    animation: dh-grow 1s cubic-bezier(0.4,0,0.2,1) both;
+}
+.dh-bar span:nth-child(2) { animation-delay: 0.15s; }
+.dh-bar span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes dh-grow { from { transform: scaleX(0); } }
+.dh-key {
+    max-width: 640px;
+    margin: 1rem auto 0;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.2rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+@media (prefers-reduced-motion: reduce) {
+    .dh-bar span { animation: none; }
 }
 
 /* icon-bar rows (ResMed style: % above the bar, label below) */
@@ -494,6 +617,7 @@ body {
 
 /* ─── LIFESTYLE DNA: stepped quiz → twin ────────────────── */
 /* one card, one step at a time; each swap fades in */
+#dna { max-width: 680px; margin: 0 auto; text-align: left; }
 .dna-stage {
     margin-top: 2rem;
     animation: dna-reveal 0.4s cubic-bezier(0.22,1,0.36,1) both;

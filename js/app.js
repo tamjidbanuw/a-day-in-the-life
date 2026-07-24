@@ -14,13 +14,6 @@ const ICONS = {
     coffee:    svg('<path d="M10 2v2"/><path d="M14 2v2"/><path d="M6 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/>'),
 };
 
-// The three story rows. "Work" = paid + unpaid combined.
-const ROWS = [
-    { label: 'Sleep & self-care', icon: ICONS.bed,       color: 'var(--care)',    codes: ['PCA'] },
-    { label: 'Work',              icon: ICONS.briefcase, color: 'var(--copper)',  codes: ['PAW', 'UPW'] },
-    { label: 'Leisure',           icon: ICONS.coffee,    color: 'var(--leisure)', codes: ['LEI'] },
-];
-
 const ADL = window.ADL;
 // Only countries with complete data across every metric feature in the story.
 const COUNTRIES = Object.keys(ADL.countries)
@@ -32,37 +25,28 @@ const fmtH  = (min) => { const h = Math.floor(min / 60), m = Math.round(min % 60
 const workMin = (min) => (min.PAW || 0) + (min.UPW || 0);
 const nice = (c) => c.replace(' (People’s Republic of)', '');
 
-// ── render the bar rows for one country into a container ──
-function renderBars(container, country) {
-    if (!container) return;   // container may be absent (e.g. experiment layout)
+// ── Section 1: "The day" hero — giant 24 + one inline split bar ──
+// Splits the day into Work (paid+unpaid) / Sleep & care / Other (leisure & rest).
+const DAY_SEGS = [
+    { label: 'Work',         color: 'var(--copper)',  codes: ['PAW', 'UPW'] },
+    { label: 'Sleep & care', color: 'var(--care)',    codes: ['PCA'] },
+    { label: 'Other',        color: 'var(--leisure)', codes: ['LEI', 'OTH'] },
+];
+function renderDayHero(container, country) {
+    if (!container) return;
     const min = ADL.countries[country].minutes;
-    container.innerHTML = ROWS.map(row => {
-        const pct = pctOf(min, row.codes);
-        return `<div class="bar-row">
-            <span class="bar-ic" style="background:${row.color}">${row.icon}</span>
-            <div class="bar-main">
-                <div class="bar-track">
-                    <span class="bar-pct" style="left:${pct}%; color:${row.color}">${pct}%</span>
-                    <span class="bar-fill" style="width:${pct}%; background:${row.color}"></span>
-                </div>
-                <span class="bar-label">${row.label}</span>
-            </div>
+    const segs = DAY_SEGS.map(s => ({ ...s, pct: pctOf(min, s.codes) }));
+    const [work, , other] = segs;
+    container.innerHTML = `
+        <div class="dh-big">24<small>hours, everywhere</small></div>
+        <p class="dh-line">In <strong>${nice(country)}</strong>, <strong>${work.pct}%</strong>
+            of the day goes to work and <strong>${other.pct}%</strong> to everything else.</p>
+        <div class="dh-bar">
+            ${segs.map(s => `<span style="width:${s.pct}%; background:${s.color}"></span>`).join('')}
+        </div>
+        <div class="dh-key">
+            ${segs.map(s => `<span style="color:${s.color}">${s.label} · ${s.pct}%</span>`).join('')}
         </div>`;
-    }).join('');
-}
-
-// ── fill any <strong data-slot> / <span data-slot> for a country ──
-function fillSlots(country) {
-    const min = ADL.countries[country].minutes;
-    const vals = {
-        name: nice(country),
-        work: pctOf(min, ['PAW', 'UPW']) + '% of the day',
-        leisure: pctOf(min, ['LEI']) + '% of the day',
-    };
-    document.querySelectorAll('[data-slot]').forEach(el => {
-        const k = el.dataset.slot;
-        if (vals[k] !== undefined) el.textContent = vals[k];
-    });
 }
 
 // ── build a picker <select> ──
@@ -367,12 +351,12 @@ function buildCoverClock(svg) {
     const coverClock = document.getElementById('cover-clock');
     if (coverClock) buildCoverClock(coverClock);
 
-    // Section 1 — single country
+    // Section 1 — "The day" hero (giant 24 + inline split bar)
     const pickerA = document.querySelector('[data-picker="A"]');
-    const barsA = document.querySelector('[data-bars="A"]');
-    if (pickerA && barsA) {
+    const dayHero = document.getElementById('day-hero');
+    if (pickerA && dayHero) {
         buildPicker(pickerA, 'France');
-        const drawA = () => { renderBars(barsA, pickerA.value); fillSlots(pickerA.value); };
+        const drawA = () => renderDayHero(dayHero, pickerA.value);
         pickerA.addEventListener('change', drawA);
         drawA();
     }

@@ -22,7 +22,7 @@
 
     <main>
         <!-- ═══ OPENER · PEOPLE DOT-FIELD ═══════════════════ -->
-        <section class="section reveal" id="sec-people">
+        <section class="section center reveal" id="sec-people">
             <span class="sec-num">The world</span>
             <h2 class="sec-title">Eight billion lives,<br>one shared world</h2>
             <hr class="rule">
@@ -46,112 +46,111 @@
         </div>
 
         <!-- ═══ 1 · THE DAY ═════════════════════════════════ -->
-        <section class="section reveal" id="sec-day">
+        <section class="section center reveal" id="sec-day">
             <span class="sec-num">The day</span>
             <h2 class="sec-title">Everyone gets 24 hours —<br>almost no one spends them alike</h2>
             <hr class="rule">
             <p class="lead">Sleep, work, rest. The same handful of demands fills every day on
                 Earth — but how much each one takes depends entirely on where you wake up.</p>
-            <p class="body">
-                Take <strong data-slot="name">France</strong>. The average person here spends
-                <strong data-slot="work">?</strong> of the day working and protects
-                <strong data-slot="leisure">?</strong> for leisure — one of the most rest-heavy
-                days measured anywhere.
-            </p>
 
             <label class="picker">
                 <span>Choose a country</span>
                 <select data-picker="A"></select>
             </label>
 
-            <div class="day-card">
-                <div class="card-head">A day in <span data-slot="name">France</span></div>
-                <div class="bars" data-bars="A" role="img" aria-label="How a day's hours are spent"></div>
-            </div>
-
+            <div class="day-hero" id="day-hero" role="img"
+                 aria-label="How a country's 24 hours are split across work, sleep and everything else"></div>
         </section>
 
         <!-- ═══ 2 · TWO LIVES, SIDE BY SIDE (the core) ══════ -->
-        <section class="section reveal" id="sec-compare">
-            <span class="sec-num">Two lives</span>
-            <h2 class="sec-title">The same day,<br>a world apart</h2>
-            <hr class="rule">
-            <p class="lead">Put two countries head to head and the differences stop being
-                numbers — they become two completely different lives.</p>
-
-            <div class="vs">
-                <div class="vs-head">
-                    <label class="vs-pick vs-pick-l"><select data-picker="L"></select></label>
-                    <span class="vs-badge">VS</span>
-                    <label class="vs-pick vs-pick-r"><select data-picker="R"></select></label>
-                </div>
-                <div class="vs-rows" id="vs-rows" role="img" aria-label="Head-to-head comparison of two countries"></div>
+        <section class="section split reveal" id="sec-compare">
+            <div class="txt">
+                <span class="sec-num">Two lives</span>
+                <h2 class="sec-title">The same day,<br>a world apart</h2>
+                <hr class="rule">
+                <p class="lead">Put two countries head to head and the differences stop being
+                    numbers — they become two completely different lives.</p>
             </div>
-
-            <div class="callout" data-callout="compare"></div>
+            <div class="viz">
+                <div class="vs">
+                    <div class="vs-head">
+                        <label class="vs-pick vs-pick-l"><select data-picker="L"></select></label>
+                        <span class="vs-badge">VS</span>
+                        <label class="vs-pick vs-pick-r"><select data-picker="R"></select></label>
+                    </div>
+                    <div class="vs-rows" id="vs-rows" role="img" aria-label="Head-to-head comparison of two countries"></div>
+                </div>
+                <div class="callout" data-callout="compare"></div>
+            </div>
         </section>
 
         <!-- ═══ 3 · WORK ════════════════════════════════════ -->
-        <section class="section reveal" id="sec-work">
-            <span class="sec-num">Work</span>
-            <h2 class="sec-title">Half your waking hours<br>go to work — some of it unseen</h2>
-            <hr class="rule">
-            <p class="lead">Every day carries two workloads: the job you're paid for, and the
-                cooking, cleaning and caring that no one puts on a payslip.</p>
-
-            <div class="bubble">
-                <b>10<span>h</span></b>
-                <p>the longest working day measured — in <strong>Mexico</strong>, and
-                    more than four of those hours go unpaid.</p>
+        <section class="section split flip reveal" id="sec-work">
+            <div class="txt">
+                <span class="sec-num">Work</span>
+                <h2 class="sec-title">Half your waking hours<br>go to work — some of it unseen</h2>
+                <hr class="rule">
+                <p class="lead">Every day carries two workloads: the job you're paid for, and the
+                    cooking, cleaning and caring that no one puts on a payslip.</p>
+                <p class="body">
+                    Count both workloads, and in <strong>Japan</strong> the day is almost as long as
+                    Mexico's — but mostly on the clock. And in <strong>Italy</strong>, where the paid
+                    day is the shortest measured, people still do <em>more</em> unpaid work than paid.
+                </p>
             </div>
-
-            <p class="body">
-                Count both workloads, and in <strong>Japan</strong> the day is almost as long as
-                Mexico's — but mostly on the clock. And in <strong>Italy</strong>, where the paid
-                day is the shortest measured, people still do <em>more</em> unpaid work than paid.
-            </p>
-
-            <div class="day-card">
-                <div class="card-head">Hours of work per day — paid and unpaid</div>
-                <div class="rank" id="work-rank" role="img" aria-label="Countries ranked by daily hours of work, split into paid and unpaid"></div>
-                <div class="rank-legend">
-                    <span><i class="rank-key" style="background:var(--magenta)"></i>Paid work</span>
-                    <span><i class="rank-key" style="background:var(--unpaid)"></i>Unpaid work (chores &amp; care)</span>
+            <div class="viz">
+                <div class="day-card">
+                    <div class="card-head">Hours of work per day — paid and unpaid</div>
+                    <div class="rank" id="work-rank" role="img" aria-label="Countries ranked by daily hours of work, split into paid and unpaid"></div>
+                    <div class="rank-legend">
+                        <span><i class="rank-key" style="background:var(--magenta)"></i>Paid work</span>
+                        <span><i class="rank-key" style="background:var(--unpaid)"></i>Unpaid work (chores &amp; care)</span>
+                    </div>
                 </div>
-            </div>
 
-            <div class="callout">
-                <p class="callout-head">The work you never clock out of</p>
-                <div class="callout-row">
-                    <span class="callout-ic">✦</span>
-                    <p>Across every country here, unpaid labour adds
-                        <strong>2 to 4 hours</strong> to the day — often as much as a second job.</p>
-                </div>
-                <div class="callout-row">
-                    <span class="callout-ic">✦</span>
-                    <p>The lightest paid day (<strong>Italy</strong>, under 3 hours) still isn't a
-                        light day — the work simply moves out of sight.</p>
+                <div class="callout">
+                    <p class="callout-head">The work you never clock out of</p>
+                    <div class="callout-row">
+                        <span class="callout-ic">✦</span>
+                        <p>Across every country here, unpaid labour adds
+                            <strong>2 to 4 hours</strong> to the day — often as much as a second job.</p>
+                    </div>
+                    <div class="callout-row">
+                        <span class="callout-ic">✦</span>
+                        <p>The lightest paid day (<strong>Italy</strong>, under 3 hours) still isn't a
+                            light day — the work simply moves out of sight.</p>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- ═══ 4 · REST ════════════════════════════════════ -->
-        <section class="section reveal" id="sec-rest">
-            <span class="sec-num">Rest</span>
-            <h2 class="sec-title">The other half of the day —<br>and who guards it</h2>
-            <hr class="rule">
-            <p class="lead">After the work is done, what's left is rest: the hours for family,
-                friends, screens, sport and simply doing nothing.</p>
-            <p class="body">
-                <strong>Germany</strong> and <strong>Italy</strong> protect the most free time —
-                over <strong>5½ hours</strong> a day. At the other end, <strong>Mexico</strong>
-                keeps barely <strong>3½</strong>, its day already spent on work seen and unseen.
-                The countries that work the hardest, unsurprisingly, rest the least.
-            </p>
+        <!-- ═══ FULL-BLEED STAT BAND ════════════════════════ -->
+        <div class="band reveal"><div class="band-inner">
+            <div class="stat"><b>10h</b><p>the longest working day measured — in <strong>Mexico</strong>, over four of them unpaid.</p></div>
+            <div class="stat"><b>2–4h</b><p>of <strong>unpaid labour</strong> added to the day in every country here.</p></div>
+            <div class="stat"><b>5.7h</b><p>the leisure gap between the most- and least-rested countries.</p></div>
+        </div></div>
 
-            <div class="day-card">
-                <div class="card-head">Hours of leisure per day</div>
-                <div class="rank" id="rest-rank" role="img" aria-label="Countries ranked by daily leisure hours"></div>
+        <!-- ═══ 4 · REST ════════════════════════════════════ -->
+        <section class="section split reveal" id="sec-rest">
+            <div class="txt">
+                <span class="sec-num">Rest</span>
+                <h2 class="sec-title">The other half of the day —<br>and who guards it</h2>
+                <hr class="rule">
+                <p class="lead">After the work is done, what's left is rest: the hours for family,
+                    friends, screens, sport and simply doing nothing.</p>
+                <p class="body">
+                    <strong>Germany</strong> and <strong>Italy</strong> protect the most free time —
+                    over <strong>5½ hours</strong> a day. At the other end, <strong>Mexico</strong>
+                    keeps barely <strong>3½</strong>, its day already spent on work seen and unseen.
+                    The countries that work the hardest, unsurprisingly, rest the least.
+                </p>
+            </div>
+            <div class="viz">
+                <div class="day-card">
+                    <div class="card-head">Hours of leisure per day</div>
+                    <div class="rank" id="rest-rank" role="img" aria-label="Countries ranked by daily leisure hours"></div>
+                </div>
             </div>
         </section>
 
@@ -165,22 +164,25 @@
         </div>
 
         <!-- ═══ 5 · THRIVE ══════════════════════════════════ -->
-        <section class="section reveal" id="sec-thrive">
-            <span class="sec-num">Thrive</span>
-            <h2 class="sec-title">A longer day doesn't<br>buy a better life</h2>
-            <hr class="rule">
-            <p class="lead">If hard work alone made life better, the busiest countries would be
-                the happiest and longest-lived. They aren't.</p>
-            <p class="body">
-                <strong>Japan</strong> lives the longest (<strong>83.9 years</strong>) yet ranks
-                mid-pack for happiness. <strong>Australia</strong> works far less than Japan but is
-                the happiest here. And <strong>India</strong>, with a long working day, sits lowest
-                on both. How a day <em>feels</em> depends on far more than how full it is.
-            </p>
-
-            <div class="day-card">
-                <div class="card-head">Life expectancy vs. happiness</div>
-                <div class="scatter-wrap" id="thrive-scatter"></div>
+        <section class="section split flip reveal" id="sec-thrive">
+            <div class="txt">
+                <span class="sec-num">Thrive</span>
+                <h2 class="sec-title">A longer day doesn't<br>buy a better life</h2>
+                <hr class="rule">
+                <p class="lead">If hard work alone made life better, the busiest countries would be
+                    the happiest and longest-lived. They aren't.</p>
+                <p class="body">
+                    <strong>Japan</strong> lives the longest (<strong>83.9 years</strong>) yet ranks
+                    mid-pack for happiness. <strong>Australia</strong> works far less than Japan but is
+                    the happiest here. And <strong>India</strong>, with a long working day, sits lowest
+                    on both. How a day <em>feels</em> depends on far more than how full it is.
+                </p>
+            </div>
+            <div class="viz">
+                <div class="day-card">
+                    <div class="card-head">Life expectancy vs. happiness</div>
+                    <div class="scatter-wrap" id="thrive-scatter"></div>
+                </div>
             </div>
         </section>
 
@@ -194,22 +196,25 @@
         </div>
 
         <!-- ═══ 6 · CONNECT ═════════════════════════════════ -->
-        <section class="section reveal" id="sec-connect">
-            <span class="sec-num">Connect</span>
-            <h2 class="sec-title">However we spend our days,<br>the world still comes to visit</h2>
-            <hr class="rule">
-            <p class="lead">For all our differences, we're endlessly curious about each other's
-                lives — and hundreds of millions of us go and see them firsthand.</p>
-            <p class="body">
-                <strong>France</strong> alone welcomes nearly <strong>218 million</strong> visitors
-                a year — more than three times its own population. Wherever people live, and however
-                they spend their 24 hours, the days of one country keep drawing the curiosity of
-                another.
-            </p>
-
-            <div class="day-card">
-                <div class="card-head">International visitors per year (2019, millions)</div>
-                <div class="rank" id="connect-rank" role="img" aria-label="Countries ranked by international tourist arrivals"></div>
+        <section class="section split reveal" id="sec-connect">
+            <div class="txt">
+                <span class="sec-num">Connect</span>
+                <h2 class="sec-title">However we spend our days,<br>the world still comes to visit</h2>
+                <hr class="rule">
+                <p class="lead">For all our differences, we're endlessly curious about each other's
+                    lives — and hundreds of millions of us go and see them firsthand.</p>
+                <p class="body">
+                    <strong>France</strong> alone welcomes nearly <strong>218 million</strong> visitors
+                    a year — more than three times its own population. Wherever people live, and however
+                    they spend their 24 hours, the days of one country keep drawing the curiosity of
+                    another.
+                </p>
+            </div>
+            <div class="viz">
+                <div class="day-card">
+                    <div class="card-head">International visitors per year (2019, millions)</div>
+                    <div class="rank" id="connect-rank" role="img" aria-label="Countries ranked by international tourist arrivals"></div>
+                </div>
             </div>
         </section>
 
@@ -222,35 +227,38 @@
             <div class="chapter-rule"></div>
         </div>
 
-        <section class="section reveal" id="sec-insight">
-            <span class="sec-num">The pattern</span>
-            <h2 class="sec-title">Same wealth.<br>A completely different day.</h2>
-            <hr class="rule">
-            <p class="lead">We assume richer means busier, or richer means freer. But wealth
-                barely predicts how a day is actually spent.</p>
-            <p class="body">
-                Take two of the richest countries measured. <strong>Canada</strong> and
-                <strong>Germany</strong> earn almost exactly the same per person — yet a Canadian
-                works nearly <strong>two hours more</strong> each day, and a German gets those two
-                hours back as leisure. Same paycheck, a different life.
-            </p>
-
-            <div class="day-card">
-                <div class="card-head">Two countries, near-identical wealth</div>
-                <div id="insight" role="img" aria-label="Comparison of two countries with similar GDP but different daily time use"></div>
+        <section class="section split flip reveal" id="sec-insight">
+            <div class="txt">
+                <span class="sec-num">The pattern</span>
+                <h2 class="sec-title">Same wealth.<br>A completely different day.</h2>
+                <hr class="rule">
+                <p class="lead">We assume richer means busier, or richer means freer. But wealth
+                    barely predicts how a day is actually spent.</p>
+                <p class="body">
+                    Take two of the richest countries measured. <strong>Canada</strong> and
+                    <strong>Germany</strong> earn almost exactly the same per person — yet a Canadian
+                    works nearly <strong>two hours more</strong> each day, and a German gets those two
+                    hours back as leisure. Same paycheck, a different life.
+                </p>
             </div>
-
-            <div class="callout">
-                <p class="callout-head">The takeaway</p>
-                <div class="callout-row">
-                    <span class="callout-ic">✦</span>
-                    <p>How much money a country makes says surprisingly little about how its people
-                        actually <strong>live their hours</strong>.</p>
+            <div class="viz">
+                <div class="day-card">
+                    <div class="card-head">Two countries, near-identical wealth</div>
+                    <div id="insight" role="img" aria-label="Comparison of two countries with similar GDP but different daily time use"></div>
                 </div>
-                <div class="callout-row">
-                    <span class="callout-ic">✦</span>
-                    <p>A fuller wallet doesn't buy a fuller day — <strong>culture and choice</strong>
-                        decide how the same 24 hours get spent.</p>
+
+                <div class="callout">
+                    <p class="callout-head">The takeaway</p>
+                    <div class="callout-row">
+                        <span class="callout-ic">✦</span>
+                        <p>How much money a country makes says surprisingly little about how its people
+                            actually <strong>live their hours</strong>.</p>
+                    </div>
+                    <div class="callout-row">
+                        <span class="callout-ic">✦</span>
+                        <p>A fuller wallet doesn't buy a fuller day — <strong>culture and choice</strong>
+                            decide how the same 24 hours get spent.</p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -264,7 +272,7 @@
             <div class="chapter-rule"></div>
         </div>
 
-        <section class="section reveal" id="sec-dna">
+        <section class="section center reveal" id="sec-dna">
             <span class="sec-num">Find your twin</span>
             <h2 class="sec-title">Somewhere out there,<br>a country lives like you</h2>
             <hr class="rule">
@@ -284,7 +292,7 @@
         </section>
 
         <!-- ═══ 7 · CLOSING ═════════════════════════════════ -->
-        <section class="section closing reveal" id="sec-close">
+        <section class="section center closing reveal" id="sec-close">
             <h2 class="sec-title closing-title">The same 24 hours.<br>A different life.</h2>
             <p class="lead">Everyone on Earth is handed the same 1,440 minutes each day. What
                 changes — from Osaka to Mexico City to Rome — is how we spend them.</p>
