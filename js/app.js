@@ -34,6 +34,7 @@ const nice = (c) => c.replace(' (People’s Republic of)', '');
 
 // ── render the bar rows for one country into a container ──
 function renderBars(container, country) {
+    if (!container) return;   // container may be absent (e.g. experiment layout)
     const min = ADL.countries[country].minutes;
     container.innerHTML = ROWS.map(row => {
         const pct = pctOf(min, row.codes);
@@ -98,6 +99,36 @@ function renderCompareCallout(el, left, right) {
             <span class="callout-ic">${ICONS.coffee}</span>
             <p>Same 24 hours, two different lives: ${nice(left)} vs ${nice(right)}.</p>
         </div>`;
+}
+
+// ── Section 2: head-to-head "vs" spine — diverging bars from a centre axis ──
+// `full` = the value that fills a bar 100%, so fills reflect the real number.
+const VS_METRICS = [
+    { label: 'Work',              get: c => pctOf(ADL.countries[c].minutes, ['PAW', 'UPW']), unit: '%',    full: 100 },
+    { label: 'Leisure',           get: c => pctOf(ADL.countries[c].minutes, ['LEI']),        unit: '%',    full: 100 },
+    { label: 'Sleep & self-care', get: c => pctOf(ADL.countries[c].minutes, ['PCA']),        unit: '%',    full: 100 },
+    { label: 'Life expectancy',   get: c => ADL.countries[c].life,      unit: ' yrs', full: 90 },
+    { label: 'Happiness',         get: c => ADL.countries[c].happiness, unit: '/10',  full: 10 },
+];
+function renderVsSpine(container, left, right) {
+    if (!container) return;
+    container.innerHTML = VS_METRICS.map(mt => {
+        const lv = mt.get(left), rv = mt.get(right);
+        const lw = Math.min(100, (lv / mt.full) * 100);
+        const rw = Math.min(100, (rv / mt.full) * 100);
+        const lWin = lv >= rv;
+        return `<div class="vs-row">
+            <div class="vs-side vs-left">
+                <span class="vs-num ${lWin ? 'win' : ''}">${lv}${mt.unit}</span>
+                <div class="vs-bar"><span style="width:${lw}%; background:var(--blue)"></span></div>
+            </div>
+            <span class="vs-metric">${mt.label}</span>
+            <div class="vs-side vs-right">
+                <div class="vs-bar"><span style="width:${rw}%; background:var(--magenta)"></span></div>
+                <span class="vs-num ${!lWin ? 'win' : ''}">${rv}${mt.unit}</span>
+            </div>
+        </div>`;
+    }).join('');
 }
 
 // ── Section 3: work ranking — all countries as paid+unpaid split bars ──
@@ -173,18 +204,16 @@ function renderThrive(container) {
         drawA();
     }
 
-    // Section 2 — comparison
+    // Section 2 — head-to-head "vs" spine
     const pickerL = document.querySelector('[data-picker="L"]');
     const pickerR = document.querySelector('[data-picker="R"]');
-    const barsL = document.querySelector('[data-bars="L"]');
-    const barsR = document.querySelector('[data-bars="R"]');
+    const vsRows = document.getElementById('vs-rows');
     const callout = document.querySelector('[data-callout="compare"]');
     if (pickerL && pickerR) {
         buildPicker(pickerL, 'Japan');
         buildPicker(pickerR, 'Italy');
         const drawCompare = () => {
-            renderBars(barsL, pickerL.value);
-            renderBars(barsR, pickerR.value);
+            renderVsSpine(vsRows, pickerL.value, pickerR.value);
             renderCompareCallout(callout, pickerL.value, pickerR.value);
         };
         pickerL.addEventListener('change', drawCompare);

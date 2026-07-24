@@ -332,3 +332,81 @@ body {
     .bar-fill { transition: none; }
     .reveal { opacity: 1; transform: none; transition: none; }
 }
+
+/* ═══ SECTION 02: VS SPINE + SPEECH-BUBBLE (ported from experiment) ═══ */
+
+/* ─── SECTION 02: VS HEAD-TO-HEAD SPINE ─────────────────── */
+.vs {
+    margin: 2.2rem 0 0;
+    background: var(--lav-card);
+    border-radius: 18px;
+    padding: 0 0 1.4rem;
+    overflow: hidden;
+}
+.vs-head {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--indigo);
+    padding: 0.7rem 1rem;
+}
+.vs-pick select {
+    width: 100%;
+    font-family: var(--font); font-weight: 700; font-size: 1.05rem;
+    color: #fff; background: transparent; border: none; cursor: pointer; appearance: none;
+}
+.vs-pick-l select { text-align: left; }
+.vs-pick-r select { text-align: right; direction: rtl; }
+.vs-pick select option { color: var(--ink); direction: ltr; }
+.vs-badge {
+    font-weight: 800; font-size: 0.85rem; color: var(--indigo);
+    background: #fff; border-radius: 999px; padding: 0.15rem 0.6rem;
+}
+
+.vs-rows { padding: 1.4rem 1.3rem 0; display: flex; flex-direction: column; gap: 1.1rem; }
+.vs-row {
+    display: grid;
+    grid-template-columns: 1fr 130px 1fr;
+    align-items: center; gap: 0.5rem;
+}
+.vs-metric {
+    text-align: center; font-size: 0.8rem; font-weight: 600;
+    color: var(--ink-soft); line-height: 1.2;
+}
+.vs-side { display: flex; align-items: center; gap: 0.6rem; }
+.vs-left  { flex-direction: row-reverse; }   /* bar grows from centre leftward */
+.vs-right { flex-direction: row; }
+.vs-bar { flex: 1; height: 16px; background: #fff; border-radius: 999px; overflow: hidden; display: flex; }
+.vs-left .vs-bar { justify-content: flex-end; }
+.vs-bar span {
+    display: block; height: 100%; border-radius: 999px;
+    animation: vs-grow 0.8s cubic-bezier(0.4,0,0.2,1) both;
+}
+@keyframes vs-grow { from { width: 0 !important; } }
+.vs-num {
+    font-weight: 700; font-size: 0.9rem; color: var(--ink-faint);
+    font-variant-numeric: tabular-nums; min-width: 48px;
+}
+.vs-left .vs-num { text-align: left; }
+.vs-right .vs-num { text-align: right; }
+.vs-num.win { color: var(--ink); font-size: 1.02rem; }
+@media (max-width: 560px) {
+    .vs-row { grid-template-columns: 1fr 80px 1fr; }
+    .vs-metric { font-size: 0.7rem; }
+}
+
+/* ─── SPEECH-BUBBLE STAT CALLOUT ────────────────────────── */
+.bubble {
+    display: flex; align-items: center; gap: 1.2rem;
+    margin: 2rem 0 0.5rem;
+}
+.bubble b {
+    flex: none;
+    font-size: 3.4rem; font-weight: 800; line-height: 1;
+    color: var(--magenta);
+    font-variant-numeric: tabular-nums;
+}
+.bubble b span { font-size: 1.6rem; }
+.bubble p { font-size: 1.02rem; color: var(--ink-soft); max-width: 460px; }
+.bubble strong { color: var(--ink); font-weight: 600; }

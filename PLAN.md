@@ -50,3 +50,32 @@ gap over a lifetime.
 - Curated pairs vs. free pick-any-two.
 - Cover photo source.
 - Accessibility pass (alt text, contrast) before submission — worth 15%.
+
+## Reference: LEGO "Brick by Brick" viz (LEGO.svg) — ideas to borrow
+
+A Tableau-built vertical scrolly. Techniques worth stealing (adapted to our palette/theme):
+
+**Structure**
+- One long vertical scroll broken into clear acts (intro → stats → head-to-head → verdict).
+- **Head-to-head "vs" spine**: two subjects share a central value axis, each side its own
+  colour, narrative columns down the middle. (Great fit for our two-country comparison.)
+- Decorative side borders framing the whole page (we'd keep ours subtle/on-brand).
+
+**Chart types seen**
+- Winding-"road" timeline with milestone markers (playful history device).
+- Speech-bubble callouts for big single numbers (255 colours, 398 themes).
+- Donut-ring stat tiles in a grid (colour breakdown).
+- Bar-chart RACE (animated, play button) — themes over decades.
+- Packed-circle / bubble chart for category sizes.
+- Dual-axis vertical comparison with product photos as data points.
+- Box-plots for distributions.
+- **Radial / spiral bar charts** (concentric arcs) — distinctive alt to flat bars.
+- Treemap for part-category composition.
+
+**Tone / UI**
+- Hand-drawn arrows & circles as annotations; trophy/emoji-style accents; mascots.
+- Big playful display headline; colour-highlighted keywords in body text.
+- Verdict/"final" closing card with a warm sign-off.
+
+NOTE: it's maximalist/playful (LEGO brand). Ours is editorial/ResMed — borrow the
+STRUCTURE and CHART VARIETY, not the clip-art density.
