@@ -6,6 +6,8 @@ data/flights_routes.csv
 data/spice.csv
 data/Resmed+Sleep+Survey+2026+White+Paper+Report.pdf
 data/city_happiness/
+data/API_NY.GDP.PCAP.CD_DS2_en_csv_v2_33610/
+data/WHR26_Data_Figure_2.1.xlsx
 
 # OS / editor cruft
 .DS_Store

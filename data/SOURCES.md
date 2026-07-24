@@ -17,3 +17,5 @@ All datasets are public. Verify/complete the URLs marked TODO before submission
 | `languages.csv` | Languages: family, region, speakers, writing system | Kaggle | TODO Kaggle link |
 | `flights_routes.csv` | Airline routes (OpenFlights) | OpenFlights | https://openflights.org/data.html |
 | `city_happiness/` | City Happiness Index 2024 (noise, traffic, green space, AQI...) | Kaggle | TODO Kaggle link |
+| `API_NY.GDP.PCAP.CD_DS2_en_csv_v2_*/` | GDP per capita, current US$ (NY.GDP.PCAP.CD); 2023 values used | World Bank | https://data.worldbank.org/indicator/NY.GDP.PCAP.CD |
+| `WHR26_Data_Figure_2.1.xlsx` | World Happiness Report 2026, Figure 2.1 data (ladder + social support, freedom, generosity sub-scores; 2025 values used for the Lifestyle DNA "Community" axis) | World Happiness Report / Gallup | https://worldhappiness.report/data/ |

@@ -77,7 +77,7 @@
                 dots.push({
                     hx, hy, x: Math.random() * W, y: Math.random() * H, vx: 0, vy: 0,
                     r: (on ? 3.9 : 2.8) * devicePixelRatio,
-                    color: on ? '30,110,240' : '198,190,220',
+                    color: on ? '184,115,51' : '206,196,182',
                     hi: on,
                     alpha: on ? 1 : (0.55 + edge * 0.45),
                     delay: (hx / W) * 500 + Math.random() * 200,
