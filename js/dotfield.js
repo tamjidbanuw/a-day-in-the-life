@@ -1,6 +1,6 @@
 /**
- * Dot-field opener — a dense field of dots that spells "PEOPLE".
- * Fly-in intro, perpetual drift, hover-bulge, feathered edges.
+ * Dot-field opener — a dense field of dots that spells "WORLD".
+ * Fly-in intro, perpetual drift, hover ripple, feathered edges.
  * Runs only if #df-canvas exists on the page.
  */
 (function () {
@@ -51,9 +51,9 @@
     function build() {
         size();
         dots = [];
-        const mask = wordMask('US');
+        const mask = wordMask('WORLD');
         const ar = mask.h / mask.w;
-        let bw = W * 0.94, bh = bw * ar;
+        let bw = W * 0.96, bh = bw * ar;
         if (bh > H * 0.88) { bh = H * 0.88; bw = bh / ar; }
         const bx = (W - bw) / 2, by = (H - bh) / 2;
         const inWord = (px, py) => {
