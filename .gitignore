@@ -13,3 +13,4 @@ data/WHR26_Data_Figure_2.1.xlsx
 .DS_Store
 *.log
 node_modules/
+.vscode/

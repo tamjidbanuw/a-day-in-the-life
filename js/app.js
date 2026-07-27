@@ -330,6 +330,62 @@ function renderDna(root) {
     intro();
 }
 
+// ── Cover on scroll: the cover recedes, a title bar takes its place ──
+// The cover is left to scroll away normally and the bar is a separate fixed
+// element. Animating the cover's own height instead would change the page's
+// scroll length, which feeds back into the progress reading and oscillates.
+const lerp  = (a, b, t) => a + (b - a) * t;
+const clamp01 = (v) => Math.min(1, Math.max(0, v));
+const easeOut = (t) => 1 - Math.pow(1 - t, 2);
+
+function initCoverScroll() {
+    const bar = document.querySelector('.title-bar');
+    const cover = document.querySelector('.cover');
+    if (!bar || !cover) return;
+
+    const center = cover.querySelector('.cover-center');
+    const clock  = cover.querySelector('.cover-clock');
+    const kicker = cover.querySelector('.cover-kicker');
+    const hint   = cover.querySelector('.cover-scroll');
+    const reduced = window.matchMedia &&
+        matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let queued = false;
+    function paint() {
+        queued = false;
+        const h = cover.offsetHeight || window.innerHeight;
+        const p = clamp01(window.scrollY / h);
+
+        // the bar arrives over the back half of the cover's exit
+        const b = easeOut(clamp01((p - 0.35) / 0.4));
+        bar.classList.toggle('in', b > 0.02);
+
+        if (reduced) {
+            // no slide, no scaling — just show or hide
+            bar.style.transform = p > 0.5 ? 'translateY(0)' : 'translateY(-100%)';
+            return;
+        }
+        bar.style.transform = `translateY(${lerp(-100, 0, b)}%)`;
+
+        const t = easeOut(p);
+        // .cover-clock is centred by a translate in CSS, so repeat it here
+        clock.style.transform = `translate(-50%, -50%) scale(${lerp(1, 0.8, t)})`;
+        clock.style.opacity = String(lerp(1, 0, clamp01(p / 0.65)));
+        center.style.transform = `scale(${lerp(1, 0.86, t)})`;
+        center.style.opacity = String(lerp(1, 0, clamp01(p / 0.75)));
+        if (kicker) kicker.style.opacity = String(lerp(1, 0, clamp01(p / 0.3)));
+        if (hint) hint.style.opacity = String(lerp(1, 0, clamp01(p / 0.2)));
+    }
+
+    addEventListener('scroll', () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(paint);
+    }, { passive: true });
+    addEventListener('resize', paint);
+    paint();
+}
+
 // ── Cover: build the 24-hour clock arc SVG ──
 function buildCoverClock(svg) {
     const cx = 150, cy = 150, r = 120;
@@ -350,6 +406,7 @@ function buildCoverClock(svg) {
     // Cover clock
     const coverClock = document.getElementById('cover-clock');
     if (coverClock) buildCoverClock(coverClock);
+    initCoverScroll();
 
     // Section 1 — "The day" hero (giant 24 + inline split bar)
     const pickerA = document.querySelector('[data-picker="A"]');

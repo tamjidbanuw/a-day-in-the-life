@@ -125,6 +125,35 @@ body {
     .cc-arc { stroke-dashoffset: 0 !important; }
 }
 
+/* ─── STICKY TITLE BAR ──────────────────────────────────────
+   Hidden above the viewport until the cover has begun to leave, then slid
+   into place by js/app.js. Kept out of the tab order and pointer-inert
+   while it is off-screen. */
+.title-bar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 50;
+    height: 52px;
+    background: #0e1230;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(-100%);
+    box-shadow: 0 10px 30px -22px rgba(0, 0, 0, 0.9);
+    pointer-events: none;
+}
+.title-bar.in { pointer-events: auto; }
+.title-bar span {
+    font-weight: 700;
+    font-size: 0.92rem;
+    letter-spacing: -0.01em;
+}
+@media (max-width: 560px) {
+    .title-bar { height: 44px; }
+    .title-bar span { font-size: 0.8rem; }
+}
+
 /* ─── CHAPTER DIVIDER (groups sections into a story) ────── */
 .chapter-mark {
     max-width: 760px;
@@ -414,12 +443,6 @@ body {
 }
 
 /* ─── OPENER: PEOPLE DOT-FIELD ──────────────────────────── */
-.df-legend {
-    display: flex; gap: 1.4rem; flex-wrap: wrap;
-    margin: 1.3rem 0 1.6rem; font-size: 0.9rem; color: var(--ink-soft);
-}
-.df-legend span { display: inline-flex; align-items: center; gap: 0.5rem; }
-.df-key { width: 12px; height: 12px; border-radius: 50%; }
 /* The dot field breaks out of the 1200px column and runs nearly edge to edge.
    margin-left + translateX centres it on the viewport rather than the column,
    and capping at 96vw keeps it clear of a horizontal scrollbar. */
@@ -429,13 +452,76 @@ body {
     margin-left: 50%;
     transform: translateX(-50%);
     aspect-ratio: 3/1;
+    margin-top: 2.4rem;
+    margin-bottom: 1.8rem;
 }
 /* on a phone a 3:1 band is too shallow to read — give it more height back */
 @media (max-width: 640px) {
     .df-stage { aspect-ratio: 12/5; }
 }
 .df-stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-.df-note { font-size: 0.8rem; color: var(--ink-faint); margin-top: 0.9rem; font-style: italic; }
+
+/* ─── DOT-FIELD KEY ─────────────────────────────────────────
+   Swatches are sized to match the marks on the canvas (copper 3.9px, grey
+   2.8px), so the key is a true sample of the field rather than a decoration. */
+.df-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem 1.6rem;
+    margin: 0 0 0.9rem;
+}
+.df-key {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.86rem;
+    color: var(--ink-soft, #55504a);
+    white-space: nowrap;   /* labels are short; never let them stack */
+}
+.df-key i {
+    display: block;
+    border-radius: 50%;
+    flex: none;
+}
+.df-key i.on  { width: 11px; height: 11px; background: rgb(184,115,51); }
+.df-key i.off { width: 8px;  height: 8px;  background: rgb(206,196,182); }
+
+/* ─── FIGURE CAPTION ────────────────────────────────────────
+   Numbered label plus a one-line method note, sat under each chart. */
+.fig-cap {
+    margin: 0.9rem 0 0;
+    padding-top: 0.6rem;
+    border-top: 1px solid var(--line);
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--ink-faint);
+    text-align: left;
+    max-width: 640px;
+}
+.section.center .fig-cap { margin-left: auto; margin-right: auto; }
+.day-card .fig-cap { margin: 0.9rem 1.5rem 0; max-width: none; }
+.fig-cap b {
+    display: block;
+    color: var(--ink);
+    font-weight: 700;
+    font-size: 0.82rem;
+    margin-bottom: 0.15rem;
+}
+
+/* ─── READER INSTRUCTION ────────────────────────────────────
+   Tells the reader what to do with an interactive, and what to look for. */
+.howto {
+    display: inline-block;
+    margin-top: 0.9rem;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: #8a4b00;
+    background: #fdf1e3;
+    border: 1px solid #f0d9bd;
+    border-radius: 999px;
+    padding: 0.35rem 0.85rem;
+}
 
 /* ─── SECTION 2: SIDE-BY-SIDE COMPARE ───────────────────── */
 .compare {

@@ -9,6 +9,10 @@
     const ctx = canvas.getContext('2d');
     let W, H, dots = [], raf;
 
+    // The 12 countries this story follows hold 3.82bn of 7.97bn people, so the
+    // copper dots are held to that share of the field. See build().
+    const SHARE = 0.48;
+
     // Mask of the word, CROPPED to its actual ink bounding box so any word
     // (short or long) fills the field tightly with no dead space.
     function wordMask(word) {
@@ -53,7 +57,7 @@
         dots = [];
         const mask = wordMask('WORLD');
         const ar = mask.h / mask.w;
-        let bw = W * 0.96, bh = bw * ar;
+        let bw = W * 0.99, bh = bw * ar;
         if (bh > H * 0.88) { bh = H * 0.88; bw = bh / ar; }
         const bx = (W - bw) / 2, by = (H - bh) / 2;
         const inWord = (px, py) => {
@@ -64,29 +68,46 @@
 
         const GAP = 11 * devicePixelRatio;
         const JIT = GAP * 0.28;
+
+        // Two passes. First lay out the grid, splitting it into the dots that
+        // fall inside the word and the grey candidates that don't.
+        const word = [], spare = [];
         for (let gy = GAP / 2; gy < H; gy += GAP) {
             for (let gx = GAP / 2; gx < W; gx += GAP) {
                 const hx = gx + (Math.random() * 2 - 1) * JIT;
                 const hy = gy + (Math.random() * 2 - 1) * JIT;
-                const on = inWord(hx, hy);
                 const mX = W * 0.12, mY = H * 0.12;
                 const fx = Math.min(hx, W - hx) / mX;
                 const fy = Math.min(hy, H - hy) / mY;
                 const edge = Math.max(0, Math.min(1, Math.min(fx, fy)));
-                if (!on && Math.random() > edge * 0.85 + 0.15) continue;
-                dots.push({
-                    hx, hy, x: Math.random() * W, y: Math.random() * H, vx: 0, vy: 0,
-                    r: (on ? 3.9 : 2.8) * devicePixelRatio,
-                    color: on ? '184,115,51' : '206,196,182',
-                    hi: on,
-                    alpha: on ? 1 : (0.55 + edge * 0.45),
-                    delay: (hx / W) * 500 + Math.random() * 200,
-                    phx: Math.random() * Math.PI * 2, phy: Math.random() * Math.PI * 2,
-                    spx: 0.6 + Math.random() * 0.8, spy: 0.6 + Math.random() * 0.8,
-                    amp: (2.2 + Math.random() * 2.2) * devicePixelRatio
-                });
+                (inWord(hx, hy) ? word : spare).push({ hx, hy, edge });
             }
         }
+
+        // Then keep only as many grey dots as the ratio allows, so the word is
+        // exactly SHARE of every dot drawn:
+        //     word / (word + grey) = SHARE  ->  grey = word * (1 - SHARE) / SHARE
+        // That is what lets the legend claim a real number. Candidates are
+        // sampled by weight, using the same feather profile the field always
+        // had, so thinning keeps the soft edges instead of cutting a rectangle.
+        const wantGrey = Math.round(word.length * (1 - SHARE) / SHARE);
+        spare.forEach(d => { d.key = Math.random() / (d.edge * 0.85 + 0.15); });
+        spare.sort((a, b) => a.key - b.key);
+        const grey = spare.slice(0, wantGrey);
+
+        const push = (d, on) => dots.push({
+            hx: d.hx, hy: d.hy, x: Math.random() * W, y: Math.random() * H, vx: 0, vy: 0,
+            r: (on ? 3.9 : 2.8) * devicePixelRatio,
+            color: on ? '184,115,51' : '206,196,182',
+            hi: on,
+            alpha: on ? 1 : (0.55 + d.edge * 0.45),
+            delay: (d.hx / W) * 500 + Math.random() * 200,
+            phx: Math.random() * Math.PI * 2, phy: Math.random() * Math.PI * 2,
+            spx: 0.6 + Math.random() * 0.8, spy: 0.6 + Math.random() * 0.8,
+            amp: (2.2 + Math.random() * 2.2) * devicePixelRatio
+        });
+        word.forEach(d => push(d, true));
+        grey.forEach(d => push(d, false));
     }
 
     // Ripple system: hovering drops expanding rings that push dots outward as

@@ -9,6 +9,10 @@
 <body>
     <div class="top-banner" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
 
+    <!-- Slides in as the cover scrolls away, so the title stays available.
+         aria-hidden because the <h1> below already announces the same words. -->
+    <div class="title-bar" aria-hidden="true"><span>A Day in the Life of the World</span></div>
+
     <!-- ═══ COVER ═══════════════════════════════════════════ -->
     <header class="cover">
         <p class="cover-kicker">A data story · VizCon 2026</p>
@@ -23,33 +27,42 @@
     <main>
         <!-- ═══ OPENER · PEOPLE DOT-FIELD ═══════════════════ -->
         <section class="section center reveal" id="sec-people">
-            <span class="sec-num">The world</span>
-            <h2 class="sec-title">One world,<br>eight billion people</h2>
+            <span class="sec-num">Meet the data</span>
+            <h2 class="sec-title">8 billion people</h2>
             <hr class="rule">
-            <p class="lead">Every dot stands for millions of people. Thirty-five countries keep
-                records detailed enough to say how their hours are spent; twelve of them run through
-                this story.</p>
-            <div class="df-legend">
-                <span><i class="df-key" style="background:#B87333"></i>Countries this story follows</span>
-                <span><i class="df-key" style="background:#cec4b6"></i>Everyone else</span>
-            </div>
+            <p class="lead">Measuring a day takes a national diary survey. Thousands of people write
+                down what they did and for how long. Only 35 countries run one.</p>
+            <p class="body">This story follows the 12 with complete records. Between them they hold
+                3.82 billion people, 48% of everyone alive. Nine are high-income countries. The other
+                three, India, China and Mexico, are not. Read this as a window on rich and emerging
+                economies, not the world.</p>
+
+            <!-- the field leads the section: visual first, explanation after -->
             <div class="df-stage"><canvas id="df-canvas"></canvas></div>
-            <p class="df-note">Dot positions are illustrative, not geographic.</p>
+
+            <div class="df-legend">
+                <span class="df-key"><i class="on"></i>Countries this story follows</span>
+                <span class="df-key"><i class="off"></i>Everyone else</span>
+            </div>
+
+            <p class="fig-cap"><b>Fig 1.1 — Eight Billion Days</b>
+                Dot field spelling WORLD. Copper marks the 12 countries this story follows: 48% of the
+                dots, matching their 48% share of world population. Positions are not geographic.</p>
         </section>
 
         <!-- ═══ CHAPTER ONE · HOW WE LIVE ═══════════════════ -->
         <div class="chapter-mark reveal">
             <span class="chapter-eyebrow">Chapter One</span>
             <h2 class="chapter-name">How We Live</h2>
-            <p class="chapter-blurb">Sleep, work, rest — three demands every day makes, and no two
-                countries meeting them the same way.</p>
+            <p class="chapter-blurb">Sleep, work, rest. Three demands every day makes. No two
+                countries meet them the same way.</p>
             <div class="chapter-rule"></div>
         </div>
 
         <!-- ═══ 1 · THE DAY ═════════════════════════════════ -->
         <section class="section center reveal" id="sec-day">
-            <span class="sec-num">The day</span>
-            <h2 class="sec-title">Everyone gets 24 hours —<br>almost no one spends them alike</h2>
+            <span class="sec-num">Same clock</span>
+            <h2 class="sec-title">Everyone gets 24 hours</h2>
             <hr class="rule">
             <p class="lead">How those hours divide has less to do with the clock than with where you
                 wake up.</p>
@@ -59,18 +72,24 @@
                 <select data-picker="A"></select>
             </label>
 
+            <div><span class="howto">Pick a country. The bar splits its 1,440 minutes three ways.</span></div>
+
             <div class="day-hero" id="day-hero" role="img"
                  aria-label="How a country's 24 hours are split across work, sleep and everything else"></div>
+
+            <p class="fig-cap"><b>Fig 2.1 — The Same 24</b>
+                Stacked bar, average minutes per day for one country, grouped into work (paid and
+                unpaid), sleep and self-care, and everything else. OECD Time Use Database, both sexes.</p>
         </section>
 
         <!-- ═══ 2 · TWO LIVES, SIDE BY SIDE (the core) ══════ -->
         <section class="section split reveal" id="sec-compare">
             <div class="txt">
-                <span class="sec-num">Two lives</span>
+                <span class="sec-num">Head to head</span>
                 <h2 class="sec-title">The same day,<br>a world apart</h2>
                 <hr class="rule">
-                <p class="lead">Set two countries side by side and the gaps stop reading as numbers.
-                    They start reading as two different lives.</p>
+                <p class="lead">Set two countries side by side and the gaps stop being numbers.</p>
+                <span class="howto">Pick two countries. Watch what leisure does as work climbs.</span>
             </div>
             <div class="viz">
                 <div class="vs">
@@ -81,6 +100,9 @@
                     </div>
                     <div class="vs-rows" id="vs-rows" role="img" aria-label="Head-to-head comparison of two countries"></div>
                 </div>
+                <p class="fig-cap"><b>Fig 2.2 — Head to Head</b>
+                    Diverging bars, five measures, two countries. Time use is shown as a share of the
+                    day; life expectancy in years; happiness on the 0–10 Cantril ladder.</p>
                 <div class="callout" data-callout="compare"></div>
             </div>
         </section>
@@ -88,26 +110,30 @@
         <!-- ═══ 3 · WORK ════════════════════════════════════ -->
         <section class="section split flip reveal" id="sec-work">
             <div class="txt">
-                <span class="sec-num">Work</span>
-                <h2 class="sec-title">Half your waking hours<br>go to work — some of it unseen</h2>
+                <span class="sec-num">The second shift</span>
+                <h2 class="sec-title">Half your waking hours<br>go to work</h2>
                 <hr class="rule">
                 <p class="lead">Every day carries two workloads: the job you're paid for, and the
                     cooking, cleaning and caring that no one puts on a payslip.</p>
                 <p class="body">
-                    Count both and <strong>Mexico</strong> works the longest day of anyone here, ten
-                    hours; <strong>Canada</strong> comes nearest, though far more of its day is on the
-                    clock. <strong>Italy</strong> has the shortest paid day measured, under three
-                    hours, and still does <em>more</em> unpaid work than paid.
+                    Count both and <strong>Mexico</strong> works the longest day here,
+                    <strong>10h05m</strong>. <strong>Canada</strong> is next at
+                    <strong>9h02m</strong>, though more of its day is paid. <strong>Italy</strong> has
+                    the shortest paid day measured, <strong>2h57m</strong>, and still does
+                    <em>more</em> unpaid work than paid.
                 </p>
             </div>
             <div class="viz">
                 <div class="day-card">
-                    <div class="card-head">Hours of work per day — paid and unpaid</div>
+                    <div class="card-head">Hours of work per day, paid and unpaid</div>
                     <div class="rank" id="work-rank" role="img" aria-label="Countries ranked by daily hours of work, split into paid and unpaid"></div>
                     <div class="rank-legend">
                         <span><i class="rank-key" style="background:var(--magenta)"></i>Paid work</span>
                         <span><i class="rank-key" style="background:var(--unpaid)"></i>Unpaid work (chores &amp; care)</span>
                     </div>
+                    <p class="fig-cap"><b>Fig 3.1 — The Second Shift</b>
+                        Stacked bars, paid and unpaid work in minutes per day, 12 countries, ranked by
+                        total. Unpaid work covers cooking, cleaning, shopping and care.</p>
                 </div>
 
                 <div class="callout">
@@ -115,7 +141,7 @@
                     <div class="callout-row">
                         <span class="callout-ic">✦</span>
                         <p>Across every country here, unpaid labour adds
-                            <strong>2 to 4 hours</strong> to the day — often as much as a second job.</p>
+                            <strong>2 to 4 hours</strong> to the day. Often as much as a second job.</p>
                     </div>
                     <div class="callout-row">
                         <span class="callout-ic">✦</span>
@@ -128,30 +154,33 @@
 
         <!-- ═══ FULL-BLEED STAT BAND ════════════════════════ -->
         <div class="band reveal"><div class="band-inner">
-            <div class="stat"><b>10h</b><p>the longest working day measured — in <strong>Mexico</strong>, over four of them unpaid.</p></div>
+            <div class="stat"><b>10h05m</b><p><strong>Mexico</strong> works the longest day here. 4h16m of it is unpaid.</p></div>
             <div class="stat"><b>2–4h</b><p>of <strong>unpaid labour</strong> added to the day in every country here.</p></div>
-            <div class="stat"><b>2h18</b><p>more free time a day in <strong>Germany</strong> than in Mexico — the widest gap here.</p></div>
+            <div class="stat"><b>2h18m</b><p>The free-time gap between <strong>Germany</strong> and Mexico. The widest here.</p></div>
         </div></div>
 
         <!-- ═══ 4 · REST ════════════════════════════════════ -->
         <section class="section split reveal" id="sec-rest">
             <div class="txt">
-                <span class="sec-num">Rest</span>
-                <h2 class="sec-title">The other half of the day —<br>and who guards it</h2>
+                <span class="sec-num">Off the clock</span>
+                <h2 class="sec-title">The other half of the day</h2>
                 <hr class="rule">
                 <p class="lead">After the work is done, what's left is rest: the hours for family,
                     friends, screens, sport and simply doing nothing.</p>
                 <p class="body">
-                    <strong>Germany</strong> guards the most, <strong>5h41m</strong> a day, with
-                    <strong>Italy</strong> close behind. <strong>Mexico</strong> is left with
-                    <strong>3h23m</strong>, its hours already committed. The countries that work
-                    longest rest least — which is arithmetic more than character.
+                    <strong>Germany</strong> keeps the most free time, <strong>5h41m</strong> a day.
+                    <strong>Italy</strong> is close behind at <strong>5h23m</strong>.
+                    <strong>Mexico</strong> is left with <strong>3h23m</strong>. The countries that
+                    work longest rest least.
                 </p>
             </div>
             <div class="viz">
                 <div class="day-card">
                     <div class="card-head">Hours of leisure per day</div>
                     <div class="rank" id="rest-rank" role="img" aria-label="Countries ranked by daily leisure hours"></div>
+                    <p class="fig-cap"><b>Fig 3.2 — Off the Clock</b>
+                        Bars, leisure in minutes per day, 12 countries. Leisure excludes sleep, personal
+                        care, paid work and unpaid work.</p>
                 </div>
             </div>
         </section>
@@ -168,24 +197,27 @@
         <!-- ═══ 5 · THRIVE ══════════════════════════════════ -->
         <section class="section split flip reveal" id="sec-thrive">
             <div class="txt">
-                <span class="sec-num">Thrive</span>
+                <span class="sec-num">Diminishing returns</span>
                 <h2 class="sec-title">A longer day doesn't<br>buy a better life</h2>
                 <hr class="rule">
                 <p class="lead">If effort alone decided it, the busiest countries would be the
                     healthiest and the happiest. They are neither.</p>
                 <p class="body">
-                    <strong>Japan</strong> lives longest, <strong>83.9 years</strong>, yet comes tenth
-                    of twelve for happiness. <strong>Australia</strong> is the happiest here on a
-                    working day barely shorter than Japan's — the difference is how little of it is
-                    paid. <strong>India</strong> works a day within minutes of Japan's and finishes
-                    last on both counts.
-                    How a day <em>feels</em> answers to more than how full it is.
+                    <strong>Japan</strong> lives longest at <strong>83.9 years</strong> and ranks
+                    <strong>10th of 12</strong> for happiness. <strong>Australia</strong> is the
+                    happiest and works <strong>8h01m</strong>, just 12 minutes less than Japan. The
+                    difference is paid work: <strong>3h58m</strong> against <strong>6h08m</strong>.
+                    <strong>India</strong> works <strong>8h06m</strong> and finishes last on both
+                    counts.
                 </p>
             </div>
             <div class="viz">
                 <div class="day-card">
                     <div class="card-head">Life expectancy vs. happiness</div>
                     <div class="scatter-wrap" id="thrive-scatter"></div>
+                    <p class="fig-cap"><b>Fig 4.1 — Diminishing Returns</b>
+                        Scatter, life expectancy in years (x) against happiness on the 0–10 ladder (y),
+                        12 countries, four labelled. Our World in Data; World Happiness Report.</p>
                 </div>
             </div>
         </section>
@@ -202,21 +234,24 @@
         <!-- ═══ 6 · CONNECT ═════════════════════════════════ -->
         <section class="section split reveal" id="sec-connect">
             <div class="txt">
-                <span class="sec-num">Connect</span>
-                <h2 class="sec-title">Whatever the day looks like,<br>the world comes to visit</h2>
+                <span class="sec-num">Inbound</span>
+                <h2 class="sec-title">The world comes to visit</h2>
                 <hr class="rule">
                 <p class="lead">Hundreds of millions of people cross a border every year to see
                     somewhere else's ordinary.</p>
                 <p class="body">
-                    <strong>France</strong> alone takes nearly <strong>218 million</strong> visitors a
-                    year, more than three times the number of people who live there. One country's
-                    routine is another country's reason to travel.
+                    <strong>France</strong> takes <strong>217.9M</strong> visitors a year, more than
+                    three times the number of people who live there. One country's routine is another
+                    country's reason to travel.
                 </p>
             </div>
             <div class="viz">
                 <div class="day-card">
                     <div class="card-head">International visitors per year (2019, millions)</div>
                     <div class="rank" id="connect-rank" role="img" aria-label="Countries ranked by international tourist arrivals"></div>
+                    <p class="fig-cap"><b>Fig 5.1 — Inbound</b>
+                        Bars, international tourist arrivals in millions, 2019, 12 countries. World Bank.
+                        2019 is used because pandemic years distort the series.</p>
                 </div>
             </div>
         </section>
@@ -232,21 +267,25 @@
 
         <section class="section split flip reveal" id="sec-insight">
             <div class="txt">
-                <span class="sec-num">The pattern</span>
-                <h2 class="sec-title">Same wealth.<br>A completely different day.</h2>
+                <span class="sec-num">Same wallet</span>
+                <h2 class="sec-title">Same wealth.<br>A different day.</h2>
                 <hr class="rule">
                 <p class="lead">Richer ought to mean busier, or else freer. It reliably means
                     neither.</p>
                 <p class="body">
-                    <strong>Canada</strong> and <strong>Germany</strong> earn almost exactly the same
-                    per person. A Canadian works nearly <strong>two hours more</strong> each day; a
-                    German takes those two hours as leisure. Same pay, different life.
+                    <strong>Canada</strong> and <strong>Germany</strong> earn within <strong>$71</strong>
+                    a head of each other, $54,848 against $54,777. A Canadian works
+                    <strong>1h46m</strong> more each day. A German takes <strong>2h10m</strong> more
+                    leisure. Same pay, different life.
                 </p>
             </div>
             <div class="viz">
                 <div class="day-card">
                     <div class="card-head">Two countries, near-identical wealth</div>
                     <div id="insight" role="img" aria-label="Comparison of two countries with similar GDP but different daily time use"></div>
+                    <p class="fig-cap"><b>Fig 6.1 — Same Wallet</b>
+                        Paired bars, GDP per capita (2023), then work and leisure in minutes per day,
+                        for the two closest-matched earners among the 12.</p>
                 </div>
 
                 <div class="callout">
@@ -278,11 +317,17 @@
             <span class="sec-num">Find your match</span>
             <h2 class="sec-title">Somewhere out there,<br>a country lives like you</h2>
             <hr class="rule">
-            <p class="lead">The twelve countries are scored on four measures — <strong>time, health,
-                community</strong> and <strong>connection</strong>. Set the dials to your own life and
-                we'll find the country that comes closest.</p>
+            <p class="lead">All 12 countries are scored on four measures: <strong>time, health,
+                community</strong> and <strong>connection</strong>.</p>
+            <div><span class="howto">Four questions. Drag each dial to your own life, then see your
+                closest match.</span></div>
 
             <div id="dna"></div>
+
+            <p class="fig-cap"><b>Fig 7.1 — Find Your Match</b>
+                Nearest-neighbour match on four normalised scores. Your answers place you in the same
+                0–100 space as the 12 countries; the closest by straight-line distance wins.
+                Illustrative, not a ranking.</p>
 
             <p class="source">
                 The four scores are an illustrative index built from the same sources used throughout:
@@ -296,8 +341,8 @@
         <!-- ═══ 7 · CLOSING ═════════════════════════════════ -->
         <section class="section center closing reveal" id="sec-close">
             <h2 class="sec-title closing-title">Same hours.<br>Different lives.</h2>
-            <p class="lead">Everyone is handed the same 1,440 minutes. What changes — from Osaka to
-                Mexico City to Rome — is what becomes of them.</p>
+            <p class="lead">Everyone is handed the same 1,440 minutes. What changes, from Osaka to
+                Mexico City to Rome, is what becomes of them.</p>
             <p class="body" style="margin:1.4rem auto 0; max-width:560px; text-align:center;">
                 Work or rest. Paid or unpaid. Alone or together. How a country fills its day shapes
                 how long its people live, how connected they feel, and how content they are to be
@@ -308,9 +353,10 @@
 
     <footer class="site-footer">
         <p>A Day in the Life of the World · A VizCon 2026 entry</p>
-        <p class="src">Sources — Daily time use: OECD Time Use Database (minutes per day, both
-            sexes; “Work” combines paid and unpaid work). Life expectancy: Our World in Data.
-            Happiness: World Happiness Report. Tourism: World Bank (international arrivals, 2019).</p>
+        <p class="src">Sources. Daily time use: OECD Time Use Database (minutes per day, both sexes;
+            “Work” combines paid and unpaid work). Life expectancy: Our World in Data. Happiness:
+            World Happiness Report. Tourism: World Bank (international arrivals, 2019). Population:
+            UN via world_population.csv (2022).</p>
     </footer>
 
     <script src="data/adl-data.js"></script>
