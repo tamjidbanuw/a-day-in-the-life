@@ -81,7 +81,7 @@ function renderCompareCallout(el, left, right) {
         </div>
         <div class="callout-row">
             <span class="callout-ic">${ICONS.coffee}</span>
-            <p>Same 24 hours, two different lives: ${nice(left)} vs ${nice(right)}.</p>
+            <p>Two countries, two different days: ${nice(left)} and ${nice(right)}.</p>
         </div>`;
 }
 
@@ -316,11 +316,11 @@ function renderDna(root) {
         const t = ADL.countries[twin];
         const stage = show(`
             <div class="dna-result">
-                <p class="dna-result-kicker">Your lifestyle twin is</p>
+                <p class="dna-result-kicker">Your closest match is</p>
                 <p class="dna-result-name">${nice(twin)}</p>
                 ${dnaStrip(t.dna)}
                 <p class="dna-result-note">Matched on how you balance <strong>time, health,
-                    community and connection</strong> — the four strands of a lifestyle.</p>
+                    community and connection</strong> — the four measures behind the score.</p>
                 <button class="dna-go dna-retake">Retake the quiz</button>
             </div>`);
         stage.querySelector('.dna-retake').addEventListener('click', intro);
