@@ -14,6 +14,9 @@
     /* groove fill inside cards */
     --track: #ffffff;
 
+    /* cover height */
+    --cover-h: 76vh;
+
     /* legacy aliases, repointed onto the copper palette */
     --blue:          #3B82F6;
     --blue-light:    #60A5FA;
@@ -54,9 +57,13 @@ body {
 .top-banner span:nth-child(5) { background: var(--magenta); }
 
 /* ─── COVER: title overlaid on a 24-hour clock, night sky ─── */
+/* Short of a full viewport on purpose: the opener below should be partly
+   visible on load, so the page reads as a story rather than a splash screen.
+   The cover scrolls away normally; the fixed .title-bar takes over from it and
+   the page then runs underneath that bar. */
 .cover {
     position: relative;
-    min-height: 100vh;
+    min-height: var(--cover-h);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -80,7 +87,7 @@ body {
 .cover-clock {
     position: absolute;
     top: 50%; left: 50%;
-    width: min(54vh, 500px); height: min(54vh, 500px);
+    width: min(44vh, 420px); height: min(44vh, 420px);
     transform: translate(-50%, -50%);
     z-index: 1;
 }
@@ -440,6 +447,18 @@ body {
 .source {
     max-width: 620px; margin: 2.4rem 0 0;
     font-size: 0.74rem; line-height: 1.5; color: var(--ink-faint);
+}
+
+/* ─── SECTION EXIT ──────────────────────────────────────────
+   Driven from JS on scroll, so no transition here: a transition would smear
+   every frame of a scroll-linked value. Origin sits above centre so the group
+   shrinks toward the edge it is leaving by. */
+.sec-exit {
+    transform-origin: 50% 25%;
+    will-change: transform, opacity;
+}
+@media (prefers-reduced-motion: reduce) {
+    .sec-exit { transform: none !important; opacity: 1 !important; }
 }
 
 /* ─── OPENER: PEOPLE DOT-FIELD ──────────────────────────── */

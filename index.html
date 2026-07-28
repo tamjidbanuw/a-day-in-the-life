@@ -27,27 +27,32 @@
     <main>
         <!-- ═══ OPENER · PEOPLE DOT-FIELD ═══════════════════ -->
         <section class="section center reveal" id="sec-people">
-            <span class="sec-num">Meet the data</span>
-            <h2 class="sec-title">8 billion people</h2>
-            <hr class="rule">
-            <p class="lead">Measuring a day takes a national diary survey. Thousands of people write
-                down what they did and for how long. Only 35 countries run one.</p>
-            <p class="body">This story follows the 12 with complete records. Between them they hold
-                3.82 billion people, 48% of everyone alive. Nine are high-income countries. The other
-                three, India, China and Mexico, are not. Read this as a window on rich and emerging
-                economies, not the world.</p>
+            <!-- .sec-exit is the group that shrinks and fades on the way out, the
+                 same handoff the cover makes. It sits inside the section so it does
+                 not clash with the .reveal transition on the section itself. -->
+            <div class="sec-exit">
+                <span class="sec-num">Meet the data</span>
+                <h2 class="sec-title">8 Billion People</h2>
+                <hr class="rule">
+                <p class="lead">Measuring a day takes a national diary survey. Thousands of people write
+                    down what they did and for how long. Only 35 countries run one.</p>
+                <p class="body">This story follows the 12 with complete records. Between them they hold
+                    3.82 billion people, 48% of everyone alive. Nine are high-income countries. The other
+                    three, India, China and Mexico, are not. Read this as a window on rich and emerging
+                    economies, not the world.</p>
 
-            <!-- the field leads the section: visual first, explanation after -->
-            <div class="df-stage"><canvas id="df-canvas"></canvas></div>
+                <!-- the field leads the section: visual first, explanation after -->
+                <div class="df-stage"><canvas id="df-canvas"></canvas></div>
 
-            <div class="df-legend">
-                <span class="df-key"><i class="on"></i>Countries this story follows</span>
-                <span class="df-key"><i class="off"></i>Everyone else</span>
+                <div class="df-legend">
+                    <span class="df-key"><i class="on"></i>Countries this story follows</span>
+                    <span class="df-key"><i class="off"></i>Everyone else</span>
+                </div>
+
+                <p class="fig-cap"><b>Fig 1.1 — Eight Billion Days</b>
+                    Dot field spelling WORLD. Copper marks the 12 countries this story follows: 48% of the
+                    dots, matching their 48% share of world population. Positions are not geographic.</p>
             </div>
-
-            <p class="fig-cap"><b>Fig 1.1 — Eight Billion Days</b>
-                Dot field spelling WORLD. Copper marks the 12 countries this story follows: 48% of the
-                dots, matching their 48% share of world population. Positions are not geographic.</p>
         </section>
 
         <!-- ═══ CHAPTER ONE · HOW WE LIVE ═══════════════════ -->

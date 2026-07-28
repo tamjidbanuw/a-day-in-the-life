@@ -386,6 +386,47 @@ function initCoverScroll() {
     paint();
 }
 
+/**
+ * Section exit — the same handoff the cover makes, reused for any section
+ * wrapping its contents in .sec-exit. As the section scrolls up and out, the
+ * group shrinks and fades, so the chapter mark underneath arrives on a clear
+ * screen rather than colliding with the section it replaces.
+ *
+ * Progress is measured against the section's own height, not the viewport, so
+ * a tall section fades over a longer scroll and the pacing feels the same on
+ * any screen: 0 when the section's top reaches the top of the viewport, 1 once
+ * it has travelled its full height past it.
+ */
+function initSectionExit() {
+    const groups = Array.from(document.querySelectorAll('.sec-exit'));
+    if (!groups.length) return;
+
+    // CSS already pins these flat under reduced motion; skip the work entirely.
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    let queued = false;
+    function paint() {
+        queued = false;
+        groups.forEach(group => {
+            const host = group.parentElement;
+            const r = host.getBoundingClientRect();
+            const p = clamp01(-r.top / Math.max(1, r.height));
+            const t = easeOut(p);
+            group.style.transform = `scale(${lerp(1, 0.92, t)})`;
+            // clears a touch sooner than the scale, so the fade leads the shrink
+            group.style.opacity = String(lerp(1, 0, clamp01(p / 0.85)));
+        });
+    }
+
+    addEventListener('scroll', () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(paint);
+    }, { passive: true });
+    addEventListener('resize', paint);
+    paint();
+}
+
 // ── Cover: build the 24-hour clock arc SVG ──
 function buildCoverClock(svg) {
     const cx = 150, cy = 150, r = 120;
@@ -407,6 +448,7 @@ function buildCoverClock(svg) {
     const coverClock = document.getElementById('cover-clock');
     if (coverClock) buildCoverClock(coverClock);
     initCoverScroll();
+    initSectionExit();
 
     // Section 1 — "The day" hero (giant 24 + inline split bar)
     const pickerA = document.querySelector('[data-picker="A"]');
