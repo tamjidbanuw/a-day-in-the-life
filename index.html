@@ -190,6 +190,38 @@
             </div>
         </section>
 
+        <!-- ═══ RIGHT NOW · LIVE PANEL ══════════════════════ -->
+        <!-- PROVISIONAL PLACEMENT. Self-contained: the whole block can move
+             anywhere in <main> without touching anything else. Driven by
+             initRightNow() in js/app.js off data/atus-hours.js. -->
+        <section class="section center reveal" id="sec-now">
+            <span class="sec-num">Right now</span>
+            <h2 class="sec-title">While you read this</h2>
+            <hr class="rule">
+            <p class="lead">A day is not an abstraction. It is happening, and you are somewhere in the
+                middle of one.</p>
+
+            <div class="rn" id="rn">
+                <p class="rn-label">Right now, where you are</p>
+                <p class="rn-time" id="rn-time">--:--</p>
+                <p class="rn-say" id="rn-say"></p>
+                <div class="rn-bar" id="rn-bar" role="img"
+                     aria-label="Share of the American population in each activity at this hour"></div>
+                <div class="rn-key" id="rn-key"></div>
+
+                <!-- the whole day behind the current hour, so this minute has context -->
+                <p class="rn-sub">The whole day, midnight to midnight</p>
+                <div class="rn-rib" id="rn-rib"></div>
+            </div>
+
+            <p class="fig-cap"><b>Fig 3.3 — This Hour</b>
+                Stacked bar, share of the American population in each activity at your current local
+                hour. American Time Use Survey microdata 2003–2015, 3,347,093 activity records from
+                170,842 respondents, weighted, weekdays and weekends pooled. United States only: ATUS
+                is the only diary data here that records times of day, so the clock is yours and the
+                behaviour is American.</p>
+        </section>
+
         <!-- ═══ CHAPTER TWO · HOW WE THRIVE ═════════════════ -->
         <div class="chapter-mark reveal">
             <span class="chapter-eyebrow">Chapter Two</span>
@@ -225,6 +257,30 @@
                         12 countries, four labelled. Our World in Data; World Happiness Report.</p>
                 </div>
             </div>
+        </section>
+
+        <!-- ═══ 5b · NOBODY LEADS EVERYWHERE ════════════════ -->
+        <section class="section center reveal" id="sec-ranks">
+            <span class="sec-num">Nobody leads</span>
+            <h2 class="sec-title">Five measures,<br>five different winners</h2>
+            <hr class="rule">
+            <p class="lead">Line up all twelve countries on all five measures and no single line stays
+                on top. Mexico works the most. France sleeps the most. Germany rests the most. Japan
+                lives longest. Australia is happiest.</p>
+
+            <div class="pc-panel">
+                <div class="pc-read" id="pc-read"></div>
+                <div class="pc-chart" id="pc-chart"></div>
+                <div class="pc-pick" id="pc-pick"></div>
+            </div>
+
+            <p class="fig-cap"><b>Fig 4.2 — Five Measures, Five Winners</b>
+                Slope chart of rank positions. Each column ranks all 12 countries on one measure, 1st at
+                the top, 12th at the bottom, so a line crossing another means the two countries swap
+                order. <b>Ranks are by size, not by merit</b>: 1st on Work is the longest working day,
+                not the best one. Ties broken by the underlying value. Time use: OECD Time Use Database,
+                both sexes. Life expectancy: Our World in Data. Happiness: World Happiness Report,
+                0–10 ladder.</p>
         </section>
 
         <!-- ═══ CHAPTER THREE · HOW WE CONNECT ══════════════ -->
@@ -365,6 +421,7 @@
     </footer>
 
     <script src="data/adl-data.js"></script>
+    <script src="data/atus-hours.js"></script>
     <script src="js/dotfield.js"></script>
     <script src="js/app.js"></script>
 </body>
