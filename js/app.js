@@ -39,7 +39,7 @@ const DC_CATS = [
     { key: 'PAW', label: 'Paid work',         color: 'var(--paid)' },
     { key: 'UPW', label: 'Unpaid work',       color: 'var(--unpaid)' },
     { key: 'LEI', label: 'Leisure',           color: 'var(--leisure)' },
-    { key: 'OTH', label: 'Other',             color: '#cec4b6' }
+    { key: 'OTH', label: 'Other',             color: 'var(--other)' }
 ];
 
 function initDayCard() {
@@ -455,7 +455,7 @@ function initRightNow() {
         { key: 'PAW', label: 'Paid work',         color: 'var(--paid)',    say: 'working or studying' },
         { key: 'UPW', label: 'Unpaid work',       color: 'var(--unpaid)',  say: 'cooking, cleaning, shopping or caring' },
         { key: 'LEI', label: 'Leisure',           color: 'var(--leisure)', say: 'at leisure' },
-        { key: 'OTH', label: 'Other',             color: '#cec4b6',        say: 'travelling, or somewhere unaccounted for' }
+        { key: 'OTH', label: 'Other',             color: 'var(--other)',   say: 'travelling, or somewhere unaccounted for' }
     ];
 
     const time = document.getElementById('rn-time');
@@ -469,7 +469,7 @@ function initRightNow() {
     // ── the whole day behind the current hour ──
     // Presentation attributes in SVG do not accept var(), so the bands carry
     // literal hex matching the palette variables used above.
-    const HEX = { PCA: '#3B82F6', PAW: '#B87333', UPW: '#5b8def', LEI: '#F97316', OTH: '#cec4b6' };
+    const HEX = { PCA: '#3D5C80', PAW: '#B87333', UPW: '#DFB48B', LEI: '#8FB0D1', OTH: '#CEC4B6' };
     const rib = document.getElementById('rn-rib');
     let hand = null, handCap = null;
 
@@ -758,9 +758,30 @@ function initRankParallel() {
         return map;
     });
 
-    const hue = i => (i * 360 / rows.length + 18) % 360;
-    const colour = i => `hsl(${hue(i)} 72% 62%)`;
-    const colourOf = name => colour(rows.findIndex(c => c.name === name));
+    /**
+     * A colour per country, taken from the page palette rather than invented.
+     *
+     * The ramp runs slate -> slate pale -> copper pale -> copper, which is the
+     * same warm/cool logic the day charts use, so the colour is not decoration:
+     * position on the ramp is the country's rank for total work. Cool lines are
+     * the countries that work least, warm ones the countries that work most.
+     * Twelve rainbow hues said nothing; twelve steps along this ramp say
+     * "how much of your day is spoken for".
+     */
+    const RAMP = [[61, 92, 128], [143, 176, 209], [223, 180, 139], [184, 115, 51]];
+    function ramp(t) {
+        const x = Math.max(0, Math.min(1, t)) * (RAMP.length - 1);
+        const i = Math.min(RAMP.length - 2, Math.floor(x));
+        const f = x - i;
+        const c = RAMP[i].map((v, k) => Math.round(v + (RAMP[i + 1][k] - v) * f));
+        return `rgb(${c[0]},${c[1]},${c[2]})`;
+    }
+    // least work at the cool end, most work at the warm end
+    const workOrder = [...rows].sort((a, b) => a.work - b.work).map(c => c.name);
+    const tone = new Map(rows.map(c => [c.name,
+        ramp(workOrder.indexOf(c.name) / Math.max(1, rows.length - 1))]));
+    const colour = i => tone.get(rows[i].name);
+    const colourOf = name => tone.get(name) || tone.get(rows[0].name);
 
     // geometry matches the sample exactly
     const W = 940, H = 420, L = 118, R = 74, T = 58, B = 40;
@@ -869,7 +890,7 @@ function initRankParallel() {
             pick.querySelectorAll('button').forEach(b => {
                 const on = b.dataset.n === name;
                 b.style.background = on ? colourOf(b.dataset.n) : 'transparent';
-                b.style.color = on ? '#131735' : '';
+                b.style.color = on ? 'var(--night)' : '';
                 b.style.borderColor = on ? colourOf(b.dataset.n) : '';
                 b.classList.toggle('on', on);
             });

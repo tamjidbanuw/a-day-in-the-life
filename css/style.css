@@ -1,38 +1,61 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
 
+/* ═══════════════════════════════════════════════════════════
+   PALETTE — three hues, each with one tint, on warm paper.
+
+   The day decides the colours rather than decoration doing it:
+
+     night   the sky the day starts and ends in — cover, title bar, dark panels
+     copper  obligation. Paid work is copper, unpaid work its lighter tint,
+             so the second shift reads as the same substance, drawn thinner
+     slate   rest. Sleep is slate, leisure its lighter tint
+
+   So on any chart of a day, warm blocks are what you owe and cool blocks are
+   what is yours. Nothing else gets a colour. Every older name below is an
+   alias onto these, so no rule needs its own hex.
+   ═══════════════════════════════════════════════════════════ */
 :root {
-    /* ─ Copper palette on warm light paper ─ */
-    --copper:     #B87333;   /* signature accent */
-    --gold:       #D4A017;   /* reserved for key insights */
+    /* the three hues */
+    --night:        #0E1230;
+    --copper:       #B87333;
+    --copper-pale:  #DFB48B;
+    --slate:        #3D5C80;
+    --slate-pale:   #8FB0D1;
 
-    /* time-use categories (per brief) */
-    --care:    #3B82F6;      /* personal care  */
-    --paid:    #B87333;      /* paid work      */
-    --unpaid:  #5b8def;      /* unpaid work (blue tint) */
-    --leisure: #F97316;      /* leisure/social */
+    /* neutrals: paper, ink, rules, and the one grey for leftovers */
+    --paper:      #FBF9F5;
+    --card:       #F4EEE6;
+    --track:      #ffffff;
+    --line:       #E5DED3;
+    --neutral:    #CEC4B6;
+    --ink:        #1F2937;
+    --ink-soft:   #4B5563;
+    --ink-faint:  #8a8177;
 
-    /* groove fill inside cards */
-    --track: #ffffff;
+    /* tints of copper, for the one instruction pill and its text */
+    --copper-deep: #8A5424;
+    --copper-wash: #F7EDE3;
 
-    /* cover height */
+    /* time-use categories, mapped onto the two hues */
+    --care:    var(--slate);        /* sleep & self-care */
+    --paid:    var(--copper);       /* paid work */
+    --unpaid:  var(--copper-pale);  /* unpaid work: same substance, lighter */
+    --leisure: var(--slate-pale);   /* leisure */
+    --other:   var(--neutral);
+
     --cover-h: 76vh;
 
-    /* legacy aliases, repointed onto the copper palette */
-    --blue:          #3B82F6;
-    --blue-light:    #60A5FA;
-    --purple:        #8B5CF6;
-    --purple-light:  #A78BFA;
-    --indigo:        #334155;   /* slate card / callout header bg */
-    --magenta:       #B87333;   /* signature copper */
-    --magenta-light: #d29a6a;
-    --pink:          #D4A017;   /* highlight -> gold */
-
-    --lav-card:  #F4EEE6;   /* warm cream card */
-    --ink:       #1F2937;
-    --ink-soft:  #4B5563;
-    --ink-faint: #8a8177;
-    --paper:     #FBF9F5;   /* warm light paper */
-    --line:      #E5DED3;
+    /* older names, all pointing at the palette above */
+    --blue:          var(--slate);
+    --blue-light:    var(--slate-pale);
+    --purple:        var(--copper);
+    --purple-light:  var(--copper-pale);
+    --indigo:        var(--night);
+    --magenta:       var(--copper);
+    --magenta-light: var(--copper-pale);
+    --pink:          var(--copper);
+    --gold:          var(--copper);
+    --lav-card:      var(--card);
 
     --font: 'Poppins', -apple-system, sans-serif;
 }
@@ -48,13 +71,14 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
+/* the banner runs night to day, left to right: the palette as a strip */
 .top-banner { display: flex; height: 12px; position: relative; z-index: 10; }
 .top-banner span { flex: 1; }
-.top-banner span:nth-child(1) { background: var(--blue); }
-.top-banner span:nth-child(2) { background: var(--purple-light); }
-.top-banner span:nth-child(3) { background: var(--purple); }
-.top-banner span:nth-child(4) { background: var(--indigo); }
-.top-banner span:nth-child(5) { background: var(--magenta); }
+.top-banner span:nth-child(1) { background: var(--night); }
+.top-banner span:nth-child(2) { background: var(--slate); }
+.top-banner span:nth-child(3) { background: var(--slate-pale); }
+.top-banner span:nth-child(4) { background: var(--copper-pale); }
+.top-banner span:nth-child(5) { background: var(--copper); }
 
 /* ─── COVER: title overlaid on a 24-hour clock, night sky ─── */
 /* Short of a full viewport on purpose: the opener below should be partly
@@ -71,7 +95,7 @@ body {
     text-align: center;
     padding: 2.5rem;
     overflow: hidden;
-    background: #0e1230;
+    background: var(--night);
     color: #fff;
 }
 
@@ -141,7 +165,7 @@ body {
     top: 0; left: 0; right: 0;
     z-index: 50;
     height: 52px;
-    background: #0e1230;
+    background: var(--night);
     color: #fff;
     display: flex;
     align-items: center;
@@ -322,7 +346,7 @@ body {
     border: 1px solid var(--line);
     border-radius: 14px;
     padding: clamp(1.1rem, 3vw, 1.5rem);
-    box-shadow: 0 30px 60px -46px rgba(51,65,85,0.34);
+    box-shadow: 0 30px 60px -46px rgba(31,41,55,0.30);
 }
 .dc-top {
     display: flex; align-items: center; justify-content: space-between;
@@ -450,7 +474,7 @@ body {
     align-items: center;
     gap: 0.45rem;
     font-size: 0.86rem;
-    color: var(--ink-soft, #55504a);
+    color: var(--ink-soft);
     white-space: nowrap;   /* labels are short; never let them stack */
 }
 .df-key i {
@@ -458,8 +482,8 @@ body {
     border-radius: 50%;
     flex: none;
 }
-.df-key i.on  { width: 11px; height: 11px; background: rgb(184,115,51); }
-.df-key i.off { width: 8px;  height: 8px;  background: rgb(206,196,182); }
+.df-key i.on  { width: 11px; height: 11px; background: var(--copper); }
+.df-key i.off { width: 8px;  height: 8px;  background: var(--neutral); }
 
 /* ─── RIGHT NOW: LIVE PANEL ─────────────────────────────────
    Night-sky panel that reads the reader's own clock. Kept on the cover's navy
@@ -470,7 +494,7 @@ body {
     margin: 2rem auto 0;
     padding: clamp(1.4rem, 4vw, 2.2rem);
     border-radius: 10px;
-    background: #0e1230;
+    background: var(--night);
     color: #fff;
     text-align: left;
 }
@@ -486,7 +510,7 @@ body {
     letter-spacing: -0.02em;
 }
 .rn-say { font-size: 1.05rem; line-height: 1.6; margin-top: 0.8rem; color: rgba(255,255,255,0.9); }
-.rn-say b { color: #e0b483; font-weight: 700; }
+.rn-say b { color: var(--copper-pale); font-weight: 700; }
 .rn-bar {
     display: flex; height: 26px; margin-top: 1.3rem;
     border-radius: 4px; overflow: hidden;
@@ -535,7 +559,7 @@ body {
     border: 1px solid var(--line);
     border-radius: 14px;
     padding: clamp(1.1rem, 3vw, 1.5rem);
-    box-shadow: 0 30px 60px -46px rgba(51,65,85,0.34);
+    box-shadow: 0 30px 60px -46px rgba(31,41,55,0.30);
 }
 .ms-read {
     min-height: 3.2rem; font-size: 0.88rem; line-height: 1.5;
@@ -549,12 +573,12 @@ body {
 .ms-end { font-size: 9.5px; fill: var(--ink-faint); }
 .ms-name { font-size: 9.5px; font-weight: 600; fill: var(--ink-soft); }
 .ms-link {
-    stroke: #d8cfc2; stroke-width: 1.5; fill: none;
+    stroke: var(--line); stroke-width: 1.5; fill: none;
     transition: stroke 0.2s ease, stroke-width 0.2s ease, opacity 0.2s ease;
 }
 .ms-link.on { stroke: var(--copper); stroke-width: 3; }
 .ms-link.off { opacity: 0.25; }
-.ms-dot { fill: #b9ae9e; transition: fill 0.2s ease, r 0.2s ease; }
+.ms-dot { fill: var(--ink-faint); transition: fill 0.2s ease, r 0.2s ease; }
 .ms-dot.on { fill: var(--copper); }
 .ms-hit { fill: none; stroke: transparent; stroke-width: 14; cursor: pointer; }
 .ms-name.on { fill: var(--ink); }
@@ -566,7 +590,7 @@ body {
    axis, which is what makes the lines safe to follow. Dark panel so the twelve
    hues have something to sit against. */
 .pc-panel {
-    background: #131735;
+    background: var(--night);
     border-radius: 12px;
     padding: clamp(1rem, 3vw, 1.7rem);
     max-width: 960px;
@@ -580,7 +604,7 @@ body {
     color: rgba(255,255,255,0.75); font-size: 0.85rem;
 }
 .pc-read b { color: #fff; font-size: 1.02rem; font-weight: 700; }
-.pc-read em { font-style: normal; color: #e0b483; font-variant-numeric: tabular-nums; }
+.pc-read em { font-style: normal; color: var(--copper-pale); font-variant-numeric: tabular-nums; }
 .pc-axl { font-size: 11.5px; font-weight: 700; fill: #fff; }
 .pc-axs { font-size: 9.5px; fill: rgba(255,255,255,0.48); }
 .pc-nml { font-size: 10.5px; font-weight: 600; }
@@ -590,11 +614,13 @@ body {
     fill: none; stroke-width: 2.5; stroke-linejoin: round;
     opacity: 0.55; transition: opacity 0.25s ease, stroke-width 0.25s ease;
 }
+/* Each line carries its own colour from the palette ramp, set as an attribute
+   in JS, so the highlight only changes weight and opacity — never the hue. */
 .pc-line.on { opacity: 1; stroke-width: 4.5; }
 .pc-line.off { opacity: 0.07; }
 .pc-hit { fill: none; stroke: transparent; stroke-width: 16; cursor: pointer; }
 /* dots are a highlight cue, not permanent furniture: hidden until a line is picked */
-.pc-dot { stroke: #131735; stroke-width: 1.5; opacity: 0; transition: opacity 0.25s ease; }
+.pc-dot { stroke: var(--night); stroke-width: 1.5; opacity: 0; transition: opacity 0.25s ease; }
 .pc-dot.on { opacity: 1; }
 .pc-pick { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 1rem; }
 .pc-pick button {
@@ -638,9 +664,9 @@ body {
     margin-top: 0.9rem;
     font-size: 0.86rem;
     font-weight: 600;
-    color: #8a4b00;
-    background: #fdf1e3;
-    border: 1px solid #f0d9bd;
+    color: var(--copper-deep);
+    background: var(--copper-wash);
+    border: 1px solid var(--copper-pale);
     border-radius: 999px;
     padding: 0.35rem 0.85rem;
 }

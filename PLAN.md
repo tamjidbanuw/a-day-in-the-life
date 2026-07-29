@@ -9,15 +9,35 @@ and the story lives in the **contrast between two countries** shown side by side
 Each section ends on a "huh, I had no idea" beat. Closing multiplies the day's
 gap over a lifetime.
 
-## Visual system (STALE — what shipped differs)
+## Palette (current — three hues, one tint each)
 
-> The palette below is the original ResMed-derived plan. What is actually in
-> `css/style.css` is a **copper palette on warm paper**: copper `#B87333`, gold
-> `#D4A017`, navy `#0e1230` for the cover, title bar and the two dark panels
-> (`.rn`, `.pc-panel`), with the time-use categories on `--care #3B82F6`,
-> `--paid #B87333`, `--unpaid #5b8def`, `--leisure #F97316`. The five-colour top
-> banner and Poppins survive. Update this section or delete it, but do not build
-> from it as written.
+The day decides the colours; nothing else gets one.
+
+| Token | Hex | Meaning |
+|-------|-----|---------|
+| `--night` | `#0E1230` | the sky the day starts and ends in: cover, title bar, dark panels |
+| `--copper` | `#B87333` | obligation — paid work |
+| `--copper-pale` | `#DFB48B` | unpaid work: same substance, drawn thinner |
+| `--slate` | `#3D5C80` | rest — sleep and self-care |
+| `--slate-pale` | `#8FB0D1` | leisure |
+| `--neutral` | `#CEC4B6` | leftovers only |
+| `--paper` `--card` `--line` `--ink` `--ink-soft` `--ink-faint` | | the page itself |
+| `--copper-deep` `--copper-wash` | | the one instruction pill |
+
+**Warm blocks are what you owe, cool blocks are what is yours.** That rule holds on every
+chart of a day.
+
+Rules to keep:
+- Every older token (`--blue`, `--purple`, `--indigo`, `--magenta`, `--pink`, `--gold`,
+  `--lav-card`) is an alias onto the above. No rule carries its own hex.
+- SVG presentation attributes reject `var()`, so `initRightNow()` holds one literal map
+  (`HEX`) that mirrors the tokens. If a token changes, change that map too.
+- Fig 4.3 gives each country a colour from a **slate → copper ramp ordered by total work**,
+  so colour means "how much of the day is spoken for". Never a rainbow. Closest pair is
+  India/Japan at a weighted distance of 40, which is the tightest the ramp should get.
+- Font: Poppins. Five-stripe top banner survives, now running night → day.
+
+> Original plan was a ResMed-derived blue/purple/indigo palette. Dropped.
 - **Font:** Poppins (bold headings, regular body).
 - **Palette:** blue `#1e6ef0`, purple `#7b3fe4`, indigo `#3a16a6`, magenta `#c42b8e`, pink `#e51a5e`; lavender card `#ede7fa`; white bg.
 - **Signature elements:** 5-color top banner · cover with curved blue panel · lavender data cards with indigo header bar · icon-bar rows (Lucide icons, % above bar, label below) · deep-indigo insight callouts · full-bleed photo "breather" between sections · footnoted sources.
