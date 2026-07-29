@@ -65,54 +65,41 @@
         </div>
 
         <!-- ═══ 1 · THE DAY ═════════════════════════════════ -->
-        <section class="section center reveal" id="sec-day">
-            <span class="sec-num">Same clock</span>
-            <h2 class="sec-title">Everyone gets 24 hours</h2>
-            <hr class="rule">
-            <p class="lead">How those hours divide has less to do with the clock than with where you
-                wake up.</p>
-
-            <label class="picker">
-                <span>Choose a country</span>
-                <select data-picker="A"></select>
-            </label>
-
-            <div><span class="howto">Pick a country. The bar splits its 1,440 minutes three ways.</span></div>
-
-            <div class="day-hero" id="day-hero" role="img"
-                 aria-label="How a country's 24 hours are split across work, sleep and everything else"></div>
-
-            <p class="fig-cap"><b>Fig 2.1 — The Same 24</b>
-                Stacked bar, average minutes per day for one country, grouped into work (paid and
-                unpaid), sleep and self-care, and everything else. OECD Time Use Database, both sexes.</p>
-        </section>
-
-        <!-- ═══ 2 · TWO LIVES, SIDE BY SIDE (the core) ══════ -->
-        <section class="section split reveal" id="sec-compare">
-            <div class="txt">
-                <span class="sec-num">Head to head</span>
-                <h2 class="sec-title">The same day,<br>a world apart</h2>
-                <hr class="rule">
-                <p class="lead">Set two countries side by side and the gaps stop being numbers.</p>
-                <span class="howto">Pick two countries. Watch what leisure does as work climbs.</span>
-            </div>
-            <div class="viz">
-                <div class="vs">
-                    <div class="vs-head">
-                        <label class="vs-pick vs-pick-l"><select data-picker="L"></select></label>
-                        <span class="vs-badge">VS</span>
-                        <label class="vs-pick vs-pick-r"><select data-picker="R"></select></label>
-                    </div>
-                    <div class="vs-rows" id="vs-rows" role="img" aria-label="Head-to-head comparison of two countries"></div>
+        <!-- Prose and card both driven by initDayCard() in js/app.js: every
+             figure and rank is generated from the selected country, so the copy
+             cannot drift from the chart beside it. -->
+        <section class="section reveal" id="sec-day">
+            <div class="dc-grid">
+                <div class="dc-txt">
+                    <span class="sec-num">Same clock</span>
+                    <h2 class="sec-title" id="dc-title">Everyone gets 24 hours</h2>
+                    <hr class="rule">
+                    <p class="lead" id="dc-lead"></p>
+                    <p class="body" id="dc-body"></p>
+                    <span class="howto">Change the country. Every number and rank follows it.</span>
                 </div>
-                <p class="fig-cap"><b>Fig 2.2 — Head to Head</b>
-                    Diverging bars, five measures, two countries. Time use is shown as a share of the
-                    day; life expectancy in years; happiness on the 0–10 Cantril ladder.</p>
-                <div class="callout" data-callout="compare"></div>
+
+                <div class="dc-card">
+                    <div class="dc-top">
+                        <span class="dc-who" id="dc-who"></span>
+                        <label class="dc-pick">
+                            <span class="vh">Choose a country</span>
+                            <select data-picker="A" aria-label="Choose a country"></select>
+                        </label>
+                    </div>
+                    <p class="dc-lab">The day, 1,440 minutes</p>
+                    <div class="dc-bar" id="dc-bar" role="img"
+                         aria-label="How this country's 24 hours divide across sleep, work and leisure"></div>
+                    <div class="dc-scale"><span>0h</span><span>6h</span><span>12h</span><span>18h</span><span>24h</span></div>
+                    <div class="dc-rows" id="dc-rows"></div>
+                    <p class="dc-foot" id="dc-foot"></p>
+                </div>
             </div>
+
+            <p class="fig-cap" id="dc-cap"></p>
         </section>
 
-        <!-- ═══ 3 · WORK ════════════════════════════════════ -->
+        <!-- ═══ 2 · WORK ════════════════════════════════════ -->
         <section class="section split flip reveal" id="sec-work">
             <div class="txt">
                 <span class="sec-num">The second shift</span>
@@ -190,38 +177,6 @@
             </div>
         </section>
 
-        <!-- ═══ RIGHT NOW · LIVE PANEL ══════════════════════ -->
-        <!-- PROVISIONAL PLACEMENT. Self-contained: the whole block can move
-             anywhere in <main> without touching anything else. Driven by
-             initRightNow() in js/app.js off data/atus-hours.js. -->
-        <section class="section center reveal" id="sec-now">
-            <span class="sec-num">Right now</span>
-            <h2 class="sec-title">While you read this</h2>
-            <hr class="rule">
-            <p class="lead">A day is not an abstraction. It is happening, and you are somewhere in the
-                middle of one.</p>
-
-            <div class="rn" id="rn">
-                <p class="rn-label">Right now, where you are</p>
-                <p class="rn-time" id="rn-time">--:--</p>
-                <p class="rn-say" id="rn-say"></p>
-                <div class="rn-bar" id="rn-bar" role="img"
-                     aria-label="Share of the American population in each activity at this hour"></div>
-                <div class="rn-key" id="rn-key"></div>
-
-                <!-- the whole day behind the current hour, so this minute has context -->
-                <p class="rn-sub">The whole day, midnight to midnight</p>
-                <div class="rn-rib" id="rn-rib"></div>
-            </div>
-
-            <p class="fig-cap"><b>Fig 3.3 — This Hour</b>
-                Stacked bar, share of the American population in each activity at your current local
-                hour. American Time Use Survey microdata 2003–2015, 3,347,093 activity records from
-                170,842 respondents, weighted, weekdays and weekends pooled. United States only: ATUS
-                is the only diary data here that records times of day, so the clock is yours and the
-                behaviour is American.</p>
-        </section>
-
         <!-- ═══ CHAPTER TWO · HOW WE THRIVE ═════════════════ -->
         <div class="chapter-mark reveal">
             <span class="chapter-eyebrow">Chapter Two</span>
@@ -230,6 +185,40 @@
                 than that.</p>
             <div class="chapter-rule"></div>
         </div>
+
+        <!-- ═══ 4 · THE TWO MEASURES ════════════════════════ -->
+        <!-- Introduces life expectancy and happiness before anything is claimed
+             about them. Drawn by initMetricScales() in js/app.js. -->
+        <section class="section reveal" id="sec-metrics">
+            <div class="ms-grid">
+                <div class="ms-txt">
+                    <span class="sec-num">Two measures</span>
+                    <h2 class="sec-title">How long a life,<br>and how good</h2>
+                    <hr class="rule">
+                    <p class="lead">The rest of this story judges a day by two things. <strong>Life
+                        expectancy</strong> is how many years a baby born today can expect, in years.
+                        <strong>Happiness</strong> is what people say when asked to place their own life
+                        on a ladder from 0 to 10.</p>
+                    <p class="body">One is measured from records. The other is a country's own opinion of
+                        itself. Across these twelve they mostly agree, at <strong>r = 0.83</strong>: long
+                        life and good mood tend to arrive together. The interesting countries are the
+                        ones where they do not.</p>
+                    <span class="howto">Hover or tap a country to follow it between the two scales.</span>
+                </div>
+
+                <div class="ms-card">
+                    <p class="ms-read" id="ms-read"></p>
+                    <div class="ms-chart" id="ms-chart"></div>
+                </div>
+            </div>
+
+            <p class="fig-cap"><b>Fig 4.1 — The Two Measures</b>
+                Connected dot plot. Each country appears once on each scale and the line joins its two
+                positions; a steep or crossing line means the two measures disagree. Each scale runs from
+                the lowest to the highest of the 12, so positions are relative to this group, not to the
+                world. Life expectancy at birth in years, Our World in Data. Happiness on the 0–10
+                Cantril ladder, World Happiness Report.</p>
+        </section>
 
         <!-- ═══ 5 · THRIVE ══════════════════════════════════ -->
         <section class="section split flip reveal" id="sec-thrive">
@@ -252,7 +241,7 @@
                 <div class="day-card">
                     <div class="card-head">Life expectancy vs. happiness</div>
                     <div class="scatter-wrap" id="thrive-scatter"></div>
-                    <p class="fig-cap"><b>Fig 4.1 — Diminishing Returns</b>
+                    <p class="fig-cap"><b>Fig 4.2 — Diminishing Returns</b>
                         Scatter, life expectancy in years (x) against happiness on the 0–10 ladder (y),
                         12 countries, four labelled. Our World in Data; World Happiness Report.</p>
                 </div>
@@ -274,7 +263,7 @@
                 <div class="pc-pick" id="pc-pick"></div>
             </div>
 
-            <p class="fig-cap"><b>Fig 4.2 — Five Measures, Five Winners</b>
+            <p class="fig-cap"><b>Fig 4.3 — Five Measures, Five Winners</b>
                 Slope chart of rank positions. Each column ranks all 12 countries on one measure, 1st at
                 the top, 12th at the bottom, so a line crossing another means the two countries swap
                 order. <b>Ranks are by size, not by merit</b>: 1st on Work is the longest working day,
@@ -399,7 +388,39 @@
             </p>
         </section>
 
-        <!-- ═══ 7 · CLOSING ═════════════════════════════════ -->
+        <!-- ═══ RIGHT NOW · LIVE PANEL ══════════════════════ -->
+        <!-- Sits last, immediately before the closing: everything above is an
+             average of a day, and this is the one that is happening. Driven by
+             initRightNow() in js/app.js off data/atus-hours.js. -->
+        <section class="section center reveal" id="sec-now">
+            <span class="sec-num">Right now</span>
+            <h2 class="sec-title">While you read this</h2>
+            <hr class="rule">
+            <p class="lead">Everything above is an average of a day. This one is happening, and you are
+                somewhere in the middle of it.</p>
+
+            <div class="rn" id="rn">
+                <p class="rn-label">Right now, where you are</p>
+                <p class="rn-time" id="rn-time">--:--</p>
+                <p class="rn-say" id="rn-say"></p>
+                <div class="rn-bar" id="rn-bar" role="img"
+                     aria-label="Share of the American population in each activity at this hour"></div>
+                <div class="rn-key" id="rn-key"></div>
+
+                <!-- the whole day behind the current hour, so this minute has context -->
+                <p class="rn-sub">The whole day, midnight to midnight</p>
+                <div class="rn-rib" id="rn-rib"></div>
+            </div>
+
+            <p class="fig-cap"><b>Fig 8.1 — This Hour</b>
+                Stacked bar, share of the American population in each activity at your current local
+                hour. American Time Use Survey microdata 2003–2015, 3,347,093 activity records from
+                170,842 respondents, weighted, weekdays and weekends pooled. United States only: ATUS
+                is the only diary data here that records times of day, so the clock is yours and the
+                behaviour is American.</p>
+        </section>
+
+        <!-- ═══ CLOSING ═════════════════════════════════════ -->
         <section class="section center closing reveal" id="sec-close">
             <h2 class="sec-title closing-title">Same hours.<br>Different lives.</h2>
             <p class="lead">Everyone is handed the same 1,440 minutes. What changes, from Osaka to

@@ -25,97 +25,107 @@ const fmtH  = (min) => { const h = Math.floor(min / 60), m = Math.round(min % 60
 const workMin = (min) => (min.PAW || 0) + (min.UPW || 0);
 const nice = (c) => c.replace(' (People’s Republic of)', '');
 
-// ── Section 1: "The day" hero — giant 24 + one inline split bar ──
-// Splits the day into Work (paid+unpaid) / Sleep & care / Other (leisure & rest).
-const DAY_SEGS = [
-    { label: 'Work',         color: 'var(--copper)',  codes: ['PAW', 'UPW'] },
-    { label: 'Sleep & care', color: 'var(--care)',    codes: ['PCA'] },
-    { label: 'Other',        color: 'var(--leisure)', codes: ['LEI', 'OTH'] },
+/**
+ * Section 1 — one country's day, in five blocks, with the rank of each block
+ * inside the twelve.
+ *
+ * Every sentence on the left and every figure in the card is generated from the
+ * selected country, so the prose cannot fall out of step with the chart the way
+ * hand-written copy does. Ranks are by size, not merit: more sleep is not
+ * better than less, so the caption says so rather than implying a league table.
+ */
+const DC_CATS = [
+    { key: 'PCA', label: 'Sleep & self-care', color: 'var(--care)' },
+    { key: 'PAW', label: 'Paid work',         color: 'var(--paid)' },
+    { key: 'UPW', label: 'Unpaid work',       color: 'var(--unpaid)' },
+    { key: 'LEI', label: 'Leisure',           color: 'var(--leisure)' },
+    { key: 'OTH', label: 'Other',             color: '#cec4b6' }
 ];
-function renderDayHero(container, country) {
-    if (!container) return;
-    const min = ADL.countries[country].minutes;
-    const segs = DAY_SEGS.map(s => ({ ...s, pct: pctOf(min, s.codes) }));
-    const [work, , other] = segs;
-    container.innerHTML = `
-        <div class="dh-big">24<small>hours, everywhere</small></div>
-        <p class="dh-line">In <strong>${nice(country)}</strong>, <strong>${work.pct}%</strong>
-            of the day goes to work and <strong>${other.pct}%</strong> to everything else.</p>
-        <div class="dh-bar">
-            ${segs.map(s => `<span style="width:${s.pct}%; background:${s.color}"></span>`).join('')}
-        </div>
-        <div class="dh-key">
-            ${segs.map(s => `<span style="color:${s.color}">${s.label} · ${s.pct}%</span>`).join('')}
-        </div>`;
+
+function initDayCard() {
+    const bar = document.getElementById('dc-bar');
+    const pick = document.querySelector('#sec-day [data-picker="A"]');
+    if (!bar || !pick || !window.ADL) return;
+
+    const hhmm = m => Math.floor(m / 60) + 'h' + String(Math.round(m % 60)).padStart(2, '0');
+    const hm = m => {
+        const h = Math.floor(m / 60), r = Math.round(m % 60);
+        return h ? `${h}h ${String(r).padStart(2, '0')}m` : `${r}m`;
+    };
+    const ord = n => n + (['th', 'st', 'nd', 'rd'][n % 10 > 3 || (n > 10 && n < 14) ? 0 : n % 10] || 'th');
+
+    // the twelve with complete records: the set the rest of the story follows
+    const twelve = Object.entries(ADL.countries)
+        .filter(([, d]) => d.life != null && d.happiness != null && d.tourism != null)
+        .map(([name, d]) => ({
+            key: name, name: nice(name), m: d.minutes,
+            work: d.minutes.PAW + d.minutes.UPW,
+            upwShare: d.minutes.UPW / (d.minutes.PAW + d.minutes.UPW)
+        }));
+    if (!twelve.length) return;
+
+    const rank = (c, get) => [...twelve].sort((a, b) => get(b) - get(a))
+        .findIndex(x => x.key === c.key) + 1;
+    const top = get => [...twelve].sort((a, b) => get(b) - get(a))[0];
+    const bottom = get => [...twelve].sort((a, b) => get(a) - get(b))[0];
+
+    pick.innerHTML = [...twelve].sort((a, b) => a.name.localeCompare(b.name))
+        .map(c => `<option value="${c.key}"${c.key === 'Mexico' ? ' selected' : ''}>${c.name}</option>`).join('');
+
+    bar.innerHTML = DC_CATS.map(c =>
+        `<span data-cat="${c.key}" style="background:${c.color};width:0"></span>`).join('');
+    const spans = new Map(Array.from(bar.children).map(s => [s.dataset.cat, s]));
+
+    const el = id => document.getElementById(id);
+
+    function draw(key) {
+        const c = twelve.find(x => x.key === key) || twelve[0];
+        el('dc-who').textContent = c.name;
+
+        DC_CATS.forEach(cat =>
+            spans.get(cat.key).style.width = (((c.m[cat.key] || 0) / 1440) * 100) + '%');
+
+        el('dc-rows').innerHTML = DC_CATS.map(cat => `
+            <div class="dc-row"><i style="background:${cat.color}"></i>
+                <span>${cat.label}</span>
+                <span class="v">${hhmm(c.m[cat.key] || 0)}</span>
+                <span class="r">${ord(rank(c, x => x.m[cat.key] || 0))} of 12</span>
+            </div>`).join('');
+
+        const workRank = rank(c, x => x.work), leiRank = rank(c, x => x.m.LEI);
+        el('dc-title').textContent = `${c.name} spends its day like this`;
+        el('dc-lead').innerHTML =
+            `Of 1,440 minutes, ${c.name} gives <strong>${hm(c.work)}</strong> to work, paid and unpaid
+             together. That is <strong>${ord(workRank)} of twelve</strong>.`;
+        el('dc-body').innerHTML =
+            `<strong>${hm(c.m.PCA)}</strong> goes to sleep and self-care, and
+             <strong>${hm(c.m.LEI)}</strong> is what remains for leisure,
+             <strong>${ord(leiRank)} of twelve</strong>.
+             <strong>${(100 * c.upwShare).toFixed(0)}%</strong> of the work is unpaid: cooking, cleaning,
+             shopping, care. No payslip records any of it.`;
+
+        const mw = top(x => x.work), lw = bottom(x => x.work);
+        el('dc-foot').innerHTML = c.key === mw.key
+            ? `<b>The longest working day of the twelve.</b> ${lw.name} works ${hm(mw.work - lw.work)} less.`
+            : c.key === lw.key
+            ? `<b>The shortest working day of the twelve.</b> ${mw.name} works ${hm(mw.work - lw.work)} more.`
+            : `<b>${mw.name}</b> works most here at ${hm(mw.work)}, <b>${lw.name}</b> least at
+               ${hm(lw.work)}. ${c.name} sits ${hm(Math.abs(c.work - mw.work))} off the top.`;
+
+        el('dc-cap').innerHTML =
+            `<b>Fig 2.1 — ${c.name}'s Day</b>
+             Stacked bar to 24 hours. Ranks are within the 12 countries with complete records, and are by
+             size rather than merit: more sleep is not better than less. Sleep and self-care includes
+             eating and washing; unpaid work covers cooking, cleaning, shopping and care. Blocks sit in a
+             fixed order, not a timeline: this is how much, not when. OECD Time Use Database, both sexes,
+             average minutes per day.`;
+    }
+
+    pick.addEventListener('change', () => draw(pick.value));
+    draw(pick.value);
 }
 
-// ── build a picker <select> ──
-function buildPicker(sel, selected) {
-    sel.innerHTML = COUNTRIES.map(c =>
-        `<option value="${c}"${c === selected ? ' selected' : ''}>${nice(c)}</option>`).join('');
-}
-
-// ── adaptive comparison callout: find the biggest gap between L and R ──
-function renderCompareCallout(el, left, right) {
-    const L = ADL.countries[left], R = ADL.countries[right];
-    const metrics = [
-        { k: 'work',    label: 'time spent working', lv: pctOf(L.minutes, ['PAW','UPW']), rv: pctOf(R.minutes, ['PAW','UPW']), unit: '% of the day' },
-        { k: 'leisure', label: 'leisure',            lv: pctOf(L.minutes, ['LEI']),        rv: pctOf(R.minutes, ['LEI']),       unit: '% of the day' },
-        { k: 'life',    label: 'life expectancy',    lv: L.life,      rv: R.life,      unit: ' years' },
-        { k: 'happy',   label: 'happiness',          lv: L.happiness, rv: R.happiness, unit: '/10' },
-    ];
-    // biggest relative gap wins the headline
-    metrics.forEach(m => m.gap = Math.abs(m.lv - m.rv) / Math.max(m.lv, m.rv));
-    const top = metrics.slice().sort((a, b) => b.gap - a.gap)[0];
-    const more = top.lv >= top.rv ? left : right;
-    const less = top.lv >= top.rv ? right : left;
-    const hi = Math.max(top.lv, top.rv), lo = Math.min(top.lv, top.rv);
-
-    el.innerHTML = `
-        <p class="callout-head">The gap that stands out</p>
-        <div class="callout-row">
-            <span class="callout-ic">${ICONS.briefcase}</span>
-            <p>On <strong>${top.label}</strong>, <strong>${nice(more)}</strong> reaches
-               <strong>${hi}${top.unit}</strong> — against <strong>${lo}${top.unit}</strong>
-               in <strong>${nice(less)}</strong>.</p>
-        </div>
-        <div class="callout-row">
-            <span class="callout-ic">${ICONS.coffee}</span>
-            <p>Two countries, two different days: ${nice(left)} and ${nice(right)}.</p>
-        </div>`;
-}
-
-// ── Section 2: head-to-head "vs" spine — diverging bars from a centre axis ──
-// `full` = the value that fills a bar 100%, so fills reflect the real number.
-const VS_METRICS = [
-    { label: 'Work',              get: c => pctOf(ADL.countries[c].minutes, ['PAW', 'UPW']), unit: '%',    full: 100 },
-    { label: 'Leisure',           get: c => pctOf(ADL.countries[c].minutes, ['LEI']),        unit: '%',    full: 100 },
-    { label: 'Sleep & self-care', get: c => pctOf(ADL.countries[c].minutes, ['PCA']),        unit: '%',    full: 100 },
-    { label: 'Life expectancy',   get: c => ADL.countries[c].life,      unit: ' yrs', full: 90 },
-    { label: 'Happiness',         get: c => ADL.countries[c].happiness, unit: '/10',  full: 10 },
-];
-function renderVsSpine(container, left, right) {
-    if (!container) return;
-    container.innerHTML = VS_METRICS.map(mt => {
-        const lv = mt.get(left), rv = mt.get(right);
-        const lw = Math.min(100, (lv / mt.full) * 100);
-        const rw = Math.min(100, (rv / mt.full) * 100);
-        const lWin = lv >= rv;
-        return `<div class="vs-row">
-            <div class="vs-side vs-left">
-                <span class="vs-num ${lWin ? 'win' : ''}">${lv}${mt.unit}</span>
-                <div class="vs-bar"><span style="width:${lw}%; background:var(--blue)"></span></div>
-            </div>
-            <span class="vs-metric">${mt.label}</span>
-            <div class="vs-side vs-right">
-                <div class="vs-bar"><span style="width:${rw}%; background:var(--leisure)"></span></div>
-                <span class="vs-num ${!lWin ? 'win' : ''}">${rv}${mt.unit}</span>
-            </div>
-        </div>`;
-    }).join('');
-}
-
-// ── Section 3: work ranking — all countries as paid+unpaid split bars ──
+// ── Section 2: work ranking — all countries as paid+unpaid split bars ──
 function renderWorkRank(container) {
     const rows = COUNTRIES.map(c => {
         const m = ADL.countries[c].minutes;
@@ -551,6 +561,157 @@ function initRightNow() {
 }
 
 /**
+ * The two measures — life expectancy and happiness, introduced on their own
+ * before the story claims anything about them.
+ *
+ * Two horizontal scales with a line joining each country's two positions. A
+ * near-flat line means the two measures agree about that country; a steep line
+ * crossing others is a country that does well on one and badly on the other.
+ * That is the whole point of the figure, and it is why this is a connected dot
+ * plot rather than two separate rankings: the disagreement has to be visible in
+ * one glance.
+ *
+ * Each scale is stretched to the range of these twelve, so a position is
+ * relative to this group and not to the world. The caption says so.
+ */
+function initMetricScales() {
+    const host = document.getElementById('ms-chart');
+    const read = document.getElementById('ms-read');
+    if (!host || !window.ADL) return;
+
+    const rows = Object.entries(ADL.countries)
+        .filter(([, d]) => d.life != null && d.happiness != null && d.tourism != null)
+        .map(([name, d]) => ({ key: name, name: nice(name), life: d.life, happy: d.happiness }));
+    if (rows.length < 2) return;
+
+    const AX = [
+        { label: 'Life expectancy', get: c => c.life,  fmt: v => v.toFixed(1) + ' years', y: 0 },
+        { label: 'Happiness',       get: c => c.happy, fmt: v => v.toFixed(2) + ' of 10', y: 1 }
+    ];
+    const scale = AX.map(a => {
+        const v = rows.map(a.get);
+        return { lo: Math.min(...v), hi: Math.max(...v) };
+    });
+    const rankOf = (c, get) => [...rows].sort((a, b) => get(b) - get(a))
+        .findIndex(x => x.key === c.key) + 1;
+    const ord = n => n + (['th', 'st', 'nd', 'rd'][n % 10 > 3 || (n > 10 && n < 14) ? 0 : n % 10] || 'th');
+
+    const W = 760, H = 250, L = 54, R = 54, TOP = 58, BOT = 178;
+    const X = (i, v) => {
+        const s = scale[i], span = (s.hi - s.lo) || 1;
+        return L + ((v - s.lo) / span) * (W - L - R);
+    };
+    const yOf = i => (i === 0 ? TOP : BOT);
+
+    /* Twelve labels on one horizontal axis collide, so nudge them apart along x
+       and let the connecting line show which dot each belongs to. */
+    function declashX(items, gap, lo, hi) {
+        const out = items.map(o => ({ ...o, lx: o.x })).sort((a, b) => a.lx - b.lx);
+        for (let pass = 0; pass < 80; pass++) {
+            let moved = false;
+            for (let i = 1; i < out.length; i++) {
+                const d = out[i].lx - out[i - 1].lx;
+                if (d < gap) {
+                    const push = (gap - d) / 2;
+                    out[i - 1].lx -= push; out[i].lx += push; moved = true;
+                }
+            }
+            if (out[0].lx < lo) { const s = lo - out[0].lx; out.forEach(o => { o.lx += s; }); }
+            const last = out[out.length - 1];
+            if (last.lx > hi) { const s = last.lx - hi; out.forEach(o => { o.lx -= s; }); }
+            if (!moved) break;
+        }
+        return out;
+    }
+
+    let s = '';
+    AX.forEach((a, i) => {
+        const y = yOf(i);
+        s += `<line class="ms-axis" x1="${L}" y1="${y}" x2="${W - R}" y2="${y}"/>`;
+        s += `<text class="ms-title" x="${L}" y="${y + (i ? 30 : -30)}">${a.label}</text>`;
+        s += `<text class="ms-end" x="${L}" y="${y + (i ? 44 : -17)}">${a.fmt(scale[i].lo)}</text>`;
+        s += `<text class="ms-end" x="${W - R}" y="${y + (i ? 44 : -17)}" text-anchor="end">${a.fmt(scale[i].hi)}</text>`;
+    });
+
+    // one line per country, joining its position on each scale
+    rows.forEach(c => {
+        const x0 = X(0, c.life), x1 = X(1, c.happy);
+        s += `<path class="ms-hit" data-name="${c.name}" d="M${x0},${TOP} L${x1},${BOT}"/>`;
+        s += `<path class="ms-link" data-name="${c.name}" d="M${x0},${TOP} L${x1},${BOT}"/>`;
+        s += `<circle class="ms-dot" data-name="${c.name}" cx="${x0}" cy="${TOP}" r="4.5"/>`;
+        s += `<circle class="ms-dot" data-name="${c.name}" cx="${x1}" cy="${BOT}" r="4.5"/>`;
+    });
+    // names above the top scale only, so the lower half stays clean
+    declashX(rows.map(c => ({ name: c.name, x: X(0, c.life) })), 44, L - 10, W - R + 10)
+        .forEach(o => {
+            s += `<text class="ms-name" data-name="${o.name}" x="${o.lx}" y="${TOP - 8}"
+                  text-anchor="middle">${o.name}</text>`;
+        });
+
+    host.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img"
+        aria-label="Life expectancy and happiness for twelve countries, each country's two positions joined by a line">${s}</svg>`;
+
+    const el = host.querySelector('svg');
+
+    // the standing message: they agree, with one loud exception
+    function corr(a, b) {
+        const n = rows.length;
+        const xs = rows.map(a), ys = rows.map(b);
+        const mx = xs.reduce((t, x) => t + x, 0) / n, my = ys.reduce((t, y) => t + y, 0) / n;
+        const sxy = xs.reduce((t, x, i) => t + (x - mx) * (ys[i] - my), 0);
+        const sxx = xs.reduce((t, x) => t + (x - mx) ** 2, 0);
+        const syy = ys.reduce((t, y) => t + (y - my) ** 2, 0);
+        return sxy / Math.sqrt(sxx * syy);
+    }
+    const R_ALL = corr(c => c.life, c => c.happy);
+    // biggest disagreement, measured in rank places
+    const oddest = rows.map(c => ({
+        c, shift: rankOf(c, x => x.happy) - rankOf(c, x => x.life)
+    })).sort((a, b) => Math.abs(b.shift) - Math.abs(a.shift))[0];
+
+    function idle() {
+        read.innerHTML =
+            `The two scales mostly line up: <em>r = ${R_ALL.toFixed(2)}</em> across the twelve.
+             The exception is <b>${oddest.c.name}</b>, which moves
+             <em>${Math.abs(oddest.shift)} places</em> between them.`;
+    }
+    function show(name) {
+        const c = rows.find(x => x.name === name);
+        if (!c) return;
+        const lr = rankOf(c, x => x.life), hr = rankOf(c, x => x.happy);
+        read.innerHTML =
+            `<b>${c.name}</b> lives to <em>${c.life.toFixed(1)}</em> years, <b>${ord(lr)} of twelve</b>,
+             and rates its own life <em>${c.happy.toFixed(2)}</em> out of ten, <b>${ord(hr)}</b>.` +
+            (Math.abs(hr - lr) >= 4 ? ' The two measures disagree sharply here.' : '');
+        el.querySelectorAll('.ms-link').forEach(p => {
+            p.classList.toggle('on', p.dataset.name === name);
+            p.classList.toggle('off', p.dataset.name !== name);
+        });
+        el.querySelectorAll('.ms-dot').forEach(d =>
+            d.classList.toggle('on', d.dataset.name === name));
+        el.querySelectorAll('.ms-name').forEach(t => {
+            t.classList.toggle('on', t.dataset.name === name);
+            t.classList.toggle('off', t.dataset.name !== name);
+        });
+    }
+    function clear() {
+        el.querySelectorAll('.ms-link, .ms-dot, .ms-name').forEach(n =>
+            n.classList.remove('on', 'off'));
+        idle();
+    }
+    el.addEventListener('mouseover', e => {
+        const t = e.target.closest('[data-name]');
+        if (t) show(t.dataset.name);
+    });
+    el.addEventListener('mouseleave', clear);
+    el.addEventListener('click', e => {
+        const t = e.target.closest('[data-name]');
+        if (t) show(t.dataset.name);
+    });
+    idle();
+}
+
+/**
  * Rank slope chart — twelve countries, five measures, plotted by rank.
  *
  * Rank rather than value on purpose. With value scales, every axis has its own
@@ -761,36 +922,13 @@ function buildCoverClock(svg) {
     initCoverScroll();
     initSectionExit();
     initRightNow();
+    initMetricScales();
     initRankParallel();
 
-    // Section 1 — "The day" hero (giant 24 + inline split bar)
-    const pickerA = document.querySelector('[data-picker="A"]');
-    const dayHero = document.getElementById('day-hero');
-    if (pickerA && dayHero) {
-        buildPicker(pickerA, 'France');
-        const drawA = () => renderDayHero(dayHero, pickerA.value);
-        pickerA.addEventListener('change', drawA);
-        drawA();
-    }
+    // Section 1 — one country's day, five blocks, each with its rank
+    initDayCard();
 
-    // Section 2 — head-to-head "vs" spine
-    const pickerL = document.querySelector('[data-picker="L"]');
-    const pickerR = document.querySelector('[data-picker="R"]');
-    const vsRows = document.getElementById('vs-rows');
-    const callout = document.querySelector('[data-callout="compare"]');
-    if (pickerL && pickerR) {
-        buildPicker(pickerL, 'Japan');
-        buildPicker(pickerR, 'Italy');
-        const drawCompare = () => {
-            renderVsSpine(vsRows, pickerL.value, pickerR.value);
-            renderCompareCallout(callout, pickerL.value, pickerR.value);
-        };
-        pickerL.addEventListener('change', drawCompare);
-        pickerR.addEventListener('change', drawCompare);
-        drawCompare();
-    }
-
-    // Section 3 — work ranking
+    // Section 2 — work ranking
     const workRank = document.getElementById('work-rank');
     if (workRank) renderWorkRank(workRank);
 
