@@ -121,7 +121,14 @@ function initDayCard() {
              average minutes per day.`;
     }
 
-    pick.addEventListener('change', () => draw(pick.value));
+    // badges: one for changing it at all, one for genuinely browsing
+    const seen = new Set([pick.value]);
+    pick.addEventListener('change', () => {
+        draw(pick.value);
+        Badges.earn('day');
+        seen.add(pick.value);
+        if (seen.size >= 5) Badges.earn('day5');
+    });
     draw(pick.value);
 }
 
@@ -249,6 +256,7 @@ function renderDna(root) {
     }
 
     function reveal() {
+        Badges.earn('quiz');
         const you = {};
         DNA_AXES.forEach(ax => you[ax.key] = answers[ax.key] ?? 50);
         const twin = COUNTRIES
@@ -491,6 +499,429 @@ function initRightNow() {
     setInterval(tick, 20000);
 }
 
+/* ═══════════════════════════════════════════════════════════
+   BADGES — one per interactive, earned by using it
+
+   The point is to get a reader to actually touch the charts rather than scroll
+   past them, so every badge is tied to a real interaction and none can be
+   earned by scrolling alone. Two exceptions, both deliberate: the last badge is
+   for reaching the live clock, which is the one thing on the page that needs no
+   input, and the "five countries" badge asks for repetition rather than a
+   single click, so there is something left to chase.
+
+   Kept in memory only. Nothing is written to storage: the piece is read once,
+   and a returning reader starting fresh is better than explaining persistence.
+   ═══════════════════════════════════════════════════════════ */
+/* Eight hand-drawn medallions, 40x40 each.
+   Every badge mixes three or four palette hues rather than being tinted one
+   colour, so the tray is genuinely multi-coloured while still using nothing
+   outside night / slate / slate-pale / copper / copper-pale. Class names are
+   short on purpose: -s slate, -sp slate pale, -c copper, -cp copper pale,
+   -n night; a trailing f means filled rather than stroked. */
+const BADGE_ART = {
+    globe: `<circle cx="20" cy="20" r="14" class="b-spf o-25"/>
+        <circle cx="20" cy="20" r="14" class="b-ln b-s"/>
+        <path class="b-ln b-s" d="M6 20h28"/>
+        <path class="b-ln b-sp" d="M20 6a19 19 0 0 1 0 28a19 19 0 0 1 0-28"/>
+        <circle cx="26" cy="14" r="3.4" class="b-cf"/>
+        <circle cx="26" cy="14" r="3.4" class="b-ln b-n o-40"/>`,
+    plane: `<circle cx="20" cy="20" r="14" class="b-cpf o-30"/>
+        <path class="b-ln b-sp" d="M6 30c6 0 10-2 14-6" stroke-dasharray="3 3"/>
+        <path class="b-cf" d="M8 24 32 9l-4.6 10 1.7 8.4-3.9-5-7.6 3.8 1.1-5.7z"/>
+        <path class="b-ln b-n o-40" d="M8 24 32 9l-4.6 10 1.7 8.4-3.9-5-7.6 3.8 1.1-5.7z"/>
+        <circle cx="32" cy="9" r="2.6" class="b-sf"/>`,
+    ladder: `<circle cx="20" cy="20" r="14" class="b-spf o-25"/>
+        <path class="b-ln b-s" d="M13 5v30M27 5v30"/>
+        <path class="b-ln b-c" d="M13 11h14M13 18h14M13 25h14M13 32h14"/>
+        <circle cx="20" cy="14.5" r="3.6" class="b-cpf"/>
+        <circle cx="20" cy="14.5" r="3.6" class="b-ln b-n o-35"/>`,
+    hourglass: `<circle cx="20" cy="20" r="14" class="b-cpf o-25"/>
+        <path class="b-ln b-n" d="M12 7h16M12 33h16"/>
+        <path class="b-ln b-s" d="M14 7c0 7 6 8 6 13s-6 6-6 13M26 7c0 7-6 8-6 13s6 6 6 13"/>
+        <path class="b-cf" d="M15 31.6c0-4.6 10-4.6 10 0z"/>
+        <circle cx="20" cy="20" r="1.6" class="b-cf"/>`,
+    trail: `<circle cx="20" cy="20" r="14" class="b-spf o-22"/>
+        <path class="b-ln b-n" d="M6 28c4 0 5-6 9-6s5-8 9-8 4 3 8 3"/>
+        <circle cx="6" cy="28" r="2.4" class="b-sf"/>
+        <circle cx="15" cy="22" r="2.4" class="b-sf"/>
+        <circle cx="24" cy="14" r="2.4" class="b-cpf"/>
+        <circle cx="32" cy="17" r="3.4" class="b-cf"/>`,
+    twin: `<circle cx="20" cy="20" r="14" class="b-cpf o-22"/>
+        <circle cx="15.5" cy="16" r="7" class="b-cf o-70"/>
+        <circle cx="24.5" cy="24" r="7" class="b-sf o-70"/>
+        <circle cx="15.5" cy="16" r="7" class="b-ln b-c"/>
+        <circle cx="24.5" cy="24" r="7" class="b-ln b-s"/>`,
+    owl: `<circle cx="20" cy="20" r="14" class="b-spf o-30"/>
+        <circle cx="20" cy="20" r="11" class="b-ln b-n"/>
+        <path class="b-ln b-c" d="M20 12v8l6 3.6"/>
+        <circle cx="20" cy="20" r="2" class="b-cf"/>
+        <path class="b-ln b-sp" d="M20 6.5v2M33.5 20h-2M20 33.5v-2M6.5 20h2"/>`,
+    ripple: `<circle cx="20" cy="20" r="14" class="b-spf o-22"/>
+        <circle cx="20" cy="20" r="3" class="b-cf"/>
+        <path class="b-ln b-c" d="M13 20a7 7 0 0 1 14 0"/>
+        <path class="b-ln b-s" d="M8 20a12 12 0 0 1 24 0"/>
+        <path class="b-ln b-sp" d="M3.5 21a16.5 16.5 0 0 1 33 0" stroke-dasharray="3 3"/>`
+};
+
+/* Each badge is a collectible: a kicker, a name, the figure it stands for, and
+   a fact from the data that is deliberately not printed anywhere else on the
+   page. Finding one is worth something to read, which is the only honest reason
+   to make a data story collectible at all. */
+const BADGES = [
+    { id: 'day', art: 'globe', ring: 'slate',
+      kicker: 'Time use', label: 'Day Tripper', stat: '10h05 vs 10h06',
+      hint: 'Swap the country in the first chart',
+      fact: 'Mexico spends as much of the day working as it does sleeping, washing and eating: 10h05m against 10h06m.' },
+    { id: 'day5', art: 'plane', ring: 'copper',
+      kicker: 'Unpaid labour', label: 'Jet Lagged', stat: '3 of 12',
+      hint: 'Visit five countries without leaving your chair',
+      fact: 'In Australia, Italy and Spain, more of the day goes to unpaid work than to paid work.' },
+    { id: 'ladder', art: 'ladder', ring: 'copper',
+      kicker: 'Happiness', label: 'Ladder Climber', stat: '10th of 12',
+      hint: 'Poke a country on the happiness scale',
+      fact: 'Japan lives longer than anyone else here, and still finishes 10th of 12 for happiness.' },
+    { id: 'years', art: 'hourglass', ring: 'night',
+      kicker: 'Life expectancy', label: 'Amateur Actuary', stat: '69 vs 39 years',
+      hint: 'Poke a country on the life expectancy scale',
+      fact: 'India has the lowest life expectancy of the twelve at 69 years — better than any country on earth reached in 1800.' },
+    { id: 'ranks', art: 'trail', ring: 'night',
+      kicker: 'Rankings', label: 'Line Stalker', stat: 'Five winners',
+      hint: 'Follow one country through all five measures',
+      fact: 'Australia is happiest, Japan lives longest, Germany rests most, France sleeps most, America earns most.' },
+    { id: 'quiz', art: 'twin', ring: 'copper',
+      kicker: 'The average', label: 'Long-Lost Twin', stat: '34× the pay',
+      hint: 'Answer four questions, meet your country',
+      fact: 'An American earns 34 times what an Indian does, and still spends 17 fewer minutes a day working for it.' },
+    { id: 'now', art: 'owl', ring: 'slate',
+      kicker: 'Hour by hour', label: 'Clock Watcher', stat: '56% at 8pm',
+      hint: 'Find out what the world is doing this minute',
+      fact: 'At 8pm more than half of America is at leisure — the most it ever agrees on anything while awake.' },
+    { id: 'waves', art: 'ripple', ring: 'slate-pale', secret: true,
+      kicker: 'Hidden', label: 'Made Waves', stat: '96% asleep',
+      hint: 'Something in the opener reacts to you',
+      fact: 'At 3am, 96% of America is asleep. At noon, no single activity holds even 30% of them.' }
+];
+
+/* The clock badge renames itself depending on when you get there, because the
+   one thing this page knows about the reader is the time on their own clock. */
+function badgeClockName() {
+    const h = new Date().getHours();
+    if (h >= 23 || h < 5) return 'Night Owl';
+    if (h < 8) return 'Early Bird';
+    if (h >= 20) return 'Off the Clock';
+    return 'Clock Watcher';
+}
+
+const Badges = (function () {
+    /* Kept in sessionStorage, so a reload keeps the collection but closing the
+       tab starts it over.
+
+       Worth being straight about the limit: a hard refresh does not clear
+       sessionStorage either, because the browser gives a page no way to tell a
+       hard reload from a normal one. What does clear it is closing the tab, or
+       the reset control in the tray. */
+    const STORE = 'adl-collection-v1';
+    /* Badges are awarded on a delay. Interrupting somebody the instant they
+       touch a chart is the fastest way to stop them touching charts: the card
+       lands on top of the thing they were mid-way through reading. So the
+       trigger only starts a timer, and the badge arrives once they have had a
+       moment with the visual. Five seconds is long enough not to snatch the
+       chart away mid-thought, short enough that the reward still feels caused
+       by what they just did. */
+    const REVEAL_DELAY = 3000;
+    /* Long enough for the stars to finish crossing the medal before the card
+       takes the screen, so the disclosure is seen rather than covered. */
+    const CARD_LAG = 1250;
+    const earned = new Set(load());
+    const pending = new Map();                 // id -> timer, so nothing double-fires
+    const lags = new Set();                    // card timers, cancellable by reset
+    const queue = [];
+    let tray = null, count = null, card = null, showing = false;
+    let rail = null, resetSlot = null;
+
+    function load() {
+        try {
+            const raw = sessionStorage.getItem(STORE);
+            if (!raw) return [];
+            // keep only ids that still exist, so an edit to BADGES cannot break it
+            return JSON.parse(raw).filter(id => BADGES.some(b => b.id === id));
+        } catch (e) {
+            return [];                       // private mode, or storage disabled
+        }
+    }
+    function save() {
+        try {
+            sessionStorage.setItem(STORE, JSON.stringify([...earned]));
+        } catch (e) {
+            /* nothing to do: the collection simply will not survive a reload */
+        }
+    }
+
+    const nameOf = b => (b.id === 'now' ? badgeClockName() : b.label);
+
+    /* Locked slots stay anonymous: a ghosted medal and nothing else, so the tray
+       shows how much is left without spoiling what any of it is. The hint lives
+       in the title attribute for anyone who hovers, and on the card once found. */
+    /* The stars that cross a badge as it is found. Two groups doing different
+       jobs: a ring that sweeps around the rim, and a burst that flies outward.
+       Written once into every slot and left inert — the CSS only runs them while
+       the slot carries .pop — so nothing has to be created mid-animation.
+         --a  the angle it sits at, and travels along
+         --m  a multiplier on how far it goes, so the burst is not a neat circle
+         --sz its size
+         --i  its place in the queue, which staggers the start */
+    const STAR_RING = 6;
+    const STAR_BURST = 14;
+
+    function starLayer() {
+        const ring = Array.from({ length: STAR_RING }, (_, i) => {
+            const a = (360 / STAR_RING) * i;
+            return `<i class="bdg-star r" style="--a:${a}deg;--sz:${i % 2 ? 8 : 11}px;--i:${i}"></i>`;
+        }).join('');
+        const burst = Array.from({ length: STAR_BURST }, (_, i) => {
+            // an uneven spread reads as a scatter rather than a fan
+            const a = (360 / STAR_BURST) * i + (i % 3) * 7;
+            const m = [1, 0.72, 1.18, 0.88][i % 4];
+            const sz = [7, 10, 5, 8][i % 4];
+            return `<i class="bdg-star b" style="--a:${a}deg;--m:${m};--sz:${sz}px;--i:${i}"></i>`;
+        }).join('');
+        return `<span class="bdg-stars" aria-hidden="true">
+                    <span class="bdg-ring">${ring}</span>${burst}
+                </span>`;
+    }
+
+    /* Built once. Rebuilding the tray on every change would restart the DOM under
+       any slot still mid-disclosure, so updates are made in place instead: two
+       badges landing seconds apart each get to finish their own animation. */
+    function buildTray() {
+        tray.innerHTML = BADGES.map(b => `
+            <li class="bdg ring-${b.ring}" data-id="${b.id}">
+                <span class="bdg-meta">
+                    <span class="bdg-kicker"></span>
+                    <span class="bdg-name"></span>
+                    <span class="bdg-stat"></span>
+                </span>
+                <span class="bdg-orb">
+                    <span class="bdg-medal">
+                        <svg viewBox="0 0 40 40" aria-hidden="true">${BADGE_ART[b.art]}</svg>
+                    </span>
+                    ${starLayer()}
+                </span>
+            </li>`).join('');
+    }
+
+    /* The disclosure runs a little under a second across three layers. Each slot
+       clears its own class on its own timer, so a badge landing while another is
+       still resolving cannot cut the first one short. */
+    const POP_MS = 1500;
+    const pops = new Map();                    // id -> timer
+
+    function paintSlot(b, pop) {
+        const li = tray.querySelector(`[data-id="${b.id}"]`);
+        if (!li) return;
+        const got = earned.has(b.id);
+        li.classList.toggle('got', got);
+        li.title = got ? nameOf(b) + ' — open again'
+                       : b.secret ? 'Hidden' : b.hint;
+        li.querySelector('.bdg-meta').setAttribute('aria-hidden', got ? 'false' : 'true');
+        li.querySelector('.bdg-kicker').textContent = got ? b.kicker : '';
+        li.querySelector('.bdg-name').textContent = got ? nameOf(b) : '';
+        li.querySelector('.bdg-stat').textContent = got ? b.stat : '';
+        if (!pop) return;
+        clearTimeout(pops.get(b.id));
+        li.classList.remove('pop');
+        void li.offsetWidth;                     // restart the animation cleanly
+        li.classList.add('pop');
+        pops.set(b.id, setTimeout(() => {
+            li.classList.remove('pop');
+            pops.delete(b.id);
+        }, POP_MS));
+    }
+
+    function clearPops() {
+        pops.forEach(t => clearTimeout(t));
+        pops.clear();
+        tray.querySelectorAll('.bdg.pop').forEach(li => li.classList.remove('pop'));
+    }
+
+    function render(justEarned) {
+        if (!tray) return;
+        if (!tray.children.length) buildTray();
+        if (!justEarned) clearPops();            // mount and reset start clean
+        BADGES.forEach(b => paintSlot(b, b.id === justEarned));
+        if (count) {
+            count.textContent = earned.size === BADGES.length
+                ? `All ${BADGES.length} found`
+                : `${earned.size} of ${BADGES.length} found`;
+            if (justEarned) {
+                count.classList.remove('bump');
+                void count.offsetWidth;              // restart the animation
+                count.classList.add('bump');
+            }
+        }
+        // the reset only appears once there is something to reset
+        if (resetSlot) {
+            resetSlot.innerHTML = earned.size
+                ? '<button type="button" class="bdg-reset">Start over</button>'
+                : '';
+            const btn = resetSlot.querySelector('.bdg-reset');
+            if (btn) btn.addEventListener('click', () => api.reset());
+        }
+        if (justEarned && rail) {
+            // if the rail is tucked away, open it: a disclosure nobody sees is wasted
+            rail.classList.remove('shut', 'flash');
+            void rail.offsetWidth;
+            rail.classList.add('flash');
+            setTimeout(() => rail.classList.remove('flash'), 800);
+            const t = document.getElementById('badges-toggle');
+            if (t) t.setAttribute('aria-expanded', 'true');
+        }
+    }
+
+    /* The reward for exploring is something to read: each card carries a figure
+       from the data that appears nowhere else on the page. Cards queue, so two
+       badges landing together do not fight over the screen. */
+    function buildCard() {
+        card = document.createElement('div');
+        card.className = 'bdg-card-wrap';
+        card.setAttribute('role', 'dialog');
+        card.setAttribute('aria-modal', 'false');
+        card.setAttribute('aria-label', 'A badge was added to your collection');
+        card.hidden = true;
+        card.innerHTML = `
+            <div class="bdg-card">
+                <button class="bdg-close" type="button" aria-label="Close">&times;</button>
+                <p class="bdg-card-head">Added to your collection</p>
+                <div class="bdg-card-id">
+                    <span class="bdg-medal" data-medal></span>
+                    <span>
+                        <span class="bdg-kicker" data-kicker></span>
+                        <span class="bdg-name" data-name></span>
+                        <span class="bdg-stat" data-stat></span>
+                    </span>
+                </div>
+                <p class="bdg-card-fact" data-fact></p>
+                <p class="bdg-card-foot" data-foot></p>
+            </div>`;
+        document.body.appendChild(card);
+        const close = () => hide();
+        card.querySelector('.bdg-close').addEventListener('click', close);
+        card.addEventListener('click', e => { if (e.target === card) close(); });
+        addEventListener('keydown', e => { if (e.key === 'Escape' && showing) close(); });
+    }
+
+    function hide() {
+        if (!card) return;
+        card.classList.remove('in');
+        showing = false;
+        setTimeout(() => {
+            card.hidden = true;
+            if (queue.length) show(queue.shift());
+        }, 320);
+    }
+
+    function show(b) {
+        if (!card) buildCard();
+        const medal = card.querySelector('[data-medal]');
+        medal.className = 'bdg-medal got ring-' + b.ring;
+        medal.innerHTML = `<svg viewBox="0 0 40 40" aria-hidden="true">${BADGE_ART[b.art]}</svg>`;
+        card.querySelector('[data-kicker]').textContent = b.kicker;
+        card.querySelector('[data-name]').textContent = nameOf(b);
+        card.querySelector('[data-stat]').textContent = b.stat;
+        card.querySelector('[data-fact]').textContent = b.fact;
+        card.querySelector('[data-foot]').textContent = earned.size === BADGES.length
+            ? 'That is all eight. Nothing left hidden.'
+            : `${earned.size} of ${BADGES.length} found · ${BADGES.length - earned.size} still out there`;
+        card.hidden = false;
+        showing = true;
+        requestAnimationFrame(() => card.classList.add('in'));
+    }
+
+    const api = {
+        mount(trayEl, countEl, railEl, resetEl) {
+            tray = trayEl; count = countEl; rail = railEl || null; resetSlot = resetEl || null;
+            // a found badge can be opened again: the figure is the point of it
+            tray.addEventListener('click', e => {
+                const li = e.target.closest('.bdg.got');
+                if (!li || showing) return;
+                const b = BADGES.find(x => x.id === li.dataset.id);
+                if (b) show(b);
+            });
+            render();
+        },
+        // starts the clock; the badge itself lands REVEAL_DELAY later
+        earn(id) {
+            if (earned.has(id) || pending.has(id) || !BADGES.some(b => b.id === id)) return;
+            pending.set(id, setTimeout(() => {
+                pending.delete(id);
+                if (earned.has(id)) return;              // reset while it was in flight
+                earned.add(id);
+                save();
+                render(id);                      // the rail discloses first
+                const b = BADGES.find(x => x.id === id);
+                const lag = setTimeout(() => {
+                    lags.delete(lag);
+                    if (!earned.has(id)) return; // reset while the card was queued
+                    if (showing) queue.push(b); else show(b);
+                }, CARD_LAG);
+                lags.add(lag);
+            }, REVEAL_DELAY));
+        },
+        has: id => earned.has(id),
+        count: () => earned.size,
+        // restoring on reload must not replay the cards, so nothing pops here
+        reset() {
+            pending.forEach(t => clearTimeout(t));
+            pending.clear();
+            lags.forEach(t => clearTimeout(t));
+            lags.clear();
+            queue.length = 0;
+            earned.clear();
+            save();
+            render();
+            // a card left open would be showing off a badge no longer in the tray
+            if (showing) hide();
+        }
+    };
+    return api;
+})();
+
+function initBadges() {
+    const tray = document.getElementById('badge-tray');
+    if (!tray) return;
+    const rail = document.getElementById('badges');
+    Badges.mount(tray, document.getElementById('badge-count'), rail,
+                 document.getElementById('badge-reset'));
+
+    /* The rail can be tucked away, because a panel pinned to the edge of a long
+       read should be dismissible. Only offered where it actually is a rail: at
+       narrow widths the collection sits in the flow and there is nothing to fold.
+       The state rides along in sessionStorage with the collection itself. */
+    const toggle = document.getElementById('badges-toggle');
+    if (toggle && rail) {
+        const SHUT = 'adl-collection-shut';
+        const set = (isShut, remember) => {
+            rail.classList.toggle('shut', isShut);
+            toggle.setAttribute('aria-expanded', String(!isShut));
+            toggle.setAttribute('aria-label', isShut ? 'Show the collection' : 'Hide the collection');
+            if (remember) { try { sessionStorage.setItem(SHUT, isShut ? '1' : '0'); } catch (e) {} }
+        };
+        let shut = false;
+        try { shut = sessionStorage.getItem(SHUT) === '1'; } catch (e) {}
+        set(shut, false);
+        toggle.addEventListener('click', () => set(!rail.classList.contains('shut'), true));
+    }
+
+    // the one badge with no input: arriving at the live panel
+    const now = document.getElementById('sec-now');
+    if (now && 'IntersectionObserver' in window) {
+        const obs = new IntersectionObserver(es => es.forEach(e => {
+            if (e.isIntersecting) { Badges.earn('now'); obs.disconnect(); }
+        }), { threshold: 0.35 });
+        obs.observe(now);
+    }
+}
+
 /**
  * The twelve with complete records: the set the whole story follows. Shared by
  * the metric strips and the effect panels so they cannot disagree about who is
@@ -526,7 +957,7 @@ function initMetricStrips() {
 
     const STRIPS = [
         {
-            host: 'mt-happy', read: 'mt-happy-read', cap: 'mt-happy-cap',
+            host: 'mt-happy', read: 'mt-happy-read', cap: 'mt-happy-cap', badge: 'ladder',
             get: c => c.happy, fmt: v => v.toFixed(2), unit: '',
             ticks: [4, 5, 6, 7], tickFmt: v => String(v),
             capTitle: 'Fig 4.1 — Happiness',
@@ -536,7 +967,7 @@ function initMetricStrips() {
                 'range of these 12 countries, not the full 0–10.'
         },
         {
-            host: 'mt-life', read: 'mt-life-read', cap: 'mt-life-cap',
+            host: 'mt-life', read: 'mt-life-read', cap: 'mt-life-cap', badge: 'years',
             get: c => c.life, fmt: v => v.toFixed(1), unit: ' years',
             ticks: [70, 75, 80], tickFmt: v => v + 'y',
             capTitle: 'Fig 4.2 — Life Expectancy',
@@ -628,10 +1059,14 @@ function initMetricStrips() {
             el.querySelectorAll('[data-name]').forEach(n =>
                 n.classList.toggle('on', n.dataset.name === name));
         }
-        el.addEventListener('mouseover', e => {
+        const inspect = e => {
             const t = e.target.closest('[data-name]');
-            if (t) show(t.dataset.name);
-        });
+            if (!t) return;
+            show(t.dataset.name);
+            Badges.earn(cfg.badge);
+        };
+        el.addEventListener('mouseover', inspect);
+        el.addEventListener('click', inspect);          // touch, and keyboard-ish taps
         el.addEventListener('mouseleave', () => {
             el.querySelectorAll('[data-name]').forEach(n => n.classList.remove('on'));
             idle();
@@ -806,6 +1241,7 @@ function initRankParallel() {
     }
 
     function highlight(name) {
+        if (name) Badges.earn('ranks');
         el.querySelectorAll('.pc-line').forEach(l => {
             l.classList.toggle('on', !!name && l.dataset.name === name);
             l.classList.toggle('off', !!name && l.dataset.name !== name);
@@ -870,6 +1306,7 @@ function buildCoverClock(svg) {
     // Cover clock
     const coverClock = document.getElementById('cover-clock');
     if (coverClock) buildCoverClock(coverClock);
+    initBadges();
     initCoverScroll();
     initSectionExit();
     initRightNow();

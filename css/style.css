@@ -23,9 +23,10 @@
     --slate-pale:   #8FB0D1;
 
     /* neutrals: paper, ink, rules, and the one grey for leftovers */
+    --white:      #ffffff;   /* type and cards that sit on the dark hues */
     --paper:      #FBF9F5;
     --card:       #F4EEE6;
-    --track:      #ffffff;
+    --track:      var(--white);
     --line:       #E5DED3;
     --neutral:    #CEC4B6;
     --ink:        #1F2937;
@@ -44,15 +45,15 @@
     --other:   var(--neutral);
 
     --cover-h: 76vh;
+    /* gutter reserved for the collection rail; 0 until the rail actually exists,
+       so the narrow layout is untouched. Set once, in the rail's media query. */
+    --rail: 0px;
 
     /* older names, all pointing at the palette above */
     --blue:          var(--slate);
-    --blue-light:    var(--slate-pale);
     --purple:        var(--copper);
-    --purple-light:  var(--copper-pale);
     --indigo:        var(--night);
     --magenta:       var(--copper);
-    --magenta-light: var(--copper-pale);
     --pink:          var(--copper);
     --gold:          var(--copper);
     --lav-card:      var(--card);
@@ -96,13 +97,13 @@ body {
     padding: 2.5rem;
     overflow: hidden;
     background: var(--night);
-    color: #fff;
+    color: var(--white);
 }
 
 .cover-kicker {
     position: absolute; top: 2.2rem; left: 2.2rem; z-index: 3;
     font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase;
-    font-weight: 600; color: #fff;
+    font-weight: 600; color: var(--white);
     background: rgba(184,115,51,0.9);
     padding: 0.35rem 0.8rem; border-radius: 999px;
 }
@@ -138,7 +139,7 @@ body {
     font-size: clamp(2.4rem, 7vw, 4.8rem);
     line-height: 1.02;
     letter-spacing: -0.02em;
-    color: #fff;
+    color: var(--white);
 }
 .cover-sub {
     margin-top: 1.1rem; font-size: clamp(1.05rem, 2.4vw, 1.35rem);
@@ -166,7 +167,7 @@ body {
     z-index: 50;
     height: 52px;
     background: var(--night);
-    color: #fff;
+    color: var(--white);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -317,7 +318,7 @@ body {
 }
 .card-head {
     background: var(--indigo);
-    color: #fff;
+    color: var(--white);
     font-weight: 600;
     font-size: 1.05rem;
     padding: 0.85rem 1.3rem;
@@ -342,7 +343,7 @@ body {
 .dc-txt .lead, .dc-txt .body { max-width: none; }
 
 .dc-card {
-    background: #fff;
+    background: var(--white);
     border: 1px solid var(--line);
     border-radius: 14px;
     padding: clamp(1.1rem, 3vw, 1.5rem);
@@ -355,7 +356,7 @@ body {
 .dc-who { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.01em; }
 .dc-pick select {
     font: inherit; font-size: 0.88rem; padding: 0.35rem 0.5rem;
-    border: 1px solid var(--line); border-radius: 6px; background: #fff; color: var(--ink);
+    border: 1px solid var(--line); border-radius: 6px; background: var(--white); color: var(--ink);
 }
 /* visually hidden, still read out */
 .vh {
@@ -401,13 +402,13 @@ body {
     background: var(--indigo);
     border-radius: 16px;
     padding: 1.6rem 1.7rem;
-    color: #fff;
+    color: var(--white);
     display: flex;
     flex-direction: column;
     gap: 1.1rem;
 }
 .callout-head {
-    font-size: 1.15rem; font-weight: 700; color: #fff;
+    font-size: 1.15rem; font-weight: 700; color: var(--white);
     margin-bottom: 0.3rem;
 }
 .callout-row { display: flex; align-items: flex-start; gap: 1rem; }
@@ -417,11 +418,11 @@ body {
     display: grid; place-items: center;
     background: rgba(255,255,255,0.14);
     border-radius: 11px;
-    color: #fff;
+    color: var(--white);
 }
 .callout-ic svg { width: 22px; height: 22px; }
 .callout-row p { font-size: 1.05rem; line-height: 1.45; color: rgba(255,255,255,0.92); }
-.callout-row strong { color: #fff; font-weight: 700; }
+.callout-row strong { color: var(--white); font-weight: 700; }
 
 .source {
     max-width: 620px; margin: 2.4rem 0 0;
@@ -442,11 +443,12 @@ body {
 
 /* ─── OPENER: PEOPLE DOT-FIELD ──────────────────────────── */
 /* The dot field breaks out of the 1200px column and runs nearly edge to edge.
-   margin-left + translateX centres it on the viewport rather than the column,
-   and capping at 96vw keeps it clear of a horizontal scrollbar. */
+   margin-left + translateX centres it on the column, which main's padding keeps
+   clear of the rail, and subtracting --rail stops the widest charts reaching
+   under it. Capping at 96vw keeps it clear of a horizontal scrollbar. */
 .df-stage {
     position: relative;
-    width: min(1560px, 96vw);
+    width: min(1560px, calc(96vw - var(--rail)));
     margin-left: 50%;
     transform: translateX(-50%);
     aspect-ratio: 3/1;
@@ -495,7 +497,7 @@ body {
     padding: clamp(1.4rem, 4vw, 2.2rem);
     border-radius: 10px;
     background: var(--night);
-    color: #fff;
+    color: var(--white);
     text-align: left;
 }
 .rn-label {
@@ -532,8 +534,8 @@ body {
 .rn-rib svg { width: 100%; height: auto; display: block; overflow: visible; }
 .rn-rib .rib-ax { font-size: 9.5px; fill: rgba(255,255,255,0.45); }
 .rn-rib .rib-grid { stroke: rgba(255,255,255,0.14); stroke-width: 1; }
-.rn-rib .rib-hand { stroke: #fff; stroke-width: 1.5; }
-.rn-rib .rib-hand-cap { fill: #fff; }
+.rn-rib .rib-hand { stroke: var(--white); stroke-width: 1.5; }
+.rn-rib .rib-hand-cap { fill: var(--white); }
 .rn-rib .rib-clip-rect { transition: width 1.6s cubic-bezier(0.22,1,0.36,1); }
 @media (prefers-reduced-motion: reduce) {
     .rn-bar span { transition: none; }
@@ -549,11 +551,11 @@ body {
    width they can get, and this is the widest the page has to give. */
 .mt-stage {
     position: relative;
-    width: min(1400px, 94vw);
+    width: min(1400px, calc(94vw - var(--rail)));
     margin: 2.2rem auto 0;
     margin-left: 50%;
     transform: translateX(-50%);
-    background: #fff;
+    background: var(--white);
     border: 1px solid var(--line);
     border-radius: 14px;
     padding: clamp(1.1rem, 3vw, 1.6rem) clamp(1.1rem, 3vw, 2rem);
@@ -606,9 +608,9 @@ body {
     min-height: 2.6rem; margin-bottom: 0.5rem;
     color: rgba(255,255,255,0.75); font-size: 0.85rem;
 }
-.pc-read b { color: #fff; font-size: 1.02rem; font-weight: 700; }
+.pc-read b { color: var(--white); font-size: 1.02rem; font-weight: 700; }
 .pc-read em { font-style: normal; color: var(--copper-pale); font-variant-numeric: tabular-nums; }
-.pc-axl { font-size: 11.5px; font-weight: 700; fill: #fff; }
+.pc-axl { font-size: 11.5px; font-weight: 700; fill: var(--white); }
 .pc-axs { font-size: 9.5px; fill: rgba(255,255,255,0.48); }
 .pc-nml { font-size: 10.5px; font-weight: 600; }
 .pc-web { stroke: rgba(255,255,255,0.2); stroke-width: 1; }
@@ -632,10 +634,386 @@ body {
     border: 1px solid rgba(255,255,255,0.22);
     background: transparent; color: rgba(255,255,255,0.75);
 }
-.pc-pick button:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
+.pc-pick button:hover { border-color: rgba(255,255,255,0.5); color: var(--white); }
 @media (max-width: 640px) {
     .pc-read { font-size: 0.8rem; }
     .pc-pick button { font-size: 0.7rem; padding: 0.24rem 0.55rem; }
+}
+
+/* ─── BADGES: A COLLECTION ──────────────────────────────────
+   Eight collectibles in the opener, four across so they fall in two rows.
+   A locked slot is anonymous — a ghosted medal and no words — so the tray shows
+   how much is left without giving away what any of it is. Finding one names it
+   and opens a card carrying a figure from the data that is printed nowhere else. */
+/* Narrow screens keep it in the flow, at the foot of the opener. The rail
+   further down takes over once there is margin to spare. */
+.badges {
+    display: block;
+    max-width: min(1040px, 94vw);
+    /* it sits between sections now, so it owns the space around itself */
+    margin: 0 auto;
+    padding: 1.5rem clamp(1.5rem, 4vw, 3rem) 0;
+    border-top: 1px solid var(--line);
+    text-align: left;
+}
+.badges-head {
+    display: flex; align-items: baseline; gap: 0.7rem;
+    font-size: 0.74rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--ink-faint); margin-bottom: 1.4rem;
+}
+.badges-title { margin-right: auto; }
+.badges-count {
+    letter-spacing: 0.04em; color: var(--copper);
+    transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
+}
+.badges-count.bump { animation: bdg-count 0.55s cubic-bezier(0.22,1,0.36,1); }
+@keyframes bdg-count {
+    0% { transform: scale(1); } 40% { transform: scale(1.28); } 100% { transform: scale(1); }
+}
+/* only earns its keep in the rail, where space is tight */
+.badges-toggle { display: none; }
+/* the only way to clear a collection: sessionStorage survives a hard refresh */
+.bdg-reset {
+    font: inherit; font-size: 0.66rem; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 0.15rem 0.5rem;
+    color: var(--ink-faint); background: none;
+    border: 1px solid var(--line); border-radius: 999px; cursor: pointer;
+}
+.bdg-reset:hover { color: var(--copper); border-color: var(--copper-pale); }
+.badges-foot:not(:empty) { margin-top: 1rem; }
+.badge-tray {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem 1.2rem;
+}
+@media (max-width: 720px) { .badge-tray { grid-template-columns: repeat(2, 1fr); } }
+
+/* ─── THE COLLECTION AS A RAIL ───────────────────────────────
+   Wide enough to spare the margin, and the collection leaves the flow for a
+   card pinned to the right edge: it follows the reader through every chapter,
+   so a badge landing is always visible. Two columns of four, medals shrunk to
+   suit, names kept but clipped to one line. z-index sits under the fixed
+   .title-bar (50) and well under the reveal card (70). */
+@media (min-width: 1100px) {
+    /* the story shifts left by exactly the rail's footprint, so nothing ever
+       sits underneath it — including the two charts that break out of the column */
+    :root { --rail: 232px; }
+    main { padding-right: var(--rail); }
+
+    .badges {
+        position: fixed;
+        top: 50%; right: clamp(0.7rem, 1.5vw, 1.5rem);
+        transform: translateY(-50%);
+        z-index: 45;
+        width: 208px; max-width: none;
+        margin: 0; padding: 0.8rem 0.85rem 0.9rem;
+        /* deliberately not overflow:auto — any overflow value but visible clips
+           the stars at the rail wall as they fly out of an edge slot. Tall
+           enough screens never need to scroll; the short-screen rule below
+           takes the clipping back when it has to. */
+        max-height: calc(100vh - 5rem); overflow: visible;
+        background: var(--paper);
+        border: 1px solid var(--line); border-top: 1px solid var(--line);
+        border-radius: 14px;
+        box-shadow: 0 30px 60px -34px rgba(14, 18, 48, 0.45);
+        transition: box-shadow 0.4s ease, border-color 0.4s ease;
+    }
+    .badges-head {
+        gap: 0.4rem; margin-bottom: 0;
+        font-size: 0.6rem; letter-spacing: 0.1em;
+        align-items: center;
+    }
+    .badges-title { font-size: 0.62rem; }
+    .badges-count { font-size: 0.6rem; white-space: nowrap; }
+    .badges-toggle {
+        display: grid; place-items: center;
+        width: 20px; height: 20px; padding: 0; flex: none;
+        color: var(--ink-faint); background: none; border: 0; cursor: pointer;
+        transition: transform 0.32s cubic-bezier(0.22,1,0.36,1), color 0.2s ease;
+    }
+    .badges-toggle svg { width: 14px; height: 14px; }
+    .badges-toggle:hover { color: var(--copper); }
+    .badges.shut .badges-toggle { transform: rotate(-90deg); }
+
+    /* collapsing hides the grid but keeps the header pill readable */
+    .badges-body {
+        overflow: hidden;
+        max-height: 78vh; opacity: 1;
+        transition: max-height 0.42s cubic-bezier(0.22,1,0.36,1), opacity 0.3s ease,
+                    margin-top 0.42s cubic-bezier(0.22,1,0.36,1);
+        margin-top: 0.85rem;
+    }
+    .badges.shut .badges-body { max-height: 0; opacity: 0; margin-top: 0; }
+
+    .badge-tray { grid-template-columns: repeat(2, 1fr); gap: 0.85rem 0.5rem; }
+    .badges .bdg-medal { width: 68px; height: 68px; }
+    .badges .bdg-medal svg { width: 52px; height: 52px; }
+    /* smaller medal, shorter flight, or the stars would land in the next slot */
+    .badges .bdg-stars { --reach: 47px; }
+    .badges .bdg-star { width: calc(var(--sz) * 0.72); height: calc(var(--sz) * 0.72); }
+    /* in the rail the medal leads and the name follows, clipped to one line */
+    .badges .bdg { display: flex; flex-direction: column-reverse; gap: 0.3rem; }
+    .badges .bdg-meta { min-height: 0; margin-bottom: 0; }
+    .badges .bdg-kicker, .badges .bdg-stat { display: none; }
+    .badges .bdg-name {
+        font-size: 0.58rem; line-height: 1.15; letter-spacing: 0.01em;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .badges-note { font-size: 0.66rem; line-height: 1.45; margin-top: 0.9rem; }
+    .badges-foot:not(:empty) { margin-top: 0.7rem; }
+    .bdg-reset { font-size: 0.58rem; }
+
+    /* a badge landing nudges the whole rail, so it is noticed off to the side */
+    .badges.flash {
+        animation: rail-pop 0.7s cubic-bezier(0.22,1,0.36,1);
+        border-color: var(--copper-pale);
+        box-shadow: 0 30px 60px -30px rgba(184, 115, 51, 0.55);
+    }
+    @keyframes rail-pop {
+        0%   { transform: translateY(-50%) scale(1); }
+        35%  { transform: translateY(-50%) scale(1.045); }
+        70%  { transform: translateY(-50%) scale(0.99); }
+        100% { transform: translateY(-50%) scale(1); }
+    }
+}
+
+/* Not enough height for all eight slots: the rail has to scroll, which means it
+   has to clip, which costs the stars their flight outside the rim. Losing a
+   little sparkle beats losing half the collection off the bottom of the screen.
+   The threshold allows for a full collection, where every slot has gained a name
+   and the rail stands at its tallest. */
+@media (min-width: 1100px) and (max-height: 780px) {
+    .badges { overflow-y: auto; }
+}
+
+.bdg { text-align: center; }
+.bdg.ring-copper     { --ring: var(--copper); }
+.bdg.ring-slate      { --ring: var(--slate); }
+.bdg.ring-slate-pale { --ring: var(--slate-pale); }
+.bdg.ring-night      { --ring: var(--night); }
+
+/* the label block sits above the medal, as on a collector's card */
+.bdg-meta { display: block; min-height: 3.4rem; margin-bottom: 0.5rem; }
+.bdg-kicker {
+    display: block; font-size: 0.62rem; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-faint);
+}
+.bdg-name {
+    display: block; font-size: 0.95rem; font-weight: 700; line-height: 1.2;
+    color: var(--ink); margin-top: 0.1rem;
+}
+.bdg-stat {
+    display: block; font-size: 0.72rem; color: var(--ring, var(--ink-faint));
+    font-weight: 600; font-variant-numeric: tabular-nums; margin-top: 0.05rem;
+}
+
+.bdg-medal {
+    position: relative;
+    display: grid; place-items: center;
+    width: 108px; height: 108px; margin: 0 auto;
+    border-radius: 50%;
+    background: var(--paper);
+    box-shadow: inset 0 0 0 2px var(--line);
+    /* clips the sweep below to the circle; the halo is a box-shadow on this same
+       element, which overflow does not touch, so both can coexist */
+    overflow: hidden;
+    transition: transform 0.45s cubic-bezier(0.22,1,0.36,1), box-shadow 0.35s ease, filter 0.45s ease;
+}
+.bdg-medal svg { width: 82px; height: 82px; display: block; }
+
+/* the art palette: the only place the SVG names a hue */
+.b-ln { fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.b-s   { stroke: var(--slate); }
+.b-sp  { stroke: var(--slate-pale); }
+.b-c   { stroke: var(--copper); }
+.b-cp  { stroke: var(--copper-pale); }
+.b-n   { stroke: var(--night); }
+.b-sf  { fill: var(--slate); }
+.b-spf { fill: var(--slate-pale); }
+.b-cf  { fill: var(--copper); }
+.b-cpf { fill: var(--copper-pale); }
+.b-nf  { fill: var(--night); }
+.o-22 { opacity: 0.22; } .o-25 { opacity: 0.25; } .o-30 { opacity: 0.3; }
+.o-35 { opacity: 0.35; } .o-40 { opacity: 0.4; } .o-70 { opacity: 0.7; }
+
+/* locked: a ghost. No colour, no name, softly blurred. */
+.bdg:not(.got) .bdg-medal { filter: grayscale(1) blur(2.5px) opacity(0.33); }
+.bdg:not(.got) .bdg-medal svg { transform: scale(0.94); }
+.bdg.got .bdg-medal { box-shadow: inset 0 0 0 3px var(--ring), 0 16px 30px -20px var(--ring); }
+.bdg:hover .bdg-medal { transform: translateY(-4px); }
+/* a found badge can be opened again for its figure */
+.bdg.got { cursor: pointer; }
+
+/* ── the disclosure ──
+   The medal sits in an orb so the stars have somewhere to fly that is not
+   clipped: the medal itself hides overflow to clip the light sweep, the orb
+   does not, so sparks can leave the rim. */
+.bdg-orb {
+    position: relative;
+    display: block; width: max-content; margin: 0 auto;
+}
+.bdg-stars {
+    position: absolute; inset: 0;
+    pointer-events: none;
+    /* how far the burst travels; the rail overrides it for its smaller medals */
+    --reach: 74px;
+}
+.bdg-ring { position: absolute; inset: 0; }
+.bdg-star {
+    position: absolute; top: 50%; left: 50%;
+    width: var(--sz, 9px); height: var(--sz, 9px);
+    margin: calc(var(--sz, 9px) / -2) 0 0 calc(var(--sz, 9px) / -2);
+    background: var(--ring, var(--copper));
+    /* a four-point sparkle, pinched at the waist */
+    clip-path: polygon(50% 0%, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0% 50%, 40% 40%);
+    opacity: 0;
+}
+/* inert until the slot is found: no animation named, nothing runs */
+.bdg.pop .bdg-ring { animation: star-orbit 1.15s cubic-bezier(0.33,0,0.28,1) both; }
+.bdg.pop .bdg-star.r {
+    animation: star-rim 1.15s ease-out both;
+    animation-delay: calc(var(--i) * 26ms);
+}
+.bdg.pop .bdg-star.b {
+    animation: star-fly 0.95s cubic-bezier(0.16,0.9,0.3,1) both;
+    animation-delay: calc(140ms + var(--i) * 22ms);
+}
+/* the ring sweeps one and a half turns around the rim, carrying its stars */
+@keyframes star-orbit {
+    from { transform: rotate(0); }
+    to   { transform: rotate(535deg); }
+}
+@keyframes star-rim {
+    0%   { opacity: 0; transform: rotate(var(--a)) translateY(calc(var(--reach) * -0.52)) scale(0.3); }
+    22%  { opacity: 1; transform: rotate(var(--a)) translateY(calc(var(--reach) * -0.78)) scale(1); }
+    70%  { opacity: 1; }
+    100% { opacity: 0; transform: rotate(var(--a)) translateY(calc(var(--reach) * -0.86)) scale(0.4); }
+}
+/* the burst shoots outward from behind the medal and dies away */
+@keyframes star-fly {
+    0%   { opacity: 0; transform: rotate(var(--a)) translateY(0) scale(0.2); }
+    25%  { opacity: 1; }
+    100% { opacity: 0;
+           transform: rotate(var(--a)) translateY(calc(var(--reach) * var(--m, 1) * -1.35)) scale(0.5); }
+}
+
+/* the medal under all that: ghost resolves into colour, a light sweeps across
+   the face, and a halo in the badge's own hue blooms and settles */
+.bdg.pop .bdg-medal {
+    animation: bdg-reveal 1.05s cubic-bezier(0.22,1,0.36,1),
+               bdg-halo   1.05s ease-out;
+}
+@keyframes bdg-reveal {
+    0%   { filter: grayscale(1) blur(4px) opacity(0.25); transform: scale(0.68) rotate(-14deg); }
+    30%  { filter: grayscale(0.6) blur(2px) opacity(0.7); }
+    52%  { filter: grayscale(0) blur(0)   opacity(1);    transform: scale(1.18) rotate(6deg); }
+    72%  { transform: scale(0.95) rotate(-2.5deg); }
+    88%  { transform: scale(1.03) rotate(1deg); }
+    100% { filter: none; transform: scale(1) rotate(0); }
+}
+@keyframes bdg-halo {
+    0%   { box-shadow: inset 0 0 0 2px var(--line), 0 0 0 0 var(--ring); }
+    52%  { box-shadow: inset 0 0 0 3px var(--ring), 0 0 34px 6px var(--ring); }
+    100% { box-shadow: inset 0 0 0 3px var(--ring), 0 16px 30px -20px var(--ring); }
+}
+.bdg.pop .bdg-medal::after {
+    content: ''; position: absolute; inset: -30% -55%;
+    background: linear-gradient(105deg, transparent 34%, var(--white) 50%, transparent 66%);
+    opacity: 0.85;
+    animation: bdg-sweep 0.8s ease-out 0.26s both;
+}
+@keyframes bdg-sweep {
+    from { transform: translateX(-115%); }
+    to   { transform: translateX(115%); }
+}
+/* the words arrive with the medal rather than snapping in ahead of it */
+.bdg.pop .bdg-meta { animation: bdg-meta-in 0.5s ease-out 0.3s both; }
+@keyframes bdg-meta-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: none; }
+}
+.badges-note { font-size: 0.82rem; line-height: 1.5; color: var(--ink-faint); margin-top: 1.4rem; }
+
+/* ─── THE REVEAL CARD ───────────────────────────────────────
+   Not a toast: the badge comes with one figure from the data, and a figure
+   worth reading deserves to stop the page rather than slide past it. */
+.bdg-card-wrap {
+    position: fixed; inset: 0; z-index: 70;
+    display: grid; place-items: center;
+    padding: 1.4rem;
+    background: rgba(14,18,48,0.55);
+    opacity: 0;
+    transition: opacity 0.32s ease;
+    /* Two guards, because a full-screen overlay that outstays its welcome eats
+       every hover and click on the page underneath:
+         1. display:grid above would otherwise beat the hidden attribute, so say
+            so explicitly
+         2. between closing and being hidden it is still painted, so it must not
+            take pointer events unless it is actually open */
+    pointer-events: none;
+}
+.bdg-card-wrap[hidden] { display: none; }
+.bdg-card-wrap.in { opacity: 1; pointer-events: auto; }
+.bdg-card {
+    position: relative;
+    width: min(520px, 100%);
+    max-height: 86vh; overflow-y: auto;
+    background: var(--paper);
+    border: 2px solid var(--copper);
+    border-radius: 14px;
+    padding: 1.6rem clamp(1.2rem, 4vw, 2rem) 1.4rem;
+    box-shadow: 0 40px 80px -40px rgba(14,18,48,0.6);
+    transform: translateY(16px) scale(0.97);
+    transition: transform 0.36s cubic-bezier(0.22,1,0.36,1);
+}
+.bdg-card-wrap.in .bdg-card { transform: none; }
+.bdg-close {
+    position: absolute; top: 0.5rem; right: 0.7rem;
+    font: inherit; font-size: 1.5rem; line-height: 1;
+    background: none; border: 0; color: var(--ink-faint); cursor: pointer;
+}
+.bdg-close:hover { color: var(--ink); }
+.bdg-card-head {
+    text-align: center; font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-faint);
+}
+.bdg-card-id {
+    display: flex; align-items: center; justify-content: center; gap: 1.1rem;
+    margin: 1rem 0 1.2rem; text-align: left;
+}
+.bdg-card-id .bdg-medal { width: 92px; height: 92px; }
+.bdg-card-id .bdg-medal svg { width: 70px; height: 70px; }
+/* One line, so it can afford to be the biggest type on the card. Read as a
+   punchline rather than a paragraph: centred, full-strength ink. */
+.bdg-card-fact {
+    font-size: 1.12rem; line-height: 1.5; color: var(--ink);
+    text-align: center; text-wrap: balance;
+    padding-top: 1.2rem; border-top: 1px solid var(--line);
+}
+.bdg-card-foot {
+    margin-top: 1rem; text-align: center;
+    font-size: 0.76rem; font-weight: 600;
+    letter-spacing: 0.04em; color: var(--copper);
+}
+
+@media (max-width: 560px) {
+    .bdg-medal { width: 84px; height: 84px; }
+    .bdg-medal svg { width: 64px; height: 64px; }
+    .bdg-meta { min-height: 3.1rem; }
+    .bdg-name { font-size: 0.86rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .bdg-card-wrap, .bdg-card { transition: opacity 0.2s ease; transform: none; }
+    .bdg.pop .bdg-medal { animation: none; }
+    .bdg.pop .bdg-medal::after, .bdg.pop .bdg-meta { animation: none; }
+    .bdg.pop .bdg-medal::after { content: none; }
+    /* no travelling stars for anyone who asked the page to sit still */
+    .bdg-stars { display: none; }
+    .badges.flash { animation: none; }
+    .badges-count.bump { animation: none; }
+    .bdg:hover .bdg-medal { transform: none; }
 }
 
 /* ─── FIGURE CAPTION ────────────────────────────────────────
@@ -784,14 +1162,14 @@ body {
 .dna-slider input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none; appearance: none;
     width: 24px; height: 24px; border-radius: 50%;
-    background: #fff; border: 3px solid var(--copper);
+    background: var(--white); border: 3px solid var(--copper);
     box-shadow: 0 2px 6px rgba(0,0,0,0.18); cursor: pointer;
     transition: transform 0.1s ease;
 }
 .dna-slider input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.12); }
 .dna-slider input[type="range"]::-moz-range-thumb {
     width: 24px; height: 24px; border-radius: 50%;
-    background: #fff; border: 3px solid var(--copper);
+    background: var(--white); border: 3px solid var(--copper);
     box-shadow: 0 2px 6px rgba(0,0,0,0.18); cursor: pointer;
 }
 .dna-ends {
@@ -810,7 +1188,7 @@ body {
 
 .dna-go {
     font-family: var(--font); font-size: 1rem; font-weight: 700;
-    color: #fff; background: var(--copper);
+    color: var(--white); background: var(--copper);
     border: none; border-radius: 12px; padding: 0.8rem 1.6rem; cursor: pointer;
     transition: transform 0.1s ease, filter 0.2s ease;
 }
@@ -822,7 +1200,7 @@ body {
     background: var(--indigo);
     border-radius: 18px;
     padding: 2.6rem 2rem;
-    color: #fff;
+    color: var(--white);
 }
 @keyframes dna-reveal { from { opacity: 0; transform: translateY(14px); } }
 .dna-retake {
@@ -838,7 +1216,7 @@ body {
     margin: 0.3rem 0 1.4rem; color: var(--gold);
 }
 .dna-result-note { font-size: 0.98rem; color: rgba(255,255,255,0.85); max-width: 440px; margin: 1.4rem auto 0; }
-.dna-result-note strong { color: #fff; }
+.dna-result-note strong { color: var(--white); }
 
 .dna-strip { display: flex; flex-direction: column; gap: 0.7rem; max-width: 440px; margin: 0 auto; }
 .dna-ax { display: grid; grid-template-columns: 110px 1fr; align-items: center; gap: 0.8rem; }

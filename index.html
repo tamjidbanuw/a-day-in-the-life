@@ -53,7 +53,37 @@
                     Dot field spelling WORLD. Copper marks the 12 countries this story follows: 48% of the
                     dots, matching their 48% share of world population. Positions are not geographic.</p>
             </div>
+
         </section>
+
+        <!-- A sibling of the sections, never a child of one. Every section carries
+             .reveal, which animates a transform, and a transformed ancestor becomes
+             the containing block for anything position:fixed inside it — which would
+             pin the rail to the opener instead of the viewport. Out here it is free.
+             Wide screens make it a rail fixed to the right edge that follows the
+             reader; narrow ones leave it in the flow, straight after the opener.
+             Filled by initBadges() in js/app.js. -->
+        <aside class="badges" id="badges" aria-label="Your badge collection">
+            <div class="badges-head">
+                <span class="badges-title">Your collection</span>
+                <span class="badges-count" id="badge-count">0 of 8 found</span>
+                <button class="badges-toggle" id="badges-toggle" type="button"
+                        aria-expanded="true" aria-controls="badges-body"
+                        aria-label="Hide the collection">
+                    <svg viewBox="0 0 16 16" aria-hidden="true">
+                        <path d="M4 6.5 8 10.5 12 6.5" fill="none" stroke="currentColor"
+                              stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="badges-body" id="badges-body">
+                <ul class="badge-tray" id="badge-tray"></ul>
+                <p class="badges-note">Eight badges are hidden in the charts below, and every chart
+                    here does something when you touch it. Each one you find comes with a figure from
+                    the data that appears nowhere else. One is not on a chart at all.</p>
+                <div class="badges-foot" id="badge-reset"></div>
+            </div>
+        </aside>
 
         <!-- ═══ CHAPTER ONE · HOW WE LIVE ═══════════════════ -->
         <div class="chapter-mark reveal">
