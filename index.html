@@ -186,69 +186,50 @@
             <div class="chapter-rule"></div>
         </div>
 
-        <!-- ═══ 4 · THE TWO MEASURES ════════════════════════ -->
-        <!-- Introduces life expectancy and happiness before anything is claimed
-             about them. Drawn by initMetricScales() in js/app.js. -->
-        <section class="section reveal" id="sec-metrics">
-            <div class="ms-grid">
-                <div class="ms-txt">
-                    <span class="sec-num">Two measures</span>
-                    <h2 class="sec-title">How long a life,<br>and how good</h2>
-                    <hr class="rule">
-                    <p class="lead">The rest of this story judges a day by two things. <strong>Life
-                        expectancy</strong> is how many years a baby born today can expect, in years.
-                        <strong>Happiness</strong> is what people say when asked to place their own life
-                        on a ladder from 0 to 10.</p>
-                    <p class="body">One is measured from records. The other is a country's own opinion of
-                        itself. Across these twelve they mostly agree, at <strong>r = 0.83</strong>: long
-                        life and good mood tend to arrive together. The interesting countries are the
-                        ones where they do not.</p>
-                    <span class="howto">Hover or tap a country to follow it between the two scales.</span>
-                </div>
+        <!-- ═══ 4 · FIRST MEASURE: HAPPINESS ════════════════ -->
+        <!-- One measure per section, both drawn by the same initMetricStrip()
+             in js/app.js, so the reader learns the chart once and reads it twice. -->
+        <section class="section center reveal" id="sec-happy">
+            <span class="sec-num">First measure</span>
+            <h2 class="sec-title">Happiness is a question,<br>not a reading</h2>
+            <hr class="rule">
+            <p class="lead">Nobody measures happiness. They ask. Imagine a ladder where 10 is the best
+                possible life for you and 0 the worst. Where do you stand today?</p>
+            <p class="body">Thousands of people in each country answer that, and the average is the
+                score. It is a country's own opinion of itself, which makes it the softest number in
+                this story and the only one that asks people directly.</p>
 
-                <div class="ms-card">
-                    <p class="ms-read" id="ms-read"></p>
-                    <div class="ms-chart" id="ms-chart"></div>
-                </div>
+            <!-- breaks out of the 1200px column, like the dot field in the opener -->
+            <div class="mt-stage">
+                <p class="mt-lab">Happiness, 0 to 10</p>
+                <div class="mt-strip" id="mt-happy"></div>
+                <p class="mt-read" id="mt-happy-read"></p>
             </div>
 
-            <p class="fig-cap"><b>Fig 4.1 — The Two Measures</b>
-                Connected dot plot. Each country appears once on each scale and the line joins its two
-                positions; a steep or crossing line means the two measures disagree. Each scale runs from
-                the lowest to the highest of the 12, so positions are relative to this group, not to the
-                world. Life expectancy at birth in years, Our World in Data. Happiness on the 0–10
-                Cantril ladder, World Happiness Report.</p>
+            <p class="fig-cap" id="mt-happy-cap"></p>
         </section>
 
-        <!-- ═══ 5 · THRIVE ══════════════════════════════════ -->
-        <section class="section split flip reveal" id="sec-thrive">
-            <div class="txt">
-                <span class="sec-num">Diminishing returns</span>
-                <h2 class="sec-title">A longer day doesn't<br>buy a better life</h2>
-                <hr class="rule">
-                <p class="lead">If effort alone decided it, the busiest countries would be the
-                    healthiest and the happiest. They are neither.</p>
-                <p class="body">
-                    <strong>Japan</strong> lives longest at <strong>83.9 years</strong> and ranks
-                    <strong>10th of 12</strong> for happiness. <strong>Australia</strong> is the
-                    happiest and works <strong>8h01m</strong>, just 12 minutes less than Japan. The
-                    difference is paid work: <strong>3h58m</strong> against <strong>6h08m</strong>.
-                    <strong>India</strong> works <strong>8h06m</strong> and finishes last on both
-                    counts.
-                </p>
+        <!-- ═══ 5 · SECOND MEASURE: LIFE EXPECTANCY ═════════ -->
+        <section class="section center reveal" id="sec-life">
+            <span class="sec-num">Second measure</span>
+            <h2 class="sec-title">Life expectancy is<br>the opposite kind of number</h2>
+            <hr class="rule">
+            <p class="lead">Nobody is asked anything. It is counted from deaths already recorded: how
+                many years a baby born today can expect if nothing changes.</p>
+            <p class="body">So one measure is an opinion and the other is arithmetic. They are not the
+                same question, and a country can do well on one and badly on the other. Read the two
+                scales together and most countries hold roughly the same position in both.</p>
+
+            <div class="mt-stage">
+                <p class="mt-lab">Life expectancy at birth, years</p>
+                <div class="mt-strip" id="mt-life"></div>
+                <p class="mt-read" id="mt-life-read"></p>
             </div>
-            <div class="viz">
-                <div class="day-card">
-                    <div class="card-head">Life expectancy vs. happiness</div>
-                    <div class="scatter-wrap" id="thrive-scatter"></div>
-                    <p class="fig-cap"><b>Fig 4.2 — Diminishing Returns</b>
-                        Scatter, life expectancy in years (x) against happiness on the 0–10 ladder (y),
-                        12 countries, four labelled. Our World in Data; World Happiness Report.</p>
-                </div>
-            </div>
+
+            <p class="fig-cap" id="mt-life-cap"></p>
         </section>
 
-        <!-- ═══ 5b · NOBODY LEADS EVERYWHERE ════════════════ -->
+        <!-- ═══ 6 · NOBODY LEADS EVERYWHERE ═════════════════ -->
         <section class="section center reveal" id="sec-ranks">
             <span class="sec-num">Nobody leads</span>
             <h2 class="sec-title">Five measures,<br>five different winners</h2>
@@ -272,91 +253,9 @@
                 0–10 ladder.</p>
         </section>
 
-        <!-- ═══ CHAPTER THREE · HOW WE CONNECT ══════════════ -->
+        <!-- ═══ CHAPTER THREE · YOUR CLOSEST MATCH ═══════════ -->
         <div class="chapter-mark reveal">
             <span class="chapter-eyebrow">Chapter Three</span>
-            <h2 class="chapter-name">How We Connect</h2>
-            <p class="chapter-blurb">Different days, and still a steady traffic of people going to
-                see how everyone else manages theirs.</p>
-            <div class="chapter-rule"></div>
-        </div>
-
-        <!-- ═══ 6 · CONNECT ═════════════════════════════════ -->
-        <section class="section split reveal" id="sec-connect">
-            <div class="txt">
-                <span class="sec-num">Inbound</span>
-                <h2 class="sec-title">The world comes to visit</h2>
-                <hr class="rule">
-                <p class="lead">Hundreds of millions of people cross a border every year to see
-                    somewhere else's ordinary.</p>
-                <p class="body">
-                    <strong>France</strong> takes <strong>217.9M</strong> visitors a year, more than
-                    three times the number of people who live there. One country's routine is another
-                    country's reason to travel.
-                </p>
-            </div>
-            <div class="viz">
-                <div class="day-card">
-                    <div class="card-head">International visitors per year (2019, millions)</div>
-                    <div class="rank" id="connect-rank" role="img" aria-label="Countries ranked by international tourist arrivals"></div>
-                    <p class="fig-cap"><b>Fig 5.1 — Inbound</b>
-                        Bars, international tourist arrivals in millions, 2019, 12 countries. World Bank.
-                        2019 is used because pandemic years distort the series.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- ═══ CHAPTER FOUR · THE INSIGHT ══════════════════ -->
-        <div class="chapter-mark reveal">
-            <span class="chapter-eyebrow">Chapter Four</span>
-            <h2 class="chapter-name">What It Adds Up To</h2>
-            <p class="chapter-blurb">One pattern runs underneath all of it, and it isn't the one you
-                would guess.</p>
-            <div class="chapter-rule"></div>
-        </div>
-
-        <section class="section split flip reveal" id="sec-insight">
-            <div class="txt">
-                <span class="sec-num">Same wallet</span>
-                <h2 class="sec-title">Same wealth.<br>A different day.</h2>
-                <hr class="rule">
-                <p class="lead">Richer ought to mean busier, or else freer. It reliably means
-                    neither.</p>
-                <p class="body">
-                    <strong>Canada</strong> and <strong>Germany</strong> earn within <strong>$71</strong>
-                    a head of each other, $54,848 against $54,777. A Canadian works
-                    <strong>1h46m</strong> more each day. A German takes <strong>2h10m</strong> more
-                    leisure. Same pay, different life.
-                </p>
-            </div>
-            <div class="viz">
-                <div class="day-card">
-                    <div class="card-head">Two countries, near-identical wealth</div>
-                    <div id="insight" role="img" aria-label="Comparison of two countries with similar GDP but different daily time use"></div>
-                    <p class="fig-cap"><b>Fig 6.1 — Same Wallet</b>
-                        Paired bars, GDP per capita (2023), then work and leisure in minutes per day,
-                        for the two closest-matched earners among the 12.</p>
-                </div>
-
-                <div class="callout">
-                    <p class="callout-head">What it comes down to</p>
-                    <div class="callout-row">
-                        <span class="callout-ic">✦</span>
-                        <p>What a country earns says remarkably little about how its people
-                            <strong>spend their hours</strong>.</p>
-                    </div>
-                    <div class="callout-row">
-                        <span class="callout-ic">✦</span>
-                        <p>Money sets the ceiling. <strong>Habit and choice</strong> decide what
-                            actually fills the day.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ═══ CHAPTER FIVE · YOUR CLOSEST MATCH ═══════════ -->
-        <div class="chapter-mark reveal">
-            <span class="chapter-eyebrow">Chapter Five</span>
             <h2 class="chapter-name">Your Closest Match</h2>
             <p class="chapter-blurb">Every country keeps its own balance of time, health, community
                 and connection. So do you.</p>
@@ -374,7 +273,7 @@
 
             <div id="dna"></div>
 
-            <p class="fig-cap"><b>Fig 7.1 — Find Your Match</b>
+            <p class="fig-cap"><b>Fig 5.1 — Find Your Match</b>
                 Nearest-neighbour match on four normalised scores. Your answers place you in the same
                 0–100 space as the 12 countries; the closest by straight-line distance wins.
                 Illustrative, not a ranking.</p>
@@ -412,7 +311,7 @@
                 <div class="rn-rib" id="rn-rib"></div>
             </div>
 
-            <p class="fig-cap"><b>Fig 8.1 — This Hour</b>
+            <p class="fig-cap"><b>Fig 6.1 — This Hour</b>
                 Stacked bar, share of the American population in each activity at your current local
                 hour. American Time Use Survey microdata 2003–2015, 3,347,093 activity records from
                 170,842 respondents, weighted, weekdays and weekends pooled. United States only: ATUS

@@ -540,49 +540,52 @@ body {
     .rn-rib .rib-clip-rect { transition: none; }
 }
 
-/* ─── THE TWO MEASURES ──────────────────────────────────────
-   Two horizontal scales, one per measure, with a line joining each country's
-   two positions. Parallel lines mean the measures agree; a crossing line is a
-   country that does well on one and badly on the other. */
-.ms-grid {
-    display: grid;
-    grid-template-columns: 1fr 1.15fr;
-    gap: clamp(1.6rem, 4vw, 3rem);
-    align-items: center;
-}
-@media (max-width: 900px) { .ms-grid { grid-template-columns: 1fr; } }
-.ms-txt { max-width: 460px; }
-.ms-txt .rule { margin-left: 0; }
-.ms-txt .lead, .ms-txt .body { max-width: none; }
-.ms-card {
+/* ─── CHAPTER TWO: ONE MEASURE AT A TIME ────────────────────
+   The same strip is used twice, for happiness and then for life expectancy, so
+   the reader learns the chart once. Twelve marks on one axis with the average
+   called out; labels are pushed apart in JS with a leader back to each mark. */
+/* Centred like the opener, with the strip breaking out of the 1200px column the
+   same way the dot field does. Twelve labels along one axis need every pixel of
+   width they can get, and this is the widest the page has to give. */
+.mt-stage {
+    position: relative;
+    width: min(1400px, 94vw);
+    margin: 2.2rem auto 0;
+    margin-left: 50%;
+    transform: translateX(-50%);
     background: #fff;
     border: 1px solid var(--line);
     border-radius: 14px;
-    padding: clamp(1.1rem, 3vw, 1.5rem);
+    padding: clamp(1.1rem, 3vw, 1.6rem) clamp(1.1rem, 3vw, 2rem);
     box-shadow: 0 30px 60px -46px rgba(31,41,55,0.30);
+    text-align: left;
 }
-.ms-read {
-    min-height: 3.2rem; font-size: 0.88rem; line-height: 1.5;
-    color: var(--ink-soft); margin-bottom: 0.6rem;
+.mt-lab {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--ink-faint); margin-bottom: 0.4rem;
 }
-.ms-read b { color: var(--ink); }
-.ms-read em { font-style: normal; color: var(--copper); font-weight: 700; font-variant-numeric: tabular-nums; }
-.ms-chart svg { width: 100%; height: auto; display: block; overflow: visible; }
-.ms-axis { stroke: var(--line); stroke-width: 2; }
-.ms-title { font-size: 11px; font-weight: 700; fill: var(--ink); }
-.ms-end { font-size: 9.5px; fill: var(--ink-faint); }
-.ms-name { font-size: 9.5px; font-weight: 600; fill: var(--ink-soft); }
-.ms-link {
-    stroke: var(--line); stroke-width: 1.5; fill: none;
-    transition: stroke 0.2s ease, stroke-width 0.2s ease, opacity 0.2s ease;
+.mt-strip svg { width: 100%; height: auto; display: block; overflow: visible; }
+.mt-read {
+    margin-top: 0.6rem; padding-top: 0.7rem; border-top: 1px solid var(--line);
+    font-size: 0.88rem; line-height: 1.5; color: var(--ink-soft); min-height: 3rem;
 }
-.ms-link.on { stroke: var(--copper); stroke-width: 3; }
-.ms-link.off { opacity: 0.25; }
-.ms-dot { fill: var(--ink-faint); transition: fill 0.2s ease, r 0.2s ease; }
-.ms-dot.on { fill: var(--copper); }
-.ms-hit { fill: none; stroke: transparent; stroke-width: 14; cursor: pointer; }
-.ms-name.on { fill: var(--ink); }
-.ms-name.off { opacity: 0.3; }
+.mt-read b { color: var(--ink); }
+.mt-read em { font-style: normal; font-weight: 700; color: var(--copper); font-variant-numeric: tabular-nums; }
+/* captions centre under the stage, as they do beneath the dot field */
+
+.mt-axis { stroke: var(--line); stroke-width: 3; }
+.mt-tick { stroke: var(--line); stroke-width: 1; }
+.mt-tickl { font-size: 9.5px; fill: var(--ink-faint); }
+.mt-mean { stroke: var(--ink-faint); stroke-width: 1; stroke-dasharray: 3 3; }
+.mt-meanl { font-size: 9px; fill: var(--ink-faint); }
+.mt-lead { stroke: var(--line); stroke-width: 1; transition: stroke 0.2s ease; }
+.mt-name { font-size: 10.5px; font-weight: 600; fill: var(--ink-soft); transition: fill 0.2s ease; }
+.mt-dot { fill: var(--slate); transition: fill 0.2s ease, r 0.2s ease; }
+.mt-dot.hi { fill: var(--copper); }
+.mt-dot.lo { fill: var(--slate-pale); }
+.mt-dot.on { fill: var(--copper); }
+.mt-name.on { fill: var(--ink); }
+.mt-lead.on { stroke: var(--copper); }
 
 /* ─── RANK SLOPE CHART ──────────────────────────────────────
    Twelve countries, five measures, plotted as rank rather than value. Rank is
@@ -704,11 +707,7 @@ body {
     .rank-name { font-size: 0.8rem; }
 }
 
-/* ─── SECTION 5: THRIVE SCATTER ─────────────────────────── */
-.scatter-wrap { padding: 1.6rem 1.5rem; }
-.scatter { width: 100%; aspect-ratio: 3/2; overflow: visible; }
-.sc-label { font-size: 3.4px; font-weight: 700; fill: var(--ink); font-family: var(--font); }
-.sc-axis  { font-size: 3px; fill: var(--ink-faint); font-family: var(--font); letter-spacing: 0.02em; }
+
 
 /* ─── CLOSING ───────────────────────────────────────────── */
 .closing {
@@ -735,34 +734,6 @@ body {
 @media (prefers-reduced-motion: reduce) {
     .reveal { opacity: 1; transform: none; transition: none; }
 }
-
-/* ─── THE INSIGHT: same wealth, different day ───────────── */
-.ins-grid { padding: 1.8rem 1.6rem 1.4rem; }
-.ins-names {
-    display: flex; align-items: baseline; gap: 0.7rem;
-    font-weight: 800; font-size: clamp(1.3rem, 4vw, 1.9rem);
-    margin-bottom: 1.4rem;
-}
-.ins-vs { font-size: 0.9rem; font-weight: 600; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.08em; }
-.ins-metric-label {
-    font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--ink-faint); margin: 1.3rem 0 0.6rem;
-}
-.ins-metric-label em { font-style: normal; font-weight: 500; text-transform: none; letter-spacing: 0; }
-.ins-two { display: flex; flex-direction: column; gap: 0.5rem; }
-.ins-cell { display: flex; align-items: center; gap: 0.9rem; }
-.ins-fig {
-    flex: none; width: 92px; text-align: right;
-    font-weight: 700; font-size: 0.95rem; color: var(--ink);
-    font-variant-numeric: tabular-nums;
-}
-.ins-bar { flex: 1; height: 18px; background: var(--track); border-radius: 999px; overflow: hidden; }
-.ins-bar span { display: block; height: 100%; border-radius: 999px; animation: bar-grow 0.9s cubic-bezier(0.4,0,0.2,1) both; }
-.ins-eq {
-    margin: 0.7rem 0 0; text-align: center;
-    font-size: 0.95rem; color: var(--ink-soft);
-}
-.ins-eq strong { color: var(--copper); font-weight: 700; }
 
 /* ─── LIFESTYLE DNA: stepped quiz → twin ────────────────── */
 /* one card, one step at a time; each swap fades in */

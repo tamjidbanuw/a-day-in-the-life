@@ -68,24 +68,22 @@ Cover, opener, eleven sections across five chapters, close. Reading order top to
 | 3 | `.band` | — | Full-bleed stat band: 10h05m · 2–4h · 2h18m | — |
 | 4 | `#sec-rest` | Off the clock / **The other half of the day** | Ranked leisure bars | 3.2 |
 | | | **CHAPTER TWO · How We Thrive** | | |
-| 5 | `#sec-metrics` | Two measures / **How long a life, and how good** | Connected dot plot: life expectancy and happiness on two scales, a line per country. Agreement r = 0.83; Japan shifts 9 places | 4.1 |
-| 6 | `#sec-thrive` | Diminishing returns / **A longer day doesn't buy a better life** | Life expectancy vs happiness scatter | 4.2 |
-| 7 | `#sec-ranks` | Nobody leads / **Five measures, five different winners** | Rank slope chart, 12 countries × 5 measures, rank 1–12 | 4.3 |
-| | | **CHAPTER THREE · How We Connect** | | |
-| 8 | `#sec-connect` | Inbound / **The world comes to visit** | Ranked international arrivals | 5.1 |
-| | | **CHAPTER FOUR · What It Adds Up To** | | |
-| 9 | `#sec-insight` | Same wallet / **Same wealth. A different day.** | Canada vs Germany paired bars; insight callout | 6.1 |
-| | | **CHAPTER FIVE · Your Closest Match** | | |
-| 10 | `#sec-dna` | Find your match / **Somewhere out there, a country lives like you** | Four-question quiz → matched country | 7.1 |
-| — | `#sec-now` | Right now / **While you read this** | Live coda: reader's clock, US activity share this hour, 24-hour ribbon with a marker at the current time | 8.1 |
+| 5 | `#sec-happy` | First measure / **Happiness is a question, not a reading** | Wide strip on the opener's centred layout: 12 marks on the 0–10 ladder, average called out, vertical leaders with tiered labels | 4.1 |
+| 6 | `#sec-life` | Second measure / **Life expectancy is the opposite kind of number** | Same strip, second measure | 4.2 |
+| 7 | `#sec-ranks` | Nobody leads / **Five measures, five different winners** | Rank slope chart, 12 countries × 5 measures, rank 1–12, colour ramped by total work | 4.3 |
+| | | **CHAPTER THREE · Your Closest Match** | | |
+| 8 | `#sec-dna` | Find your match / **Somewhere out there, a country lives like you** | Four-question quiz → matched country | 5.1 |
+| — | `#sec-now` | Right now / **While you read this** | Live coda: reader's clock, US activity share this hour, 24-hour ribbon with a marker at the current time | 6.1 |
 | — | `#sec-close` | **Same hours. Different lives.** | Text payoff, then `.site-footer` sources | — |
 
-### Removed
-- **Head to head** (`#sec-compare`, old Fig 2.2), two-country diverging bars. Its job is partly
-  covered by the day card's ranks and by Fig 4.3. `renderVsSpine`, `renderCompareCallout`,
-  `buildPicker` and all `.vs-*` / `.compare-*` CSS deleted with it.
-- **The old "24" hero** in section 1 (`.day-hero`, `renderDayHero`, `DAY_SEGS`), replaced by the
-  day card.
+### Removed along the way
+- **Head to head** (`#sec-compare`), two-country diverging bars.
+- **The old "24" hero** in section 1 (`.day-hero`, `renderDayHero`, `DAY_SEGS`), replaced by the day card.
+- **The two-measures dot plot** (`#sec-metrics`) and the **life-vs-happiness scatter** (`#sec-thrive`,
+  `renderThrive`): the first duplicated what 4.1 and 4.2 now do one at a time, the second plotted the
+  two outcomes against each other in a section that claimed to be about effort.
+- **The gap test** (`#sec-gap`, `initGapTest`), **Inbound / tourism** (`#sec-connect`) and
+  **Same Wallet** (`#sec-insight`, `renderInsight`), with all their CSS.
 
 ### Scroll mechanics
 - Cover is `--cover-h: 76vh`, so the opener is partly visible on load.
@@ -94,11 +92,19 @@ Cover, opener, eleven sections across five chapters, close. Reading order top to
 - Every section carries `.reveal` for scroll-in fade, via IntersectionObserver.
 
 ### Known structural problems
-- **Chapter weight is still uneven.** Chapters One and Two hold three or four units each; Three, Four and Five hold one apiece.
-- **Figure numbers now run in order** (1.1, 2.1, 3.1, 3.2, 4.1, 4.2, 4.3, 5.1, 6.1, 7.1, 8.1) but the leading digit tracks neither chapter nor section — it is just sequence. Fine unless a judge expects chapter numbering.
-- **`#sec-now` sits outside any chapter**, after Chapter Five's section. It reads as a coda but visually belongs to that chapter. Consider its own chapter mark, or folding it into the closing.
+- **Chapter Two's blurb no longer matches it.** "Effort is supposed to pay off. The numbers are less
+  obedient than that" promised the effort-versus-outcome section that has since been removed. Reword,
+  or the chapter opens on a claim it never tests.
+- **Chapter weight**: One and Two hold three or four units each; Three holds one.
+- **Figure numbers run in sequence** (1.1, 2.1, 3.1, 3.2, 4.1, 4.2, 4.3, 5.1, 6.1) but the leading digit
+  tracks neither chapter nor section — it is just order.
+- **`#sec-now` sits outside any chapter**, after Chapter Three's section. It reads as a coda but
+  visually belongs to that chapter.
+- **Section 1's heading changes with the country** ("Mexico spends its day like this"), so it no longer
+  states a finding the way the others do.
 - **"8 Billion People" is the only title-cased heading**; the rest are sentence case.
-- **Section 1's heading changes with the country** ("Mexico spends its day like this"), so it no longer states a finding the way the others do.
+- **Ties in the strips**: Canada and Germany both score 7.03 happiness, China and Mexico both 76.4
+  years, so those pairs render as one mark with two labels stacked above it.
 
 ### Verified data notes (recomputed, not asserted)
 - Sleep and self-care varies **4.7%** between countries; paid work **16.8%**. The biggest block of the day is the one that moves least.

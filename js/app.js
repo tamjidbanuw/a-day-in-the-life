@@ -160,75 +160,6 @@ function renderRank(container, valueFn, fmt, color, highlight) {
     }).join('');
 }
 
-// ── Section 5: Thrive — scatter of life expectancy (x) vs happiness (y) ──
-function renderThrive(container) {
-    const W = 100, H = 100, pad = 8;               // viewBox units (%)
-    const pts = COUNTRIES.map(c => ({ c, x: ADL.countries[c].life, y: ADL.countries[c].happiness }));
-    const xs = pts.map(p => p.x), ys = pts.map(p => p.y);
-    const x0 = Math.min(...xs) - 1, x1 = Math.max(...xs) + 1;
-    const y0 = Math.min(...ys) - 0.3, y1 = Math.max(...ys) + 0.3;
-    const sx = v => pad + ((v - x0) / (x1 - x0)) * (W - pad * 2);
-    const sy = v => (H - pad) - ((v - y0) / (y1 - y0)) * (H - pad * 2);
-
-    const dots = pts.map(p => {
-        const big = ['Japan', 'India', 'Mexico', 'Australia'].includes(p.c);
-        return `<circle cx="${sx(p.x).toFixed(1)}" cy="${sy(p.y).toFixed(1)}" r="${big ? 1.8 : 1.4}"
-            fill="${big ? 'var(--gold)' : 'var(--blue)'}"><title>${nice(p.c)}: ${p.x} yrs, ${p.y}/10 happy</title></circle>
-            ${big ? `<text x="${sx(p.x).toFixed(1)}" y="${(sy(p.y) - 3).toFixed(1)}" class="sc-label" text-anchor="middle">${nice(p.c)}</text>` : ''}`;
-    }).join('');
-
-    container.innerHTML = `<svg viewBox="0 0 100 100" class="scatter" preserveAspectRatio="none" aria-label="Life expectancy versus happiness by country">
-        <text x="${W / 2}" y="99" class="sc-axis" text-anchor="middle">Life expectancy →</text>
-        <text x="1.5" y="${H / 2}" class="sc-axis" text-anchor="middle" transform="rotate(-90 1.5 ${H / 2})">Happiness →</text>
-        ${dots}
-    </svg>`;
-}
-
-// ── The Insight: "same wealth, different day" ──────────────
-// Given two countries, render matched GDP (they're near-identical) and then
-// the diverging work / leisure split that wealth utterly fails to predict.
-function renderInsight(container, left, right) {
-    if (!container) return;
-    const L = ADL.countries[left], R = ADL.countries[right];
-    const gL = L.gdp, gR = R.gdp;
-    const gMax = Math.max(gL, gR);
-    const workL = workMin(L.minutes), workR = workMin(R.minutes);
-    const leiL = L.minutes.LEI, leiR = R.minutes.LEI;
-    const dMax = Math.max(workL, workR, leiL, leiR);
-    const bar = (val, max, color) =>
-        `<div class="ins-bar"><span style="width:${(val / max) * 100}%; background:${color}"></span></div>`;
-
-    container.innerHTML = `
-      <div class="ins-grid">
-        <div class="ins-names">
-            <span class="ins-name" style="color:var(--copper)">${nice(left)}</span>
-            <span class="ins-vs">vs</span>
-            <span class="ins-name" style="color:var(--blue)">${nice(right)}</span>
-        </div>
-
-        <p class="ins-metric-label">Wealth per person <em>(GDP per capita, 2023)</em></p>
-        <div class="ins-two">
-            <div class="ins-cell"><span class="ins-fig">$${gL.toLocaleString()}</span>${bar(gL, gMax, 'var(--copper)')}</div>
-            <div class="ins-cell"><span class="ins-fig">$${gR.toLocaleString()}</span>${bar(gR, gMax, 'var(--blue)')}</div>
-        </div>
-        <p class="ins-eq">Practically the same &mdash; a
-            <strong>${Math.round(Math.abs(gL - gR) / gMax * 100)}%</strong> difference.</p>
-
-        <p class="ins-metric-label">Hours of work per day</p>
-        <div class="ins-two">
-            <div class="ins-cell"><span class="ins-fig">${fmtH(workL)}</span>${bar(workL, dMax, 'var(--copper)')}</div>
-            <div class="ins-cell"><span class="ins-fig">${fmtH(workR)}</span>${bar(workR, dMax, 'var(--blue)')}</div>
-        </div>
-
-        <p class="ins-metric-label">Hours of leisure per day</p>
-        <div class="ins-two">
-            <div class="ins-cell"><span class="ins-fig">${fmtH(leiL)}</span>${bar(leiL, dMax, 'var(--copper)')}</div>
-            <div class="ins-cell"><span class="ins-fig">${fmtH(leiR)}</span>${bar(leiR, dMax, 'var(--blue)')}</div>
-        </div>
-      </div>`;
-    return { workL, workR, leiL, leiR };
-}
-
 // ── Lifestyle DNA: quiz → fingerprint → nearest-country twin ──
 const DNA_AXES = [
     { key: 'time',      label: 'Time',          color: 'var(--leisure)' },
@@ -561,154 +492,153 @@ function initRightNow() {
 }
 
 /**
- * The two measures — life expectancy and happiness, introduced on their own
- * before the story claims anything about them.
- *
- * Two horizontal scales with a line joining each country's two positions. A
- * near-flat line means the two measures agree about that country; a steep line
- * crossing others is a country that does well on one and badly on the other.
- * That is the whole point of the figure, and it is why this is a connected dot
- * plot rather than two separate rankings: the disagreement has to be visible in
- * one glance.
- *
- * Each scale is stretched to the range of these twelve, so a position is
- * relative to this group and not to the world. The caption says so.
+ * The twelve with complete records: the set the whole story follows. Shared by
+ * the metric strips and the effect panels so they cannot disagree about who is
+ * in the sample.
  */
-function initMetricScales() {
-    const host = document.getElementById('ms-chart');
-    const read = document.getElementById('ms-read');
-    if (!host || !window.ADL) return;
-
-    const rows = Object.entries(ADL.countries)
+function twelveRows() {
+    return Object.entries(ADL.countries)
         .filter(([, d]) => d.life != null && d.happiness != null && d.tourism != null)
-        .map(([name, d]) => ({ key: name, name: nice(name), life: d.life, happy: d.happiness }));
+        .map(([name, d]) => ({
+            name: nice(name),
+            work: d.minutes.PAW + d.minutes.UPW,
+            paid: d.minutes.PAW,
+            unpaid: d.minutes.UPW,
+            life: d.life,
+            happy: d.happiness,
+            gdp: d.gdp
+        }));
+}
+
+/**
+ * Metric strips — one measure, twelve countries, on a single line.
+ *
+ * Chapter Two introduces its two measures one at a time, and both use this same
+ * chart: happiness first, life expectancy second. Reusing one form means the
+ * reader learns how to read it once and then only has to absorb the new numbers.
+ * Labels are pushed apart along the axis with a leader back to the true mark, so
+ * crowding never costs accuracy.
+ */
+function initMetricStrips() {
+    if (!window.ADL) return;
+    const rows = twelveRows();
     if (rows.length < 2) return;
 
-    const AX = [
-        { label: 'Life expectancy', get: c => c.life,  fmt: v => v.toFixed(1) + ' years', y: 0 },
-        { label: 'Happiness',       get: c => c.happy, fmt: v => v.toFixed(2) + ' of 10', y: 1 }
-    ];
-    const scale = AX.map(a => {
-        const v = rows.map(a.get);
-        return { lo: Math.min(...v), hi: Math.max(...v) };
-    });
-    const rankOf = (c, get) => [...rows].sort((a, b) => get(b) - get(a))
-        .findIndex(x => x.key === c.key) + 1;
-    const ord = n => n + (['th', 'st', 'nd', 'rd'][n % 10 > 3 || (n > 10 && n < 14) ? 0 : n % 10] || 'th');
-
-    const W = 760, H = 250, L = 54, R = 54, TOP = 58, BOT = 178;
-    const X = (i, v) => {
-        const s = scale[i], span = (s.hi - s.lo) || 1;
-        return L + ((v - s.lo) / span) * (W - L - R);
-    };
-    const yOf = i => (i === 0 ? TOP : BOT);
-
-    /* Twelve labels on one horizontal axis collide, so nudge them apart along x
-       and let the connecting line show which dot each belongs to. */
-    function declashX(items, gap, lo, hi) {
-        const out = items.map(o => ({ ...o, lx: o.x })).sort((a, b) => a.lx - b.lx);
-        for (let pass = 0; pass < 80; pass++) {
-            let moved = false;
-            for (let i = 1; i < out.length; i++) {
-                const d = out[i].lx - out[i - 1].lx;
-                if (d < gap) {
-                    const push = (gap - d) / 2;
-                    out[i - 1].lx -= push; out[i].lx += push; moved = true;
-                }
-            }
-            if (out[0].lx < lo) { const s = lo - out[0].lx; out.forEach(o => { o.lx += s; }); }
-            const last = out[out.length - 1];
-            if (last.lx > hi) { const s = last.lx - hi; out.forEach(o => { o.lx -= s; }); }
-            if (!moved) break;
+    const STRIPS = [
+        {
+            host: 'mt-happy', read: 'mt-happy-read', cap: 'mt-happy-cap',
+            get: c => c.happy, fmt: v => v.toFixed(2), unit: '',
+            ticks: [4, 5, 6, 7], tickFmt: v => String(v),
+            capTitle: 'Fig 4.1 — Happiness',
+            capBody: 'Dot plot, one mark per country, on the 0–10 Cantril ladder: respondents place ' +
+                'their own life between the worst possible (0) and the best possible (10), and the ' +
+                'score is the national average. World Happiness Report. The scale here spans only the ' +
+                'range of these 12 countries, not the full 0–10.'
+        },
+        {
+            host: 'mt-life', read: 'mt-life-read', cap: 'mt-life-cap',
+            get: c => c.life, fmt: v => v.toFixed(1), unit: ' years',
+            ticks: [70, 75, 80], tickFmt: v => v + 'y',
+            capTitle: 'Fig 4.2 — Life Expectancy',
+            capBody: 'Dot plot, one mark per country, life expectancy at birth in years: the average ' +
+                'lifespan of a baby born today if current mortality held for its whole life. Our World ' +
+                'in Data. The scale spans only the range of these 12 countries.'
         }
-        return out;
-    }
+    ];
 
-    let s = '';
-    AX.forEach((a, i) => {
-        const y = yOf(i);
-        s += `<line class="ms-axis" x1="${L}" y1="${y}" x2="${W - R}" y2="${y}"/>`;
-        s += `<text class="ms-title" x="${L}" y="${y + (i ? 30 : -30)}">${a.label}</text>`;
-        s += `<text class="ms-end" x="${L}" y="${y + (i ? 44 : -17)}">${a.fmt(scale[i].lo)}</text>`;
-        s += `<text class="ms-end" x="${W - R}" y="${y + (i ? 44 : -17)}" text-anchor="end">${a.fmt(scale[i].hi)}</text>`;
-    });
+    STRIPS.forEach(cfg => {
+        const host = document.getElementById(cfg.host);
+        const read = document.getElementById(cfg.read);
+        const cap = document.getElementById(cfg.cap);
+        if (!host) return;
 
-    // one line per country, joining its position on each scale
-    rows.forEach(c => {
-        const x0 = X(0, c.life), x1 = X(1, c.happy);
-        s += `<path class="ms-hit" data-name="${c.name}" d="M${x0},${TOP} L${x1},${BOT}"/>`;
-        s += `<path class="ms-link" data-name="${c.name}" d="M${x0},${TOP} L${x1},${BOT}"/>`;
-        s += `<circle class="ms-dot" data-name="${c.name}" cx="${x0}" cy="${TOP}" r="4.5"/>`;
-        s += `<circle class="ms-dot" data-name="${c.name}" cx="${x1}" cy="${BOT}" r="4.5"/>`;
-    });
-    // names above the top scale only, so the lower half stays clean
-    declashX(rows.map(c => ({ name: c.name, x: X(0, c.life) })), 44, L - 10, W - R + 10)
-        .forEach(o => {
-            s += `<text class="ms-name" data-name="${o.name}" x="${o.lx}" y="${TOP - 8}"
-                  text-anchor="middle">${o.name}</text>`;
+        const vals = rows.map(cfg.get);
+        const lo = Math.min(...vals), hi = Math.max(...vals);
+        const mean = vals.reduce((a, b) => a + b, 0) / vals.length;
+        const pad = (hi - lo) * 0.06 || 1;
+        const W = 1040, H = 168, L = 28, R = 28, AXIS = 128;
+        const X = v => L + ((v - (lo - pad)) / ((hi + pad) - (lo - pad))) * (W - L - R);
+
+        const ranked = [...rows].sort((a, b) => cfg.get(b) - cfg.get(a));
+        const top = ranked[0], bottom = ranked[ranked.length - 1];
+
+        let s = '';
+        cfg.ticks.forEach(t => {
+            if (t < lo - pad || t > hi + pad) return;
+            s += `<line class="mt-tick" x1="${X(t)}" y1="${AXIS - 30}" x2="${X(t)}" y2="${AXIS + 8}"/>`;
+            s += `<text class="mt-tickl" x="${X(t)}" y="${AXIS + 22}" text-anchor="middle">${cfg.tickFmt(t)}</text>`;
+        });
+        // the average, so a reader can see who is above and below it
+        s += `<line class="mt-mean" x1="${X(mean)}" y1="${AXIS - 34}" x2="${X(mean)}" y2="${AXIS + 8}"/>`;
+        s += `<text class="mt-meanl" x="${X(mean)}" y="${AXIS + 34}" text-anchor="middle">average ${cfg.fmt(mean)}</text>`;
+        s += `<line class="mt-axis" x1="${L}" y1="${AXIS}" x2="${W - R}" y2="${AXIS}"/>`;
+
+        /* Labels sit directly above their own mark and the leader drops straight
+           down, so nothing leans. Since a vertical leader cannot move sideways to
+           make room, crowding is solved in the other axis instead: each label
+           takes the lowest tier where its text box clears the last label already
+           on that tier. Near the ends the text anchor flips rather than the
+           label shifting, which keeps the leader vertical there too. */
+        const TIER = 16, PADX = 9;
+        const width = n => n.length * 6.2 + PADX * 2;
+        const tiers = [];                              // rightmost edge used per tier
+        const placed = rows.map(c => ({ name: c.name, x: X(cfg.get(c)) }))
+            .sort((a, b) => a.x - b.x)
+            .map(o => {
+                const w = width(o.name);
+                // anchor flips at the edges so the box stays inside the stage
+                const anchor = o.x - w / 2 < L ? 'start' : o.x + w / 2 > W - R ? 'end' : 'middle';
+                const left = anchor === 'start' ? o.x : anchor === 'end' ? o.x - w : o.x - w / 2;
+                let tier = 0;
+                while (tiers[tier] !== undefined && left < tiers[tier]) tier++;
+                tiers[tier] = left + w;
+                return { ...o, anchor, tier };
+            });
+        const maxTier = Math.max(...placed.map(o => o.tier));
+        placed.forEach(o => {
+            const ly = AXIS - 30 - (maxTier - o.tier) * TIER;
+            s += `<line class="mt-lead" data-name="${o.name}" x1="${o.x}" y1="${AXIS - 11}"
+                  x2="${o.x}" y2="${ly + 4}"/>`;
+            s += `<text class="mt-name" data-name="${o.name}" x="${o.x}" y="${ly}"
+                  text-anchor="${o.anchor}">${o.name}</text>`;
+        });
+        rows.forEach(c => {
+            const v = cfg.get(c);
+            const cls = c.name === top.name ? ' hi' : c.name === bottom.name ? ' lo' : '';
+            s += `<circle class="mt-dot${cls}" data-name="${c.name}" cx="${X(v)}" cy="${AXIS}" r="7"/>`;
         });
 
-    host.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img"
-        aria-label="Life expectancy and happiness for twelve countries, each country's two positions joined by a line">${s}</svg>`;
+        host.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img"
+            aria-label="Twelve countries on one scale">${s}</svg>`;
+        const el = host.querySelector('svg');
 
-    const el = host.querySelector('svg');
-
-    // the standing message: they agree, with one loud exception
-    function corr(a, b) {
-        const n = rows.length;
-        const xs = rows.map(a), ys = rows.map(b);
-        const mx = xs.reduce((t, x) => t + x, 0) / n, my = ys.reduce((t, y) => t + y, 0) / n;
-        const sxy = xs.reduce((t, x, i) => t + (x - mx) * (ys[i] - my), 0);
-        const sxx = xs.reduce((t, x) => t + (x - mx) ** 2, 0);
-        const syy = ys.reduce((t, y) => t + (y - my) ** 2, 0);
-        return sxy / Math.sqrt(sxx * syy);
-    }
-    const R_ALL = corr(c => c.life, c => c.happy);
-    // biggest disagreement, measured in rank places
-    const oddest = rows.map(c => ({
-        c, shift: rankOf(c, x => x.happy) - rankOf(c, x => x.life)
-    })).sort((a, b) => Math.abs(b.shift) - Math.abs(a.shift))[0];
-
-    function idle() {
-        read.innerHTML =
-            `The two scales mostly line up: <em>r = ${R_ALL.toFixed(2)}</em> across the twelve.
-             The exception is <b>${oddest.c.name}</b>, which moves
-             <em>${Math.abs(oddest.shift)} places</em> between them.`;
-    }
-    function show(name) {
-        const c = rows.find(x => x.name === name);
-        if (!c) return;
-        const lr = rankOf(c, x => x.life), hr = rankOf(c, x => x.happy);
-        read.innerHTML =
-            `<b>${c.name}</b> lives to <em>${c.life.toFixed(1)}</em> years, <b>${ord(lr)} of twelve</b>,
-             and rates its own life <em>${c.happy.toFixed(2)}</em> out of ten, <b>${ord(hr)}</b>.` +
-            (Math.abs(hr - lr) >= 4 ? ' The two measures disagree sharply here.' : '');
-        el.querySelectorAll('.ms-link').forEach(p => {
-            p.classList.toggle('on', p.dataset.name === name);
-            p.classList.toggle('off', p.dataset.name !== name);
+        const idle = () => {
+            read.innerHTML = `<b>${top.name}</b> leads at <em>${cfg.fmt(cfg.get(top))}${cfg.unit}</em>,
+                <b>${bottom.name}</b> trails at <em>${cfg.fmt(cfg.get(bottom))}${cfg.unit}</em>.
+                The twelve average <em>${cfg.fmt(mean)}${cfg.unit}</em>.`;
+        };
+        function show(name) {
+            const c = rows.find(x => x.name === name);
+            if (!c) return;
+            const rank = ranked.findIndex(x => x.name === name) + 1;
+            const diff = cfg.get(c) - mean;
+            read.innerHTML = `<b>${c.name}</b>: <em>${cfg.fmt(cfg.get(c))}${cfg.unit}</em>,
+                ${rank} of ${rows.length}, ${Math.abs(diff) < 0.05 ? 'level with' :
+                    (diff > 0 ? cfg.fmt(diff) + ' above' : cfg.fmt(-diff) + ' below')} the average.`;
+            el.querySelectorAll('[data-name]').forEach(n =>
+                n.classList.toggle('on', n.dataset.name === name));
+        }
+        el.addEventListener('mouseover', e => {
+            const t = e.target.closest('[data-name]');
+            if (t) show(t.dataset.name);
         });
-        el.querySelectorAll('.ms-dot').forEach(d =>
-            d.classList.toggle('on', d.dataset.name === name));
-        el.querySelectorAll('.ms-name').forEach(t => {
-            t.classList.toggle('on', t.dataset.name === name);
-            t.classList.toggle('off', t.dataset.name !== name);
+        el.addEventListener('mouseleave', () => {
+            el.querySelectorAll('[data-name]').forEach(n => n.classList.remove('on'));
+            idle();
         });
-    }
-    function clear() {
-        el.querySelectorAll('.ms-link, .ms-dot, .ms-name').forEach(n =>
-            n.classList.remove('on', 'off'));
         idle();
-    }
-    el.addEventListener('mouseover', e => {
-        const t = e.target.closest('[data-name]');
-        if (t) show(t.dataset.name);
+        if (cap) cap.innerHTML = `<b>${cfg.capTitle}</b> ${cfg.capBody}`;
     });
-    el.addEventListener('mouseleave', clear);
-    el.addEventListener('click', e => {
-        const t = e.target.closest('[data-name]');
-        if (t) show(t.dataset.name);
-    });
-    idle();
 }
 
 /**
@@ -943,7 +873,7 @@ function buildCoverClock(svg) {
     initCoverScroll();
     initSectionExit();
     initRightNow();
-    initMetricScales();
+    initMetricStrips();
     initRankParallel();
 
     // Section 1 — one country's day, five blocks, each with its rank
@@ -959,19 +889,8 @@ function buildCoverClock(svg) {
         c => ADL.countries[c].minutes.LEI,
         m => fmtH(m), 'var(--blue)', 'Italy');
 
-    // Section 5 — thrive (life vs happiness scatter)
-    const thrive = document.getElementById('thrive-scatter');
-    if (thrive) renderThrive(thrive);
 
-    // Section 6 — connect (tourism ranking)
-    const connRank = document.getElementById('connect-rank');
-    if (connRank) renderRank(connRank,
-        c => ADL.countries[c].tourism,
-        v => v + 'M', 'var(--purple)', 'France');
 
-    // The Insight — same wealth, different day (default Canada vs Germany)
-    const insight = document.getElementById('insight');
-    if (insight) renderInsight(insight, 'Canada', 'Germany');
 
     // Lifestyle DNA — quiz → twin
     renderDna(document.getElementById('dna'));
