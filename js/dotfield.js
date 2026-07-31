@@ -23,10 +23,17 @@
         o.fillStyle = '#000';
         o.textAlign = 'center';
         o.textBaseline = 'middle';
+        /* Canvas cannot read a custom property, so the family is fetched from the
+           same --font token the stylesheet uses. Naming it here instead would
+           leave the one word set in the page's own letterforms behind whenever
+           the typeface changes — which is exactly what happened when the palette
+           moved off Poppins. */
+        const family = getComputedStyle(document.documentElement)
+            .getPropertyValue('--font').trim() || 'sans-serif';
         let fs = 300;
-        o.font = `800 ${fs}px Poppins, Arial, sans-serif`;
+        o.font = `700 ${fs}px ${family}`;
         fs = Math.min(fs * (cw * 0.9) / o.measureText(word).width, ch * 0.8);
-        o.font = `800 ${fs}px Poppins, Arial, sans-serif`;
+        o.font = `700 ${fs}px ${family}`;
         o.fillText(word, cw / 2, ch / 2);
         const data = o.getImageData(0, 0, cw, ch).data;
 

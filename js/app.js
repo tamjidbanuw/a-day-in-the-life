@@ -143,7 +143,7 @@ function renderWorkRank(container) {
     container.innerHTML = rows.map(r => `<div class="rank-row">
         <span class="rank-name">${nice(r.c)}</span>
         <div class="rank-track">
-            <span class="rank-fill" style="width:${(r.paid / max) * 100}%; background:var(--magenta)" title="Paid: ${fmtH(r.paid)}"></span>
+            <span class="rank-fill" style="width:${(r.paid / max) * 100}%; background:var(--accent)" title="Paid: ${fmtH(r.paid)}"></span>
             <span class="rank-fill" style="width:${(r.unpaid / max) * 100}%; background:var(--unpaid)" title="Unpaid: ${fmtH(r.unpaid)}"></span>
         </div>
         <span class="rank-val">${fmtH(r.total)}</span>
@@ -160,7 +160,7 @@ function renderRank(container, valueFn, fmt, color, highlight) {
         return `<div class="rank-row">
             <span class="rank-name">${nice(r.c)}</span>
             <div class="rank-track">
-                <span class="rank-fill" style="width:${(r.v / max) * 100}%; background:${on ? 'var(--pink)' : color}"></span>
+                <span class="rank-fill" style="width:${(r.v / max) * 100}%; background:${on ? 'var(--accent)' : color}"></span>
             </div>
             <span class="rank-val">${fmt(r.v)}</span>
         </div>`;
@@ -171,8 +171,8 @@ function renderRank(container, valueFn, fmt, color, highlight) {
 const DNA_AXES = [
     { key: 'time',      label: 'Time',          color: 'var(--leisure)' },
     { key: 'health',    label: 'Health',        color: 'var(--care)' },
-    { key: 'community', label: 'Community',      color: 'var(--copper)' },
-    { key: 'connect',   label: 'Connectedness', color: 'var(--blue)' },
+    { key: 'community', label: 'Community',      color: 'var(--accent)' },
+    { key: 'connect',   label: 'Connectedness', color: 'var(--support)' },
 ];
 // One question per axis. A slider from 0–100 sets the target on that axis;
 // the two ends anchor what low vs high means.
@@ -568,35 +568,35 @@ const BADGE_ART = {
    page. Finding one is worth something to read, which is the only honest reason
    to make a data story collectible at all. */
 const BADGES = [
-    { id: 'day', art: 'globe', ring: 'slate',
+    { id: 'day', art: 'globe', ring: 'support',
       kicker: 'Time use', label: 'Day Tripper', stat: '10h05 vs 10h06',
       hint: 'Swap the country in the first chart',
       fact: 'Mexico spends as much of the day working as it does sleeping, washing and eating: 10h05m against 10h06m.' },
-    { id: 'day5', art: 'plane', ring: 'copper',
+    { id: 'day5', art: 'plane', ring: 'accent',
       kicker: 'Unpaid labour', label: 'Jet Lagged', stat: '3 of 12',
       hint: 'Visit five countries without leaving your chair',
       fact: 'In Australia, Italy and Spain, more of the day goes to unpaid work than to paid work.' },
-    { id: 'ladder', art: 'ladder', ring: 'copper',
+    { id: 'ladder', art: 'ladder', ring: 'accent',
       kicker: 'Happiness', label: 'Ladder Climber', stat: '10th of 12',
       hint: 'Poke a country on the happiness scale',
       fact: 'Japan lives longer than anyone else here, and still finishes 10th of 12 for happiness.' },
-    { id: 'years', art: 'hourglass', ring: 'night',
+    { id: 'years', art: 'hourglass', ring: 'ink',
       kicker: 'Life expectancy', label: 'Amateur Actuary', stat: '69 vs 39 years',
       hint: 'Poke a country on the life expectancy scale',
       fact: 'India has the lowest life expectancy of the twelve at 69 years — better than any country on earth reached in 1800.' },
-    { id: 'ranks', art: 'trail', ring: 'night',
+    { id: 'ranks', art: 'trail', ring: 'ink',
       kicker: 'Rankings', label: 'Line Stalker', stat: 'Five winners',
       hint: 'Follow one country through all five measures',
       fact: 'Australia is happiest, Japan lives longest, Germany rests most, France sleeps most, America earns most.' },
-    { id: 'quiz', art: 'twin', ring: 'copper',
+    { id: 'quiz', art: 'twin', ring: 'accent',
       kicker: 'The average', label: 'Long-Lost Twin', stat: '34× the pay',
       hint: 'Answer four questions, meet your country',
       fact: 'An American earns 34 times what an Indian does, and still spends 17 fewer minutes a day working for it.' },
-    { id: 'now', art: 'owl', ring: 'slate',
+    { id: 'now', art: 'owl', ring: 'support',
       kicker: 'Hour by hour', label: 'Clock Watcher', stat: '56% at 8pm',
       hint: 'Find out what the world is doing this minute',
       fact: 'At 8pm more than half of America is at leisure — the most it ever agrees on anything while awake.' },
-    { id: 'waves', art: 'ripple', ring: 'slate-pale', secret: true,
+    { id: 'waves', art: 'ripple', ring: 'support-pale', secret: true,
       kicker: 'Hidden', label: 'Made Waves', stat: '96% asleep',
       hint: 'Something in the opener reacts to you',
       fact: 'At 3am, 96% of America is asleep. At noon, no single activity holds even 30% of them.' }
@@ -1422,7 +1422,7 @@ function initRankParallel() {
             pick.querySelectorAll('button').forEach(b => {
                 const on = b.dataset.n === name;
                 b.style.background = on ? colourOf(b.dataset.n) : 'transparent';
-                b.style.color = on ? 'var(--night)' : '';
+                b.style.color = on ? 'var(--ink-deep)' : '';
                 b.style.borderColor = on ? colourOf(b.dataset.n) : '';
                 b.classList.toggle('on', on);
             });
@@ -1490,7 +1490,7 @@ function buildCoverClock(svg) {
     const restRank = document.getElementById('rest-rank');
     if (restRank) renderRank(restRank,
         c => ADL.countries[c].minutes.LEI,
-        m => fmtH(m), 'var(--blue)', 'Italy');
+        m => fmtH(m), 'var(--support)', 'Italy');
 
 
 

@@ -111,7 +111,7 @@
         <!-- Prose and card both driven by initDayCard() in js/app.js: every
              figure and rank is generated from the selected country, so the copy
              cannot drift from the chart beside it. -->
-        <section class="section reveal" id="sec-day">
+        <section class="section notes reveal" id="sec-day">
             <div class="dc-grid">
                 <div class="dc-txt">
                     <span class="sec-num">Same clock</span>
@@ -143,7 +143,7 @@
         </section>
 
         <!-- ═══ 2 · WORK ════════════════════════════════════ -->
-        <section class="section split flip reveal" id="sec-work">
+        <section class="section notes reveal" id="sec-work">
             <div class="txt">
                 <span class="sec-num">The second shift</span>
                 <h2 class="sec-title">Half your waking hours<br>go to work</h2>
@@ -163,7 +163,7 @@
                     <div class="card-head">Hours of work per day, paid and unpaid</div>
                     <div class="rank" id="work-rank" role="img" aria-label="Countries ranked by daily hours of work, split into paid and unpaid"></div>
                     <div class="rank-legend">
-                        <span><i class="rank-key" style="background:var(--magenta)"></i>Paid work</span>
+                        <span><i class="rank-key" style="background:var(--accent)"></i>Paid work</span>
                         <span><i class="rank-key" style="background:var(--unpaid)"></i>Unpaid work (chores &amp; care)</span>
                     </div>
                     <p class="fig-cap"><b>Fig 3.1 — The Second Shift</b>
@@ -195,7 +195,7 @@
         </div></div>
 
         <!-- ═══ 4 · REST ════════════════════════════════════ -->
-        <section class="section split reveal" id="sec-rest">
+        <section class="section notes reveal" id="sec-rest">
             <div class="txt">
                 <span class="sec-num">Off the clock</span>
                 <h2 class="sec-title">The other half of the day</h2>
@@ -232,68 +232,76 @@
         <!-- ═══ 4 · FIRST MEASURE: HAPPINESS ════════════════ -->
         <!-- One measure per section, both drawn by the same initMetricStrip()
              in js/app.js, so the reader learns the chart once and reads it twice. -->
-        <section class="section center reveal" id="sec-happy">
-            <span class="sec-num">First measure</span>
-            <h2 class="sec-title">Happiness is a question,<br>not a reading</h2>
-            <hr class="rule">
-            <p class="lead">Nobody measures happiness. They ask. Imagine a ladder where 10 is the best
-                possible life for you and 0 the worst. Where do you stand today?</p>
-            <p class="body">Thousands of people in each country answer that, and the average is the
-                score. It is a country's own opinion of itself, which makes it the softest number in
-                this story and the only one that asks people directly.</p>
-
-            <!-- breaks out of the 1200px column, like the dot field in the opener -->
-            <div class="mt-stage">
-                <p class="mt-lab">Happiness, 0 to 10</p>
-                <div class="mt-strip" id="mt-happy"></div>
-                <p class="mt-read" id="mt-happy-read"></p>
+        <section class="section notes reveal" id="sec-happy">
+            <div class="txt">
+                <span class="sec-num">First measure</span>
+                <h2 class="sec-title">Happiness is a question,<br>not a reading</h2>
+                <hr class="rule">
+                <p class="lead">Nobody measures happiness. They ask. Imagine a ladder where 10 is the
+                    best possible life for you and 0 the worst. Where do you stand today?</p>
+                <p class="body">Thousands of people in each country answer that, and the average is the
+                    score. It is a country's own opinion of itself, which makes it the softest number in
+                    this story and the only one that asks people directly.</p>
             </div>
 
-            <p class="fig-cap" id="mt-happy-cap"></p>
+            <div class="viz">
+                <div class="mt-stage">
+                    <p class="mt-lab">Happiness, 0 to 10</p>
+                    <div class="mt-strip" id="mt-happy"></div>
+                    <p class="mt-read" id="mt-happy-read"></p>
+                </div>
+                <p class="fig-cap" id="mt-happy-cap"></p>
+            </div>
         </section>
 
         <!-- ═══ 5 · SECOND MEASURE: LIFE EXPECTANCY ═════════ -->
-        <section class="section center reveal" id="sec-life">
-            <span class="sec-num">Second measure</span>
-            <h2 class="sec-title">Life expectancy is<br>the opposite kind of number</h2>
-            <hr class="rule">
-            <p class="lead">Nobody is asked anything. It is counted from deaths already recorded: how
-                many years a baby born today can expect if nothing changes.</p>
-            <p class="body">So one measure is an opinion and the other is arithmetic. They are not the
-                same question, and a country can do well on one and badly on the other. Read the two
-                scales together and most countries hold roughly the same position in both.</p>
-
-            <div class="mt-stage">
-                <p class="mt-lab">Life expectancy at birth, years</p>
-                <div class="mt-strip" id="mt-life"></div>
-                <p class="mt-read" id="mt-life-read"></p>
+        <section class="section notes reveal" id="sec-life">
+            <div class="txt">
+                <span class="sec-num">Second measure</span>
+                <h2 class="sec-title">Life expectancy is<br>the opposite kind of number</h2>
+                <hr class="rule">
+                <p class="lead">Nobody is asked anything. It is counted from deaths already recorded: how
+                    many years a baby born today can expect if nothing changes.</p>
+                <p class="body">So one measure is an opinion and the other is arithmetic. They are not the
+                    same question, and a country can do well on one and badly on the other. Read the two
+                    scales together and most countries hold roughly the same position in both.</p>
             </div>
 
-            <p class="fig-cap" id="mt-life-cap"></p>
+            <div class="viz">
+                <div class="mt-stage">
+                    <p class="mt-lab">Life expectancy at birth, years</p>
+                    <div class="mt-strip" id="mt-life"></div>
+                    <p class="mt-read" id="mt-life-read"></p>
+                </div>
+                <p class="fig-cap" id="mt-life-cap"></p>
+            </div>
         </section>
 
         <!-- ═══ 6 · NOBODY LEADS EVERYWHERE ═════════════════ -->
-        <section class="section center reveal" id="sec-ranks">
-            <span class="sec-num">Nobody leads</span>
-            <h2 class="sec-title">Five measures,<br>five different winners</h2>
-            <hr class="rule">
-            <p class="lead">Line up all twelve countries on all five measures and no single line stays
-                on top. Mexico works the most. France sleeps the most. Germany rests the most. Japan
-                lives longest. Australia is happiest.</p>
-
-            <div class="pc-panel">
-                <div class="pc-read" id="pc-read"></div>
-                <div class="pc-chart" id="pc-chart"></div>
-                <div class="pc-pick" id="pc-pick"></div>
+        <section class="section notes reveal" id="sec-ranks">
+            <div class="txt">
+                <span class="sec-num">Nobody leads</span>
+                <h2 class="sec-title">Five measures,<br>five different winners</h2>
+                <hr class="rule">
+                <p class="lead">Line up all twelve countries on all five measures and no single line stays
+                    on top. Mexico works the most. France sleeps the most. Germany rests the most. Japan
+                    lives longest. Australia is happiest.</p>
             </div>
 
-            <p class="fig-cap"><b>Fig 4.3 — Five Measures, Five Winners</b>
-                Slope chart of rank positions. Each column ranks all 12 countries on one measure, 1st at
-                the top, 12th at the bottom, so a line crossing another means the two countries swap
-                order. <b>Ranks are by size, not by merit</b>: 1st on Work is the longest working day,
-                not the best one. Ties broken by the underlying value. Time use: OECD Time Use Database,
-                both sexes. Life expectancy: Our World in Data. Happiness: World Happiness Report,
-                0–10 ladder.</p>
+            <div class="viz">
+                <div class="pc-panel">
+                    <div class="pc-read" id="pc-read"></div>
+                    <div class="pc-chart" id="pc-chart"></div>
+                    <div class="pc-pick" id="pc-pick"></div>
+                </div>
+                <p class="fig-cap"><b>Fig 4.3 — Five Measures, Five Winners</b>
+                    Slope chart of rank positions. Each column ranks all 12 countries on one measure, 1st at
+                    the top, 12th at the bottom, so a line crossing another means the two countries swap
+                    order. <b>Ranks are by size, not by merit</b>: 1st on Work is the longest working day,
+                    not the best one. Ties broken by the underlying value. Time use: OECD Time Use Database,
+                    both sexes. Life expectancy: Our World in Data. Happiness: World Happiness Report,
+                    0–10 ladder.</p>
+            </div>
         </section>
 
         <!-- ═══ CHAPTER THREE · YOUR CLOSEST MATCH ═══════════ -->
@@ -305,61 +313,65 @@
             <div class="chapter-rule"></div>
         </div>
 
-        <section class="section center reveal" id="sec-dna">
-            <span class="sec-num">Find your match</span>
-            <h2 class="sec-title">Somewhere out there,<br>a country lives like you</h2>
-            <hr class="rule">
-            <p class="lead">All 12 countries are scored on four measures: <strong>time, health,
-                community</strong> and <strong>connection</strong>.</p>
-            <div><span class="howto">Four questions. Drag each dial to your own life, then see your
-                closest match.</span></div>
+        <section class="section notes reveal" id="sec-dna">
+            <div class="txt">
+                <span class="sec-num">Find your match</span>
+                <h2 class="sec-title">Somewhere out there,<br>a country lives like you</h2>
+                <hr class="rule">
+                <p class="lead">All 12 countries are scored on four measures: <strong>time, health,
+                    community</strong> and <strong>connection</strong>.</p>
+                <div><span class="howto">Four questions. Drag each dial to your own life, then see your
+                    closest match.</span></div>
+            </div>
 
-            <div id="dna"></div>
-
-            <p class="fig-cap"><b>Fig 5.1 — Find Your Match</b>
-                Nearest-neighbour match on four normalised scores. Your answers place you in the same
-                0–100 space as the 12 countries; the closest by straight-line distance wins.
-                Illustrative, not a ranking.</p>
-
-            <p class="source">
-                The four scores are an illustrative index built from the same sources used throughout:
-                daily free-time share (OECD Time Use), life expectancy (Our World in Data), a community
-                score combining social support, freedom and generosity (World Happiness Report), and
-                international arrivals (World Bank). Each is normalised 0–100 across the twelve
-                countries, and is meant for exploring rather than ranking.
-            </p>
+            <div class="viz">
+                <div id="dna"></div>
+                <p class="fig-cap"><b>Fig 5.1 — Find Your Match</b>
+                    Nearest-neighbour match on four normalised scores. Your answers place you in the same
+                    0–100 space as the 12 countries; the closest by straight-line distance wins.
+                    Illustrative, not a ranking.</p>
+                <p class="source">
+                    The four scores are an illustrative index built from the same sources used throughout:
+                    daily free-time share (OECD Time Use), life expectancy (Our World in Data), a community
+                    score combining social support, freedom and generosity (World Happiness Report), and
+                    international arrivals (World Bank). Each is normalised 0–100 across the twelve
+                    countries, and is meant for exploring rather than ranking.
+                </p>
+            </div>
         </section>
 
         <!-- ═══ RIGHT NOW · LIVE PANEL ══════════════════════ -->
         <!-- Sits last, immediately before the closing: everything above is an
              average of a day, and this is the one that is happening. Driven by
              initRightNow() in js/app.js off data/atus-hours.js. -->
-        <section class="section center reveal" id="sec-now">
-            <span class="sec-num">Right now</span>
-            <h2 class="sec-title">While you read this</h2>
-            <hr class="rule">
-            <p class="lead">Everything above is an average of a day. This one is happening, and you are
-                somewhere in the middle of it.</p>
-
-            <div class="rn" id="rn">
-                <p class="rn-label">Right now, where you are</p>
-                <p class="rn-time" id="rn-time">--:--</p>
-                <p class="rn-say" id="rn-say"></p>
-                <div class="rn-bar" id="rn-bar" role="img"
-                     aria-label="Share of the American population in each activity at this hour"></div>
-                <div class="rn-key" id="rn-key"></div>
-
-                <!-- the whole day behind the current hour, so this minute has context -->
-                <p class="rn-sub">The whole day, midnight to midnight</p>
-                <div class="rn-rib" id="rn-rib"></div>
+        <section class="section notes reveal" id="sec-now">
+            <div class="txt">
+                <span class="sec-num">Right now</span>
+                <h2 class="sec-title">While you read this</h2>
+                <hr class="rule">
+                <p class="lead">Everything above is an average of a day. This one is happening, and you are
+                    somewhere in the middle of it.</p>
             </div>
 
-            <p class="fig-cap"><b>Fig 6.1 — This Hour</b>
-                Stacked bar, share of the American population in each activity at your current local
-                hour. American Time Use Survey microdata 2003–2015, 3,347,093 activity records from
-                170,842 respondents, weighted, weekdays and weekends pooled. United States only: ATUS
-                is the only diary data here that records times of day, so the clock is yours and the
-                behaviour is American.</p>
+            <div class="viz">
+                <div class="rn" id="rn">
+                    <p class="rn-label">Right now, where you are</p>
+                    <p class="rn-time" id="rn-time">--:--</p>
+                    <p class="rn-say" id="rn-say"></p>
+                    <div class="rn-bar" id="rn-bar" role="img"
+                         aria-label="Share of the American population in each activity at this hour"></div>
+                    <div class="rn-key" id="rn-key"></div>
+                    <!-- the whole day behind the current hour, so this minute has context -->
+                    <p class="rn-sub">The whole day, midnight to midnight</p>
+                    <div class="rn-rib" id="rn-rib"></div>
+                </div>
+                <p class="fig-cap"><b>Fig 6.1 — This Hour</b>
+                    Stacked bar, share of the American population in each activity at your current local
+                    hour. American Time Use Survey microdata 2003–2015, 3,347,093 activity records from
+                    170,842 respondents, weighted, weekdays and weekends pooled. United States only: ATUS
+                    is the only diary data here that records times of day, so the clock is yours and the
+                    behaviour is American.</p>
+            </div>
         </section>
 
         <!-- ═══ CLOSING ═════════════════════════════════════ -->
