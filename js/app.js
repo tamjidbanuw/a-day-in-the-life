@@ -406,9 +406,14 @@ function initRightNow() {
         `<span><i style="background:${c.color}"></i>${c.label}</span>`).join('');
 
     // ── the whole day behind the current hour ──
-    // Presentation attributes in SVG do not accept var(), so the bands carry
-    // literal hex matching the palette variables used above.
-    const HEX = { PCA: '#3D5C80', PAW: '#B87333', UPW: '#DFB48B', LEI: '#8FB0D1', OTH: '#CEC4B6' };
+    /* SVG presentation attributes do not accept var(), so the bands need real
+       colours — but read from the tokens rather than restated here. Written out
+       by hand, these five were still the old palette long after the stylesheet
+       had moved on, because nothing links a copy to its original. */
+    const HEX = {
+        PCA: token('--care'), PAW: token('--paid'), UPW: token('--unpaid'),
+        LEI: token('--leisure'), OTH: token('--other')
+    };
     const rib = document.getElementById('rn-rib');
     let hand = null, handCap = null;
 
@@ -1089,6 +1094,27 @@ function initBadges() {
 }
 
 /**
+ * Read a palette token. Canvas and SVG presentation attributes cannot resolve
+ * var(), so anything drawn rather than styled has to ask for the value — and ask
+ * rather than keep its own copy, or it quietly falls a palette behind.
+ */
+function token(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+/** '#1A2B3C' or 'rgb(1, 2, 3)' -> [r, g, b], for interpolating between tokens. */
+function toRgb(c) {
+    c = c.trim();
+    if (c[0] === '#') {
+        let h = c.slice(1);
+        if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+        return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+    }
+    const m = c.match(/-?[\d.]+/g) || [0, 0, 0];
+    return [+m[0], +m[1], +m[2]];
+}
+
+/**
  * The twelve with complete records: the set the whole story follows. Shared by
  * the metric strips and the effect panels so they cannot disagree about who is
  * in the sample.
@@ -1299,7 +1325,8 @@ function initRankParallel() {
      * Twelve rainbow hues said nothing; twelve steps along this ramp say
      * "how much of your day is spoken for".
      */
-    const RAMP = [[61, 92, 128], [143, 176, 209], [223, 180, 139], [184, 115, 51]];
+    const RAMP = [token('--support'), token('--support-pale'),
+                  token('--accent-pale'), token('--accent')].map(toRgb);
     function ramp(t) {
         const x = Math.max(0, Math.min(1, t)) * (RAMP.length - 1);
         const i = Math.min(RAMP.length - 2, Math.floor(x));

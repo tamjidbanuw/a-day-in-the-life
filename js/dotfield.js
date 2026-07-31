@@ -13,6 +13,21 @@
     // copper dots are held to that share of the field. See build().
     const SHARE = 0.48;
 
+    /* The two dot colours, as "r,g,b" for the canvas. Taken from the tokens: as
+       literals they stayed the old copper and the old grey through a palette
+       change, which left the first image on the page in colours the rest of it
+       had abandoned. */
+    const swatch = n => {
+        const v = getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+        let h = v.replace('#', '');
+        if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+        if (/^[0-9a-f]{6}$/i.test(h)) {
+            return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16)).join(',');
+        }
+        return (v.match(/-?[\d.]+/g) || [0, 0, 0]).slice(0, 3).join(',');
+    };
+    const INK = { on: swatch('--accent'), off: swatch('--neutral') };
+
     // Mask of the word, CROPPED to its actual ink bounding box so any word
     // (short or long) fills the field tightly with no dead space.
     function wordMask(word) {
@@ -20,6 +35,8 @@
         const off = document.createElement('canvas');
         off.width = cw; off.height = ch;
         const o = off.getContext('2d');
+        // not a palette colour: this canvas is never shown, only read back for
+        // its alpha to decide which dots fall inside the letterforms
         o.fillStyle = '#000';
         o.textAlign = 'center';
         o.textBaseline = 'middle';
@@ -105,7 +122,7 @@
         const push = (d, on) => dots.push({
             hx: d.hx, hy: d.hy, x: Math.random() * W, y: Math.random() * H, vx: 0, vy: 0,
             r: (on ? 3.9 : 2.8) * devicePixelRatio,
-            color: on ? '184,115,51' : '206,196,182',
+            color: on ? INK.on : INK.off,
             hi: on,
             alpha: on ? 1 : (0.55 + d.edge * 0.45),
             delay: (d.hx / W) * 500 + Math.random() * 200,
