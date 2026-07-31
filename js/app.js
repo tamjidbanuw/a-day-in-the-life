@@ -25,6 +25,11 @@ const fmtH  = (min) => { const h = Math.floor(min / 60), m = Math.round(min % 60
 const workMin = (min) => (min.PAW || 0) + (min.UPW || 0);
 const nice = (c) => c.replace(' (People’s Republic of)', '');
 
+/* "United States" is the only name here that already ends in s, and it takes a
+   bare apostrophe rather than another s. Written inline it read "United
+   States's Day", which the figure label used to hide behind a number. */
+const possessive = (name) => name + (/s$/i.test(name) ? '’' : '’s');
+
 /**
  * Section 1 — one country's day, in five blocks, with the rank of each block
  * inside the twelve.
@@ -113,7 +118,7 @@ function initDayCard() {
                ${hm(lw.work)}. ${c.name} sits ${hm(Math.abs(c.work - mw.work))} off the top.`;
 
         el('dc-cap').innerHTML =
-            `<b>Fig 2.1 — ${c.name}'s Day</b>
+            `<b>${possessive(c.name)} Day</b>
              Stacked bar to 24 hours. Ranks are within the 12 countries with complete records, and are by
              size rather than merit: more sleep is not better than less. Sleep and self-care includes
              eating and washing; unpaid work covers cooking, cleaning, shopping and care. Blocks sit in a
@@ -1152,7 +1157,7 @@ function initMetricStrips() {
             host: 'mt-happy', read: 'mt-happy-read', cap: 'mt-happy-cap', badge: 'ladder',
             get: c => c.happy, fmt: v => v.toFixed(2), unit: '',
             ticks: [4, 5, 6, 7], tickFmt: v => String(v),
-            capTitle: 'Fig 4.1 — Happiness',
+            capTitle: 'Happiness',
             capBody: 'Dot plot, one mark per country, on the 0–10 Cantril ladder: respondents place ' +
                 'their own life between the worst possible (0) and the best possible (10), and the ' +
                 'score is the national average. World Happiness Report. The scale here spans only the ' +
@@ -1162,7 +1167,7 @@ function initMetricStrips() {
             host: 'mt-life', read: 'mt-life-read', cap: 'mt-life-cap', badge: 'years',
             get: c => c.life, fmt: v => v.toFixed(1), unit: ' years',
             ticks: [70, 75, 80], tickFmt: v => v + 'y',
-            capTitle: 'Fig 4.2 — Life Expectancy',
+            capTitle: 'Life Expectancy',
             capBody: 'Dot plot, one mark per country, life expectancy at birth in years: the average ' +
                 'lifespan of a baby born today if current mortality held for its whole life. Our World ' +
                 'in Data. The scale spans only the range of these 12 countries.'
