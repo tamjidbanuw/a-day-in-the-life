@@ -815,6 +815,12 @@ const Badges = (function () {
             target.right < 0 || target.left > innerWidth;
         if (still.matches || offscreen) { done('pop'); return; }
 
+        /* Held for the whole flight, not just the card. Besides putting the story
+           behind the badge, it keeps the page still: --dx/--dy are measured at
+           takeoff, and on a narrow screen the rail scrolls with the page, so a
+           scroll mid-flight would land the badge where the slot used to be. */
+        lockPage(true);
+        showVeil(true);
         dropFlyer();
         const cx = innerWidth / 2, cy = innerHeight / 2;
         const dx = (target.left + target.width / 2) - cx;
@@ -872,7 +878,7 @@ const Badges = (function () {
         card = document.createElement('div');
         card.className = 'bdg-card-wrap';
         card.setAttribute('role', 'dialog');
-        card.setAttribute('aria-modal', 'false');
+        card.setAttribute('aria-modal', 'false');   // flipped to true while it is up
         card.setAttribute('aria-label', 'A badge was added to your collection');
         card.hidden = true;
         card.innerHTML = `
@@ -897,13 +903,44 @@ const Badges = (function () {
         addEventListener('keydown', e => { if (e.key === 'Escape' && showing) close(); });
     }
 
+    /* While a card is up the page underneath is blurred and pinned. The lock is
+       held across a queue rather than released between cards, so two badges
+       landing together do not let the page jump about in the gap. */
+    let lastFocus = null;
+    let veil = null;
+
+    function lockPage(on) {
+        document.documentElement.classList.toggle('bdg-locked', on);
+    }
+
+    /* The blur behind the flight. The card brings its own backdrop, so this one
+       stands down when the card arrives rather than stacking a second blur on
+       top of the first; both are opacity transitions, so they cross-fade. */
+    function showVeil(on) {
+        if (!veil) {
+            if (!on) return;
+            veil = document.createElement('div');
+            veil.className = 'bdg-veil';
+            veil.setAttribute('aria-hidden', 'true');
+            document.body.appendChild(veil);
+            void veil.offsetWidth;               // so the first fade has a start state
+        }
+        veil.classList.toggle('in', on);
+    }
+
     function hide() {
         if (!card) return;
         card.classList.remove('in');
+        card.setAttribute('aria-modal', 'false');
         showing = false;
         setTimeout(() => {
             card.hidden = true;
-            if (queue.length) show(queue.shift());
+            if (queue.length) { show(queue.shift()); return; }
+            lockPage(false);
+            showVeil(false);
+            // put the reader back where they were reading
+            if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
+            lastFocus = null;
         }, 320);
     }
 
@@ -919,9 +956,29 @@ const Badges = (function () {
         card.querySelector('[data-foot]').textContent = earned.size === BADGES.length
             ? 'That is all eight. Nothing left hidden.'
             : `${earned.size} of ${BADGES.length} found · ${BADGES.length - earned.size} still out there`;
+        /* Remember where the reader was, but never remember the card's own close
+           button: showing is already false when a queued card takes over, so
+           without the containment check the second card would overwrite the
+           real answer with the first card's furniture. */
+        if (!showing && !card.contains(document.activeElement)) {
+            lastFocus = document.activeElement;
+        }
+        lockPage(true);
+        showVeil(false);                 // the card's own backdrop takes over here
         card.hidden = false;
+        card.setAttribute('aria-modal', 'true');
         showing = true;
-        requestAnimationFrame(() => card.classList.add('in'));
+        /* Deliberately not requestAnimationFrame. The page is locked by the line
+           above, so if the frame never came the reader would be left unable to
+           scroll with no card to explain why — and frames do stop coming, in a
+           background tab. Forcing the reflow here commits the shown-but-clear
+           state synchronously, which is all the transition needs to have
+           something to move from. */
+        void card.offsetWidth;
+        card.classList.add('in');
+        // the close button is the only thing to do here, so start on it
+        const btn = card.querySelector('.bdg-close');
+        if (btn) btn.focus({ preventScroll: true });
     }
 
     const api = {
@@ -969,6 +1026,9 @@ const Badges = (function () {
             flights.forEach(t => { clearTimeout(t); clearInterval(t); });
             flights.clear();
             dropFlyer();
+            showVeil(false);
+            // a flight with no card behind it still left the page pinned
+            if (!showing) lockPage(false);
             queue.length = 0;
             earned.clear();
             save();

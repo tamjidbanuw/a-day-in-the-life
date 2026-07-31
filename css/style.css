@@ -958,6 +958,27 @@ body {
     border-radius: 0 8px 8px 0;
 }
 
+/* ─── THE VEIL ──────────────────────────────────────────────
+   Up for the whole delivery, so the story goes soft the moment a badge appears
+   at the centre of the screen and stays that way until the card is dismissed.
+
+   z-index 44 is chosen, not arbitrary: backdrop-filter blurs whatever paints
+   below it, so sitting under the rail (45) and the title bar (50) leaves both of
+   those sharp. The badge is flying *to* the rail — a blurred destination would
+   be the one thing on screen that needs to stay legible. */
+.bdg-veil {
+    position: fixed; inset: 0; z-index: 44;
+    background: rgba(14,18,48,0.26);
+    -webkit-backdrop-filter: blur(9px) saturate(0.9);
+    backdrop-filter: blur(9px) saturate(0.9);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.45s ease;
+}
+.bdg-veil.in { opacity: 1; }
+@supports not ((backdrop-filter: blur(4px)) or (-webkit-backdrop-filter: blur(4px))) {
+    .bdg-veil { background: rgba(14,18,48,0.5); }
+}
+
 /* ─── THE DELIVERY ──────────────────────────────────────────
    A reveal is wasted at 68px in the corner of the screen, so it happens in the
    middle of the viewport at 180px and then the badge flies into its slot. The
@@ -1033,7 +1054,13 @@ body {
     position: fixed; inset: 0; z-index: 70;
     display: grid; place-items: center;
     padding: 1.4rem;
-    background: rgba(14,18,48,0.55);
+    /* the page goes soft behind it: less tint than a flat scrim needs, because
+       the blur is doing the work of separating the card from the story */
+    background: rgba(14,18,48,0.42);
+    -webkit-backdrop-filter: blur(10px) saturate(0.85);
+    backdrop-filter: blur(10px) saturate(0.85);
+    /* nothing behind this scrolls; the card itself still can, below */
+    touch-action: none;
     opacity: 0;
     transition: opacity 0.32s ease;
     /* Two guards, because a full-screen overlay that outstays its welcome eats
@@ -1046,10 +1073,24 @@ body {
 }
 .bdg-card-wrap[hidden] { display: none; }
 .bdg-card-wrap.in { opacity: 1; pointer-events: auto; }
+/* where blur is unavailable, lean harder on the tint so the card still separates */
+@supports not ((backdrop-filter: blur(4px)) or (-webkit-backdrop-filter: blur(4px))) {
+    .bdg-card-wrap { background: rgba(14,18,48,0.74); }
+}
+
+/* Scroll is held while a card is up, so the reader deals with the card rather
+   than losing it up the page. The gutter is reserved on every page load, not
+   just while locked: taking the scrollbar away is what makes the layout jump,
+   and reserving the space permanently means there is nothing to take away. */
+html { scrollbar-gutter: stable; }
+html.bdg-locked, html.bdg-locked body { overflow: hidden; }
 .bdg-card {
     position: relative;
     width: min(520px, 100%);
+    /* the one thing that may still scroll, and only within itself */
     max-height: 86vh; overflow-y: auto;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
     background: var(--paper);
     border: 2px solid var(--copper);
     border-radius: 14px;
