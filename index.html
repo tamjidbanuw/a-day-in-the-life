@@ -67,6 +67,18 @@
             <div class="badges-head">
                 <span class="badges-title">Your collection</span>
                 <span class="badges-count" id="badge-count">0 of 8 found</span>
+                <!-- the rules of the game, folded behind an i: worth reading once,
+                     not worth a standing paragraph in a panel this size -->
+                <button class="badges-info" id="badges-info" type="button"
+                        aria-expanded="false" aria-controls="badges-note"
+                        aria-label="How the badges work">
+                    <svg viewBox="0 0 16 16" aria-hidden="true">
+                        <circle cx="8" cy="8" r="6.7" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M8 7.2v4.1" fill="none" stroke="currentColor" stroke-width="1.8"
+                              stroke-linecap="round"/>
+                        <circle cx="8" cy="4.7" r="1.05" fill="currentColor"/>
+                    </svg>
+                </button>
                 <button class="badges-toggle" id="badges-toggle" type="button"
                         aria-expanded="true" aria-controls="badges-body"
                         aria-label="Hide the collection">
@@ -77,10 +89,11 @@
                 </button>
             </div>
             <div class="badges-body" id="badges-body">
+                <p class="badges-note" id="badges-note" hidden>Eight badges are hidden in the charts
+                    below, and every chart here does something when you touch it. Each one you find
+                    comes with a figure from the data that appears nowhere else. One is not on a
+                    chart at all.</p>
                 <ul class="badge-tray" id="badge-tray"></ul>
-                <p class="badges-note">Eight badges are hidden in the charts below, and every chart
-                    here does something when you touch it. Each one you find comes with a figure from
-                    the data that appears nowhere else. One is not on a chart at all.</p>
                 <div class="badges-foot" id="badge-reset"></div>
             </div>
         </aside>

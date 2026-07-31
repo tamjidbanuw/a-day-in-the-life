@@ -629,12 +629,13 @@ const Badges = (function () {
        chart away mid-thought, short enough that the reward still feels caused
        by what they just did. */
     const REVEAL_DELAY = 3000;
-    /* Long enough for the stars to finish crossing the medal before the card
-       takes the screen, so the disclosure is seen rather than covered. */
-    const CARD_LAG = 1250;
+    /* A beat after the badge touches down, so the landing is watched rather than
+       covered. The flight already gave the reveal its moment at centre screen. */
+    const CARD_LAG = 420;
     const earned = new Set(load());
     const pending = new Map();                 // id -> timer, so nothing double-fires
     const lags = new Set();                    // card timers, cancellable by reset
+    const flights = new Set();                 // flight timers, likewise
     const queue = [];
     let tray = null, count = null, card = null, showing = false;
     let rail = null, resetSlot = null;
@@ -716,7 +717,9 @@ const Badges = (function () {
     const POP_MS = 1500;
     const pops = new Map();                    // id -> timer
 
-    function paintSlot(b, pop) {
+    /* anim is 'land' when the badge flew in and only has to touch down, 'pop' when
+       it never left the tray and has to do the whole flourish in place. */
+    function paintSlot(b, anim) {
         const li = tray.querySelector(`[data-id="${b.id}"]`);
         if (!li) return;
         const got = earned.has(b.id);
@@ -727,13 +730,13 @@ const Badges = (function () {
         li.querySelector('.bdg-kicker').textContent = got ? b.kicker : '';
         li.querySelector('.bdg-name').textContent = got ? nameOf(b) : '';
         li.querySelector('.bdg-stat').textContent = got ? b.stat : '';
-        if (!pop) return;
+        if (!anim) return;
         clearTimeout(pops.get(b.id));
-        li.classList.remove('pop');
+        li.classList.remove('pop', 'land');
         void li.offsetWidth;                     // restart the animation cleanly
-        li.classList.add('pop');
+        li.classList.add(anim);
         pops.set(b.id, setTimeout(() => {
-            li.classList.remove('pop');
+            li.classList.remove('pop', 'land');
             pops.delete(b.id);
         }, POP_MS));
     }
@@ -741,14 +744,15 @@ const Badges = (function () {
     function clearPops() {
         pops.forEach(t => clearTimeout(t));
         pops.clear();
-        tray.querySelectorAll('.bdg.pop').forEach(li => li.classList.remove('pop'));
+        tray.querySelectorAll('.bdg.pop, .bdg.land')
+            .forEach(li => li.classList.remove('pop', 'land'));
     }
 
-    function render(justEarned) {
+    function render(justEarned, anim) {
         if (!tray) return;
         if (!tray.children.length) buildTray();
         if (!justEarned) clearPops();            // mount and reset start clean
-        BADGES.forEach(b => paintSlot(b, b.id === justEarned));
+        BADGES.forEach(b => paintSlot(b, b.id === justEarned ? (anim || 'pop') : null));
         if (count) {
             count.textContent = earned.size === BADGES.length
                 ? `All ${BADGES.length} found`
@@ -768,14 +772,97 @@ const Badges = (function () {
             if (btn) btn.addEventListener('click', () => api.reset());
         }
         if (justEarned && rail) {
-            // if the rail is tucked away, open it: a disclosure nobody sees is wasted
-            rail.classList.remove('shut', 'flash');
+            rail.classList.remove('flash');
             void rail.offsetWidth;
             rail.classList.add('flash');
             setTimeout(() => rail.classList.remove('flash'), 800);
-            const t = document.getElementById('badges-toggle');
-            if (t) t.setAttribute('aria-expanded', 'true');
         }
+    }
+
+    /* A tucked-away rail has no slot to aim at: collapsed, the tray is clipped to
+       nothing and measures nothing. So it opens before the badge sets off, not
+       when it arrives. */
+    function openRail() {
+        if (!rail) return;
+        rail.classList.remove('shut');
+        const t = document.getElementById('badges-toggle');
+        if (t) t.setAttribute('aria-expanded', 'true');
+    }
+
+    /* ── the flight ──
+       Reveal big at the centre of the viewport, then arc into the slot leaving a
+       trail. Calls back with 'land' if it flew and 'pop' if it could not, so the
+       slot knows whether to touch down or do the whole flourish in place. */
+    const FLY_HOLD = 1300;                     // long enough for the starfall to finish
+    const FLY_TRIP = 950;
+    const still = matchMedia('(prefers-reduced-motion: reduce)');
+    let flyer = null;
+
+    function dropFlyer() {
+        if (flyer) { flyer.remove(); flyer = null; }
+        document.querySelectorAll('.bdg-trail').forEach(d => d.remove());
+    }
+
+    function deliver(b, done) {
+        const li = tray && tray.querySelector(`[data-id="${b.id}"]`);
+        const med = li && li.querySelector('.bdg-medal');
+        const target = med && med.getBoundingClientRect();
+        /* Three reasons to skip the trip and just light up the slot: motion is
+           unwelcome, the rail is off screen so the badge would fly out of sight,
+           or there is nothing to measure. Any of them and the badge still arrives. */
+        const offscreen = !target || target.width < 4 ||
+            target.bottom < 0 || target.top > innerHeight ||
+            target.right < 0 || target.left > innerWidth;
+        if (still.matches || offscreen) { done('pop'); return; }
+
+        dropFlyer();
+        const cx = innerWidth / 2, cy = innerHeight / 2;
+        const dx = (target.left + target.width / 2) - cx;
+        const dy = (target.top + target.height / 2) - cy;
+
+        flyer = document.createElement('div');
+        flyer.className = 'bdg-fly';
+        flyer.setAttribute('aria-hidden', 'true');
+        flyer.style.setProperty('--dx', dx.toFixed(1) + 'px');
+        flyer.style.setProperty('--dy', dy.toFixed(1) + 'px');
+        flyer.style.setProperty('--s', (target.width / 180).toFixed(3));
+        flyer.style.setProperty('--t', FLY_TRIP + 'ms');
+        flyer.innerHTML = `
+            <div class="bdg-fly-y"><div class="bdg-fly-scale">
+                <span class="bdg ring-${b.ring} got pop">
+                    <span class="bdg-orb">
+                        <span class="bdg-medal">
+                            <svg viewBox="0 0 40 40" aria-hidden="true">${BADGE_ART[b.art]}</svg>
+                        </span>
+                        ${starLayer()}
+                    </span>
+                </span>
+            </div></div>`;
+        document.body.appendChild(flyer);
+
+        const el = flyer;
+        const go = setTimeout(() => {
+            el.classList.add('go');
+            const m = el.querySelector('.bdg-medal');
+            const trail = setInterval(() => {
+                const r = m.getBoundingClientRect();
+                const d = document.createElement('div');
+                d.className = 'bdg-trail';
+                d.style.left = (r.left + r.width / 2) + 'px';
+                d.style.top = (r.top + r.height / 2) + 'px';
+                d.style.width = d.style.height = Math.max(5, r.width * 0.09) + 'px';
+                document.body.appendChild(d);
+                setTimeout(() => d.remove(), 750);
+            }, 45);
+            flights.add(trail);
+            const arrive = setTimeout(() => {
+                clearInterval(trail);
+                if (flyer === el) { el.remove(); flyer = null; }
+                done('land');
+            }, FLY_TRIP);
+            flights.add(arrive);
+        }, FLY_HOLD);
+        flights.add(go);
     }
 
     /* The reward for exploring is something to read: each card carries a figure
@@ -857,14 +944,17 @@ const Badges = (function () {
                 if (earned.has(id)) return;              // reset while it was in flight
                 earned.add(id);
                 save();
-                render(id);                      // the rail discloses first
                 const b = BADGES.find(x => x.id === id);
-                const lag = setTimeout(() => {
-                    lags.delete(lag);
-                    if (!earned.has(id)) return; // reset while the card was queued
-                    if (showing) queue.push(b); else show(b);
-                }, CARD_LAG);
-                lags.add(lag);
+                openRail();                      // give the badge somewhere to land
+                deliver(b, anim => {
+                    render(id, anim);             // the slot fills as it arrives
+                    const lag = setTimeout(() => {
+                        lags.delete(lag);
+                        if (!earned.has(id)) return;   // reset while the card was queued
+                        if (showing) queue.push(b); else show(b);
+                    }, CARD_LAG);
+                    lags.add(lag);
+                });
             }, REVEAL_DELAY));
         },
         has: id => earned.has(id),
@@ -875,6 +965,10 @@ const Badges = (function () {
             pending.clear();
             lags.forEach(t => clearTimeout(t));
             lags.clear();
+            // a badge in mid-air belongs to a collection that no longer exists
+            flights.forEach(t => { clearTimeout(t); clearInterval(t); });
+            flights.clear();
+            dropFlyer();
             queue.length = 0;
             earned.clear();
             save();
@@ -892,6 +986,18 @@ function initBadges() {
     const rail = document.getElementById('badges');
     Badges.mount(tray, document.getElementById('badge-count'), rail,
                  document.getElementById('badge-reset'));
+
+    /* How the badges work is worth reading once and then never again, so it hides
+       behind an i rather than standing in the panel taking up room. */
+    const info = document.getElementById('badges-info');
+    const note = document.getElementById('badges-note');
+    if (info && note) {
+        info.addEventListener('click', () => {
+            const open = note.hidden;
+            note.hidden = !open;
+            info.setAttribute('aria-expanded', String(open));
+        });
+    }
 
     /* The rail can be tucked away, because a panel pinned to the edge of a long
        read should be dismissible. Only offered where it actually is a rail: at

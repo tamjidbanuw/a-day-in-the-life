@@ -672,6 +672,17 @@ body {
 }
 /* only earns its keep in the rail, where space is tight */
 .badges-toggle { display: none; }
+/* the instruction, folded away behind an i */
+.badges-info {
+    display: grid; place-items: center;
+    width: 20px; height: 20px; padding: 0; flex: none;
+    color: var(--ink-faint); background: none; border: 0; cursor: pointer;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+.badges-info svg { width: 15px; height: 15px; }
+.badges-info:hover { color: var(--copper); }
+.badges-info[aria-expanded="true"] { color: var(--copper); }
+.badges-note[hidden] { display: none; }
 /* the only way to clear a collection: sessionStorage survives a hard refresh */
 .bdg-reset {
     font: inherit; font-size: 0.66rem; font-weight: 700;
@@ -761,7 +772,10 @@ body {
         font-size: 0.58rem; line-height: 1.15; letter-spacing: 0.01em;
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .badges-note { font-size: 0.66rem; line-height: 1.45; margin-top: 0.9rem; }
+    .badges-note {
+        font-size: 0.66rem; line-height: 1.45;
+        margin: 0 0 0.8rem; padding: 0.55rem 0.6rem;
+    }
     .badges-foot:not(:empty) { margin-top: 0.7rem; }
     .bdg-reset { font-size: 0.58rem; }
 
@@ -934,7 +948,83 @@ body {
     from { opacity: 0; transform: translateY(4px); }
     to   { opacity: 1; transform: none; }
 }
-.badges-note { font-size: 0.82rem; line-height: 1.5; color: var(--ink-faint); margin-top: 1.4rem; }
+/* shown only when the i is pressed, so it reads as an answer to a question */
+.badges-note {
+    font-size: 0.82rem; line-height: 1.5; color: var(--ink-soft);
+    margin: 0 0 1.3rem;
+    padding: 0.7rem 0.85rem;
+    background: var(--copper-wash);
+    border-left: 2px solid var(--copper-pale);
+    border-radius: 0 8px 8px 0;
+}
+
+/* ─── THE DELIVERY ──────────────────────────────────────────
+   A reveal is wasted at 68px in the corner of the screen, so it happens in the
+   middle of the viewport at 180px and then the badge flies into its slot. The
+   slot stays locked and anonymous the whole way, so the arrival is what fills it.
+
+   Four nested elements because each needs its own easing:
+     .bdg-fly        crosses the screen  — one curve
+     .bdg-fly-y      falls              — a different curve, and the mismatch is the arc
+     .bdg-fly-scale  shrinks to the size the slot expects
+     .bdg            real badge markup, so the starfall above runs here unchanged
+   --dx/--dy is the trip, --s the size it has to arrive at, --t how long it takes. */
+.bdg-fly {
+    position: fixed; left: 50%; top: 50%;
+    z-index: 65;                    /* over the page, under the card at 70 */
+    pointer-events: none;
+}
+.bdg-fly-y, .bdg-fly-scale { display: block; }
+.bdg-fly .bdg { display: block; }
+.bdg-fly .bdg-meta { display: none; }
+/* centred with a transform, not negative margins: the star layer is positioned
+   against the orb, so the orb's box and the medal's box must be the same box */
+.bdg-fly .bdg-orb {
+    margin: 0; width: 180px; height: 180px;
+    transform: translate(-50%, -50%);
+}
+.bdg-fly .bdg-medal {
+    width: 180px; height: 180px; margin: 0;
+    box-shadow: inset 0 0 0 3px var(--ring), 0 40px 80px -40px var(--night);
+}
+.bdg-fly .bdg-medal svg { width: 136px; height: 136px; }
+/* the whole flourish scales up with it, or it would look sparse at this size */
+.bdg-fly .bdg-stars { --reach: 124px; }
+.bdg-fly .bdg-star { width: calc(var(--sz) * 2.2); height: calc(var(--sz) * 2.2); }
+
+.bdg-fly.go { animation: fly-x var(--t) cubic-bezier(0.5,0,0.4,1) forwards; }
+.bdg-fly.go .bdg-fly-y { animation: fly-y var(--t) cubic-bezier(0.25,0,0.15,1) forwards; }
+.bdg-fly.go .bdg-fly-scale { animation: fly-shrink var(--t) cubic-bezier(0.4,0,0.3,1) forwards; }
+@keyframes fly-x { to { transform: translateX(var(--dx)); } }
+@keyframes fly-y { to { transform: translateY(var(--dy)); } }
+@keyframes fly-shrink {
+    0%   { transform: scale(1); }
+    22%  { transform: scale(1.06); }
+    100% { transform: scale(var(--s)); }
+}
+/* copper dropped along the path, each dot fading where it was left */
+.bdg-trail {
+    position: fixed; z-index: 64; pointer-events: none;
+    border-radius: 50%; background: var(--copper);
+    margin: -5px 0 0 -5px;
+    animation: trail-fade 0.7s ease-out forwards;
+}
+@keyframes trail-fade {
+    0%   { opacity: 0.85; transform: scale(1); }
+    100% { opacity: 0; transform: scale(0.2); }
+}
+/* the slot's own reaction as the badge drops in */
+.bdg.land .bdg-medal {
+    animation: land-punch 0.55s cubic-bezier(0.3,1.7,0.4,1) both,
+               bdg-halo   0.7s ease-out both;
+}
+.bdg.land .bdg-meta { animation: bdg-meta-in 0.5s 0.12s ease-out both; }
+@keyframes land-punch {
+    0%   { transform: scale(1.55); }
+    45%  { transform: scale(0.88); }
+    75%  { transform: scale(1.07); }
+    100% { transform: scale(1); }
+}
 
 /* ─── THE REVEAL CARD ───────────────────────────────────────
    Not a toast: the badge comes with one figure from the data, and a figure
@@ -1011,6 +1101,9 @@ body {
     .bdg.pop .bdg-medal::after { content: none; }
     /* no travelling stars for anyone who asked the page to sit still */
     .bdg-stars { display: none; }
+    /* and no flight either: initBadges() skips it, this is the belt and braces */
+    .bdg-fly, .bdg-trail { display: none; }
+    .bdg.land .bdg-medal, .bdg.land .bdg-meta { animation: none; }
     .badges.flash { animation: none; }
     .badges-count.bump { animation: none; }
     .bdg:hover .bdg-medal { transform: none; }
