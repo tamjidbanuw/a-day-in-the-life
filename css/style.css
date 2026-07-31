@@ -99,12 +99,14 @@ body {
     text-align: center;
     /* The band is half as deep, so the insets scale with it rather than keeping a
        2.5rem frame that would eat a quarter of the height.
-       The bottom is deeper than the top on purpose: .cover-scroll is positioned
-       out of the flow down there, and the flex centring above knows nothing about
-       it. Without the reservation the subtitle and the scroll hint overlap on a
-       short screen — measured at 12px of overlap at 613px tall, both centred. */
-    padding: clamp(1.4rem, 4vh, 2.5rem) 2.5rem
-             calc(clamp(0.9rem, 2.6vh, 2rem) + 2rem);
+
+       The right side also carries --rail. The cover is a <header> outside <main>,
+       and <main> reserves that gutter for the collection rail — so without it here
+       the cover centres on the viewport while every heading below centres on the
+       narrower column, leaving the title sitting half a gutter to the right of
+       the whole story. One centre line for the page, not two. */
+    padding: clamp(1.4rem, 4vh, 2.5rem) calc(2.5rem + var(--rail))
+             clamp(1.4rem, 4vh, 2.5rem) 2.5rem;
     overflow: hidden;
     background: var(--ink-deep);
     color: var(--white);
@@ -125,7 +127,12 @@ body {
    above instead of reading as a circle. */
 .cover-clock {
     position: absolute;
-    top: 50%; left: 50%;
+    top: 50%;
+    /* An absolutely positioned element is placed against the padding box, so
+       left:50% is the middle of the whole cover and ignores the --rail gutter the
+       title respects. Half the gutter back puts the clock on the same centre line
+       as the words in front of it. */
+    left: calc(50% - var(--rail) / 2);
     width: min(calc(var(--cover-h) * 0.68), 300px);
     height: min(calc(var(--cover-h) * 0.68), 300px);
     transform: translate(-50%, -50%);
@@ -160,13 +167,7 @@ body {
     margin-top: 1.1rem; font-size: clamp(1.05rem, 2.4vw, 1.35rem);
     font-weight: 400; color: rgb(var(--white-rgb) / 0.82);
 }
-.cover-scroll {
-    position: absolute; left: 50%; transform: translateX(-50%);
-    bottom: clamp(0.9rem, 2.6vh, 2rem);
-    z-index: 3;
-    font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase;
-    color: rgb(var(--white-rgb) / 0.6); font-weight: 500;
-}
+
 
 /* On a short screen the title centres high enough to reach the kicker, which is
    pinned out of the flow in the top corner. On a narrow one they overlap
@@ -204,6 +205,9 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    /* the same gutter as the cover and <main>, so the bar's title lands on the
+       page's one centre line rather than the viewport's */
+    padding-right: var(--rail);
     transform: translateY(-100%);
     box-shadow: 0 10px 30px -22px rgb(var(--shade-rgb) / 0.9);
     pointer-events: none;

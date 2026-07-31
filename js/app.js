@@ -295,7 +295,7 @@ function initCoverScroll() {
     const center = cover.querySelector('.cover-center');
     const clock  = cover.querySelector('.cover-clock');
     const kicker = cover.querySelector('.cover-kicker');
-    const hint   = cover.querySelector('.cover-scroll');
+
     const reduced = window.matchMedia &&
         matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -323,7 +323,7 @@ function initCoverScroll() {
         center.style.transform = `scale(${lerp(1, 0.86, t)})`;
         center.style.opacity = String(lerp(1, 0, clamp01(p / 0.75)));
         if (kicker) kicker.style.opacity = String(lerp(1, 0, clamp01(p / 0.3)));
-        if (hint) hint.style.opacity = String(lerp(1, 0, clamp01(p / 0.2)));
+
     }
 
     addEventListener('scroll', () => {
