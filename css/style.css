@@ -54,7 +54,10 @@
     --unpaid:  var(--accent-pale);    /* unpaid work: same substance, lighter */
     --leisure: var(--support-pale);   /* leisure */
     --other:   var(--neutral);
-    --cover-h: 76vh;
+    /* Half what it was. min-height, not height, so on a short screen the title
+       pushes the band taller rather than being cut off. js/app.js measures the
+       cover with offsetHeight, so the scroll-away animation rescales itself. */
+    --cover-h: 38vh;
     /* gutter reserved for the collection rail; 0 until the rail actually exists,
        so the narrow layout is untouched. Set once, in the rail's media query. */
     --rail: 0px;
@@ -94,25 +97,37 @@ body {
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 2.5rem;
+    /* The band is half as deep, so the insets scale with it rather than keeping a
+       2.5rem frame that would eat a quarter of the height.
+       The bottom is deeper than the top on purpose: .cover-scroll is positioned
+       out of the flow down there, and the flex centring above knows nothing about
+       it. Without the reservation the subtitle and the scroll hint overlap on a
+       short screen — measured at 12px of overlap at 613px tall, both centred. */
+    padding: clamp(1.4rem, 4vh, 2.5rem) 2.5rem
+             calc(clamp(0.9rem, 2.6vh, 2rem) + 2rem);
     overflow: hidden;
     background: var(--ink-deep);
     color: var(--white);
 }
 
 .cover-kicker {
-    position: absolute; top: 2.2rem; left: 2.2rem; z-index: 3;
+    position: absolute; z-index: 3;
+    top: clamp(1.1rem, 3vh, 2.2rem); left: clamp(1.1rem, 3vw, 2.2rem);
     font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase;
     font-weight: 600; color: var(--white);
     background: rgb(var(--accent-rgb) / 0.9);
     padding: 0.35rem 0.8rem; border-radius: 999px;
 }
 
-/* the clock sits centred, behind the title */
+/* The clock sits centred, behind the title. Sized against the cover rather than
+   the viewport: at 44vh it was two thirds of the old band, but taller than the
+   halved one, so it would have been cropped top and bottom by the overflow rule
+   above instead of reading as a circle. */
 .cover-clock {
     position: absolute;
     top: 50%; left: 50%;
-    width: min(44vh, 420px); height: min(44vh, 420px);
+    width: min(calc(var(--cover-h) * 0.68), 300px);
+    height: min(calc(var(--cover-h) * 0.68), 300px);
     transform: translate(-50%, -50%);
     z-index: 1;
 }
@@ -146,10 +161,28 @@ body {
     font-weight: 400; color: rgb(var(--white-rgb) / 0.82);
 }
 .cover-scroll {
-    position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+    position: absolute; left: 50%; transform: translateX(-50%);
+    bottom: clamp(0.9rem, 2.6vh, 2rem);
     z-index: 3;
     font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase;
     color: rgb(var(--white-rgb) / 0.6); font-weight: 500;
+}
+
+/* On a short screen the title centres high enough to reach the kicker, which is
+   pinned out of the flow in the top corner. On a narrow one they overlap
+   horizontally too, so below this height the kicker rejoins the flow and simply
+   stacks above the title. The halved band is what brought them into contact:
+   at 76vh there was room to spare. */
+@media (max-height: 660px) {
+    .cover-kicker {
+        position: static;
+        margin-bottom: 0.7rem;
+    }
+    /* The title is sized off the width, so on a short window two lines at 4.8rem
+       alone need 157px and the band grows to 60vh however small the target. A
+       height-based cap is what lets the halving hold on a laptop in landscape. */
+    .cover-title { font-size: clamp(1.9rem, 5vw, 3rem); }
+    .cover-sub { margin-top: 0.7rem; font-size: clamp(0.95rem, 2vw, 1.1rem); }
 }
 
 @media (prefers-reduced-motion: reduce) {
