@@ -100,13 +100,10 @@ body {
     /* The band is half as deep, so the insets scale with it rather than keeping a
        2.5rem frame that would eat a quarter of the height.
 
-       The right side also carries --rail. The cover is a <header> outside <main>,
-       and <main> reserves that gutter for the collection rail — so without it here
-       the cover centres on the viewport while every heading below centres on the
-       narrower column, leaving the title sitting half a gutter to the right of
-       the whole story. One centre line for the page, not two. */
-    padding: clamp(1.4rem, 4vh, 2.5rem) calc(2.5rem + var(--rail))
-             clamp(1.4rem, 4vh, 2.5rem) 2.5rem;
+       No --rail here: the gutter is applied symmetrically on <main> instead, so
+       every centred thing on the page — cover, story, footer — shares the
+       viewport's own centre line rather than a line offset by half a rail. */
+    padding: clamp(1.4rem, 4vh, 2.5rem) 2.5rem;
     overflow: hidden;
     background: var(--ink-deep);
     color: var(--white);
@@ -128,11 +125,7 @@ body {
 .cover-clock {
     position: absolute;
     top: 50%;
-    /* An absolutely positioned element is placed against the padding box, so
-       left:50% is the middle of the whole cover and ignores the --rail gutter the
-       title respects. Half the gutter back puts the clock on the same centre line
-       as the words in front of it. */
-    left: calc(50% - var(--rail) / 2);
+    left: 50%;
     width: min(calc(var(--cover-h) * 0.68), 300px);
     height: min(calc(var(--cover-h) * 0.68), 300px);
     transform: translate(-50%, -50%);
@@ -205,9 +198,6 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    /* the same gutter as the cover and <main>, so the bar's title lands on the
-       page's one centre line rather than the viewport's */
-    padding-right: var(--rail);
     transform: translateY(-100%);
     box-shadow: 0 10px 30px -22px rgb(var(--shade-rgb) / 0.9);
     pointer-events: none;
@@ -306,7 +296,7 @@ body {
 .section.notes {
     max-width: 1340px;
     display: grid;
-    grid-template-columns: minmax(200px, 264px) 1fr;
+    grid-template-columns: minmax(180px, 228px) 1fr;
     gap: clamp(1.2rem, 3vw, 2.4rem);
     align-items: start;
 }
@@ -550,7 +540,7 @@ body {
    under it. Capping at 96vw keeps it clear of a horizontal scrollbar. */
 .df-stage {
     position: relative;
-    width: min(1560px, calc(96vw - var(--rail)));
+    width: min(1560px, calc(96vw - var(--rail) * 2));
     margin-left: 50%;
     transform: translateX(-50%);
     aspect-ratio: 3/1;
@@ -653,7 +643,7 @@ body {
    width they can get, and this is the widest the page has to give. */
 .mt-stage {
     position: relative;
-    width: min(1400px, calc(94vw - var(--rail)));
+    width: min(1400px, calc(94vw - var(--rail) * 2));
     margin: 2.2rem auto 0;
     margin-left: 50%;
     transform: translateX(-50%);
@@ -810,17 +800,23 @@ body {
    suit, names kept but clipped to one line. z-index sits under the fixed
    .title-bar (50) and well under the reveal card (70). */
 @media (min-width: 1100px) {
-    /* the story shifts left by exactly the rail's footprint, so nothing ever
-       sits underneath it — including the two charts that break out of the column */
-    :root { --rail: 232px; }
-    main { padding-right: var(--rail); }
+    /* The gutter is reserved on BOTH sides, not just the right, so the story
+       column stays on the viewport's own centre line and the cover and footer
+       outside <main> agree with it.
+
+       Symmetric means paying for the rail twice, which is why the rail itself is
+       narrow: at its old 208px the charts fell to 291px at a 1100px window, which
+       is not a chart. At 132px the same symmetric layout leaves them within a few
+       pixels of where the lopsided version had them. */
+    :root { --rail: 156px; }
+    main { padding-inline: var(--rail); }
 
     .badges {
         position: fixed;
         top: 50%; right: clamp(0.7rem, 1.5vw, 1.5rem);
         transform: translateY(-50%);
         z-index: 45;
-        width: 208px; max-width: none;
+        width: 132px; max-width: none;
         margin: 0; padding: 0.8rem 0.85rem 0.9rem;
         /* deliberately not overflow:auto — any overflow value but visible clips
            the stars at the rail wall as they fly out of an edge slot. Tall
@@ -834,11 +830,13 @@ body {
         transition: box-shadow 0.4s ease, border-color 0.4s ease;
     }
     .badges-head {
-        gap: 0.4rem; margin-bottom: 0;
-        font-size: 0.6rem; letter-spacing: 0.1em;
-        align-items: center;
+        gap: 0.25rem; margin-bottom: 0;
+        font-size: 0.55rem; letter-spacing: 0.06em;
+        align-items: center; flex-wrap: wrap;
     }
-    .badges-title { font-size: 0.62rem; }
+    /* 132px will not hold the words and the count on one line; the count is the
+       part that changes, so it is the part that stays */
+    .badges-title { display: none; }
     .badges-count { font-size: 0.6rem; white-space: nowrap; }
     .badges-toggle {
         display: grid; place-items: center;
@@ -860,19 +858,21 @@ body {
     }
     .badges.shut .badges-body { max-height: 0; opacity: 0; margin-top: 0; }
 
-    .badge-tray { grid-template-columns: repeat(2, 1fr); gap: 0.85rem 0.5rem; }
-    .badges .bdg-medal { width: 68px; height: 68px; }
-    .badges .bdg-medal svg { width: 52px; height: 52px; }
+    .badge-tray { grid-template-columns: repeat(2, 1fr); gap: 0.7rem 0.35rem; }
+    .badges .bdg-medal { width: 48px; height: 48px; }
+    .badges .bdg-medal svg { width: 36px; height: 36px; }
     /* smaller medal, shorter flight, or the stars would land in the next slot */
-    .badges .bdg-stars { --reach: 47px; }
-    .badges .bdg-star { width: calc(var(--sz) * 0.72); height: calc(var(--sz) * 0.72); }
+    .badges .bdg-stars { --reach: 34px; }
+    .badges .bdg-star { width: calc(var(--sz) * 0.55); height: calc(var(--sz) * 0.55); }
     /* in the rail the medal leads and the name follows, clipped to one line */
     .badges .bdg { display: flex; flex-direction: column-reverse; gap: 0.3rem; }
     .badges .bdg-meta { min-height: 0; margin-bottom: 0; }
     .badges .bdg-kicker, .badges .bdg-stat { display: none; }
+    /* Wrapping, not ellipsis: at 132px a name like "Amateur Actuary" cannot fit
+       on one line, and two readable lines beat one truncated one. */
     .badges .bdg-name {
-        font-size: 0.58rem; line-height: 1.15; letter-spacing: 0.01em;
-        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        font-size: 0.5rem; line-height: 1.2; letter-spacing: 0.01em;
+        white-space: normal;
     }
     .badges-note {
         font-size: 0.66rem; line-height: 1.45;
@@ -1334,11 +1334,7 @@ html.bdg-locked, html.bdg-locked body { overflow: hidden; }
 /* ─── FOOTER ────────────────────────────────────────────── */
 .site-footer {
     text-align: center;
-    /* The footer sits outside <main>, so like the cover and the title bar it has
-       to be told about --rail. Without it the footer centres on the viewport
-       while the whole story above centres half a gutter to the left, and the two
-       lines of small print sit visibly off from everything they follow. */
-    padding: 3rem calc(1.5rem + var(--rail)) 4rem 1.5rem;
+    padding: 3rem 1.5rem 4rem;
     color: var(--ink-faint);
     font-size: 0.82rem;
     border-top: 1px solid var(--line);
