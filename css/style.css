@@ -389,13 +389,20 @@ body {
 
 .rule { border: none; border-top: 1.5px solid var(--line); margin: 1.3rem 0 1.6rem; }
 
+/* The lead used to be set entirely in the accent, inherited from a palette where
+   it was a purple. On newsprint that put the one colour with a job — marking the
+   thing being argued about — behind whole paragraphs, and the day card's lead is
+   generated prose full of figures, so it came out as a slab of red inside a
+   column already ruled in red. Ink for the sentence, accent for the figures
+   inside it, which is what the palette rule in :root actually says. */
 .lead {
     font-size: clamp(1.15rem, 2.3vw, 1.4rem);
     font-weight: 500;
-    color: var(--accent);
+    color: var(--ink);
     line-height: 1.4;
     margin-bottom: 1rem;
 }
+.lead strong { color: var(--accent); font-weight: 700; }
 
 .body { color: var(--ink-soft); max-width: 620px; }
 .body strong { color: var(--ink); font-weight: 600; }
