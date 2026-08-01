@@ -1334,7 +1334,11 @@ html.bdg-locked, html.bdg-locked body { overflow: hidden; }
 /* ─── FOOTER ────────────────────────────────────────────── */
 .site-footer {
     text-align: center;
-    padding: 3rem 1.5rem 4rem;
+    /* The footer sits outside <main>, so like the cover and the title bar it has
+       to be told about --rail. Without it the footer centres on the viewport
+       while the whole story above centres half a gutter to the left, and the two
+       lines of small print sit visibly off from everything they follow. */
+    padding: 3rem calc(1.5rem + var(--rail)) 4rem 1.5rem;
     color: var(--ink-faint);
     font-size: 0.82rem;
     border-top: 1px solid var(--line);
