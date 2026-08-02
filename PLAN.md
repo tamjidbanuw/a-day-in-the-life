@@ -93,9 +93,10 @@ Cover, opener, ten sections across four chapters, close. Reading order top to bo
 
 One line in `js/app.js` used to keep only countries with life expectancy **and** happiness
 **and** tourism, and that condition is what made this a story about twelve countries.
-`data/life_expectancy.csv` holds 15 countries, three of which keep no time diary, so the
+`data/life_expectancy.csv` held 15 countries, three of which keep no time diary, so the
 intersection was exactly 12. Asking for life expectancy threw away 23 countries whose days
-were already in the file.
+were already in the file. That CSV has since been deleted as unused — Our World in Data
+publishes all 35 if the measure is ever wanted back.
 
 - **`COUNTRIES` now requires a day** — 35. `HAPPY_COUNTRIES` is the 34 with a ladder score;
   Luxembourg keeps a diary and has none. Charts that need happiness filter for themselves
@@ -314,22 +315,32 @@ be range-based, or move the glance standfirst onto CV. Not yet decided.
   and **16m** more childcare; men take **34m** more relaxing and **11m** more sport. The OECD's
   35-country gender finding shows up inside one country's diaries.
 
-## Prototypes kept in the repo
+## Layouts tried for `#sec-glance`, and why they lost
 
-Standalone sheets, none referenced by `index.html`. Each is a rejected or superseded answer
-to "what does Chapter One look like at a glance", and the reasoning in their comments is not
-recoverable from the shipped markup — several argue against approaches that look obvious
-until built. Delete freely if the repo should carry only shipped work.
+Nine prototype sheets explored "what does Chapter One look like at a glance" before the
+shipped one. **The files are deleted** — the repo carries only shipped work — but the
+findings are worth not rediscovering. In git history if ever needed.
 
-| File | What it was testing |
-|---|---|
-| `chapter-one-lab.html` | the counted-cell baseline |
-| `chapter-one-lab-map.html` | tile grid map. No geojson or lat-lon in the repo and a CDN fetch would break the offline-baked-data rule, so the 13×9 grid is hand-placed, with assertions that every country lands and no two share a cell |
-| `chapter-one-lab-fan.html` | angle = share, radius = spread. `Other` is 215% of its own mean, so it is drawn dashed and off-scale: capping it would mislead, dropping it would stop the pie totalling |
-| `chapter-one-lab-screen.html` | the screen-time report format |
-| `chapter-one-lab-poster.html` | the dark poster `#sec-glance` grew out of |
-| `chapter-one-lab-poster-light.html` | that poster on the story's own palette with the day card folded in — what `#sec-glance` was ported from |
-| `design-lab.html`, `gender-lab.html`, `thirtyfive-lab.html` | palette/arrangement trials, the OECD Sex column, and the first 35-country pass |
+- **A tile grid map** of the 35, one cell per country. Dropped as a format, but the reason
+  is a standing constraint: there is no geojson, topojson or lat-lon anywhere in this repo,
+  only ISO3 codes in `world_population.csv`, and pulling a projection from a CDN breaks the
+  rule that every dataset is baked and the page runs offline. Any future map here is a
+  hand-placed grid, not a projection.
+- **A fan**, angle = share of the day and radius = spread. It broke on `Other`: at 215% of
+  its own mean it dwarfed every real category, and neither fix was honest — capping it
+  misleads, excluding it stops the pie totalling 100%. Drawn dashed and off-scale in the
+  end, which is a workaround, not a design.
+- **A screen-time report** and a **counted-cell grid**, both readable and both saying less
+  per pixel than the braid.
+- **The dark poster** that `#sec-glance` grew from, then **the same poster on the story's own
+  palette** with the day card folded in — the one actually ported in.
+- Earlier: palette and arrangement trials, a first 35-country pass, and a sheet on the OECD
+  Sex column (see Open decisions).
+
+The one general lesson: **a choropleth or a single-measure encoding beats dimming a stacked
+bar.** A band worth 13% of the day is about 6px in a 46px tile and starts at a different
+offset in every tile, so the eye cannot compare them. That is also why the shipped ranking
+cannot be read down a single category — see Known structural problems.
 
 ## Data (have it, cited in SOURCES.md)
 - Day bars: OECD Time Use, `data/time_use_oecd.csv` → `data/adl-data.js` (35 countries;
@@ -340,22 +351,32 @@ until built. Delete freely if the repo should carry only shipped work.
 - American detail: `data/time_use_atus/` → `data/atus-hours.js` (share of the population by
   clock hour) and `data/day-us.js` (the whole day itemised into 44 groups, plus a finer
   twelve-group leisure split).
-- **Unused:** `data/life_expectancy.csv` (15 countries, dropped as a measure), and the
-  `dna` / `community_raw` fields in `adl-data.js` (twelve countries only).
+- **Still in the file but unused:** the `dna` / `community_raw` fields in `adl-data.js`,
+  which only ever covered twelve countries.
+- **Deleted as unused:** `life_expectancy.csv`, `food_meat.csv`, `languages.csv` and
+  `gender-split.js`. The raw sources they came from are still cited in SOURCES.md with live
+  URLs, so any of them is one download away.
 
 ## Open decisions (decide when we reach them)
-- Whether to refill `life_expectancy.csv` for all 35 from Our World in Data and bring the
-  measure back. It was dropped because the file was short, not because the data does not exist.
+- Whether to bring life expectancy back as a measure. It was dropped because the file held
+  15 countries, not because the data is unavailable — Our World in Data publishes all 35, and
+  the URL is in SOURCES.md. Refilling it would restore the fifth rank column and the DNA
+  health axis.
 - Whether the OECD Sex column becomes a chapter. Men have more leisure in **35 of 35**
   countries (+44 min average) and women do more unpaid work in **35 of 35** (+127 min), yet
-  counting both kinds of work together women work more in **31 of 35**. Sampled in
-  `gender-lab.html`.
+  counting both kinds of work together women work more in **31 of 35**. Those figures came
+  out of a prototype built on a `gender-split.js` derived from the Sex column of
+  `time_use_oecd.csv`, which is still in the repo; both the prototype and the derived file
+  are deleted, so this would start from the CSV again.
 - Cover photo source.
 - Accessibility pass (alt text, contrast) before submission — worth 15%.
 
-## Reference: LEGO "Brick by Brick" viz (LEGO.svg) — ideas to borrow
+## Reference: LEGO "Brick by Brick" viz — ideas to borrow
 
-A Tableau-built vertical scrolly. Techniques worth stealing (adapted to our palette/theme):
+A Tableau-built vertical scrolly, looked at early for structure. The `LEGO.svg` capture that
+these notes were taken from is deleted; the notes are the part that mattered.
+
+Techniques worth stealing (adapted to our palette/theme):
 
 **Structure**
 - One long vertical scroll broken into clear acts (intro → stats → head-to-head → verdict).

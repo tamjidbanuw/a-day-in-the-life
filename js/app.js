@@ -20,9 +20,10 @@ const ADL = window.ADL;
  *
  * This list used to demand life expectancy, happiness and tourism all at once,
  * and that single condition is what made the story a story about twelve
- * countries. Life expectancy was the binding constraint — data/life_expectancy.csv
- * only ever held 15 countries, three of which keep no time diary — so asking for
- * it threw away 23 countries whose days were sitting right there in the file.
+ * countries. Life expectancy was the binding constraint — its CSV only ever held
+ * 15 countries, three of which keep no time diary — so asking for it threw away
+ * 23 countries whose days were sitting right there in the file. That file is gone
+ * now; see data/SOURCES.md if the measure is ever wanted back.
  *
  * Now the requirement is a day, because a day is what the story is about. The one
  * measure that is still incomplete is happiness, missing for Luxembourg, so the

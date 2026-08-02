@@ -17,24 +17,29 @@ finding them again costs more than storing them, but nothing on the page depends
 | `API_NY.GDP.PCAP.CD_DS2_en_csv_v2_*/` | GDP per capita, current US$ (NY.GDP.PCAP.CD); 2023 values used | World Bank | **yes** — the money-and-mood scatter, and the quiz's income axis | https://data.worldbank.org/indicator/NY.GDP.PCAP.CD |
 | `tourism_worldbank/` | International tourism arrivals (ST.INT.ARVL) | World Bank WDI | **yes** — the quiz's openness axis | https://data.worldbank.org/indicator/ST.INT.ARVL |
 | `world_population.csv` | Population, density, area by country | Kaggle (World Population) | **yes** — the opener's 52.5% share, and the only file carrying ISO3 codes | TODO Kaggle link |
-| `life_expectancy.csv` | Life expectancy by country & year (from 1802) | Our World in Data | **no** — dropped as a measure | https://ourworldindata.org/life-expectancy |
 | `WHR26_Data_Figure_2.1.xlsx` | World Happiness Report 2026, Figure 2.1 data (ladder + social support, freedom, generosity sub-scores) | World Happiness Report / Gallup | **no** — fed the quiz's old Community axis | https://worldhappiness.report/data/ |
 | `population_projections_un.xlsx` | World Population Prospects 2024 (demographic indicators) | UN DESA | no | https://population.un.org/wpp |
-| `food_meat.csv` | Meat consumption kg/capita by country/year | OECD | no | https://data.oecd.org/agroutput/meat-consumption.htm |
 | `spice.csv` | Spice production/consumption/trade by country | FAO FAOSTAT | no | https://www.fao.org/faostat |
-| `languages.csv` | Languages: family, region, speakers, writing system | Kaggle | no | TODO Kaggle link |
 | `flights_routes.csv` | Airline routes (OpenFlights) | OpenFlights | no | https://openflights.org/data.html |
 | `city_happiness/` | City Happiness Index 2024 (noise, traffic, green space, AQI...) | Kaggle | no | TODO Kaggle link |
 
-### Why life expectancy is listed but unused
+### Removed as unused
 
-It was the constraint that held the story to twelve countries. One condition in `js/app.js`
-kept only countries having life expectancy **and** happiness **and** tourism, and
-`life_expectancy.csv` carries just 15 countries, three of which keep no time diary — so the
-intersection was exactly 12, and 23 countries whose days were already in the file were being
-thrown away. Dropping the measure tripled the sample. The file stays because refilling it for
-all 35 from Our World in Data would bring the measure back; it was dropped for being short,
-not for being wrong. Same for the WHR 2026 sub-scores, which only ever covered the same twelve.
+Four files were deleted once nothing read them: `life_expectancy.csv`, `food_meat.csv`,
+`languages.csv`, and the derived `gender-split.js`. Git history has them, and the publisher
+URLs above cover the first three if any is wanted again.
+
+Life expectancy is the one worth explaining, because it shaped the whole story. It was the
+constraint that held the page to twelve countries: one condition in `js/app.js` kept only
+countries having life expectancy **and** happiness **and** tourism, and the file carried just
+15 countries, three of which keep no time diary — so the intersection was exactly 12, and 23
+countries whose days were already in the OECD file were being thrown away. Dropping the
+measure tripled the sample.
+
+It was dropped for the file being short, not wrong. **Our World in Data publishes all 35**
+(https://ourworldindata.org/life-expectancy), so refilling it would restore the fifth rank
+column and the DNA health axis. The WHR 2026 sub-scores are the same story: they only ever
+covered the same twelve, which is why the quiz was rebuilt on percentiles instead.
 
 ## Generated files (committed; their build scripts are not)
 
@@ -47,7 +52,6 @@ carries its own provenance header.
 | `adl-data.js` | `time_use_oecd.csv`, `happiness/`, GDP, `tourism_worldbank/` | Per-country day (five measures), ladder score, GDP per person, arrivals. 35 countries with a day; 34 with a ladder — Luxembourg keeps a diary and has no score. Also holds unused `dna` and `community_raw` fields for twelve countries. |
 | `day-us.js` | `time_use_atus/` | The whole American day: 431 activity codes rolled to the survey's own second tier, 44 groups summing to exactly **1,440 minutes**, filed under the same five blocks the OECD charts use. 170,842 weighted diaries, 2003–2015. Plus a finer six-digit leisure split, because the television figure needs codes the tier-2 spine does not reach. |
 | `atus-hours.js` | `time_use_atus/` | Share of the American population in each activity by clock hour, for the live coda. |
-| `gender-split.js` | `time_use_oecd.csv` (Sex column) | Men/women day split, for `gender-lab.html`. Not loaded by `index.html`. |
 
 **Do not read the ATUS totals against the OECD bars.** The two surveys draw the boundaries
 differently and neither is wrong: ATUS counts travel as its own activity where the OECD folds
