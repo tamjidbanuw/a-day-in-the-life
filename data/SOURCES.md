@@ -54,12 +54,11 @@ differently and neither is wrong: ATUS counts travel as its own activity where t
 it into whatever the travel was for, which is why "travel and the rest" is 1h31 in Chapter
 Three against the OECD's 21 minutes for the United States. Both captions say so.
 
-### Three orphaned files
+### Removed: three superseded files
 
-`adl.json`, `day.json` and `day-data.js` are committed but **nothing references them** — not
-one HTML, JS or Markdown file in the repo. They are leftovers from an earlier data shape, from
-before `adl-data.js` took over, and total about 14 KB. Safe to delete; kept only because
-nobody has confirmed it. Git history holds them either way.
+`adl.json`, `day.json` and `day-data.js` were leftovers from the data shape that preceded
+`adl-data.js`, and nothing in the repo referenced them — not one HTML, JS or Markdown file.
+Deleted. Git history has them if that turns out to be wrong.
 
 ## Not in the repo
 
