@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sample · Chapter One as one poster</title>
+<!--
+  SAMPLE ONLY. index.html is untouched.
+
+  Built from the three reference posters: a dark canvas taken in at a glance, a hero
+  donut with leader-line callouts, a braid of many thin flows through the middle,
+  a block of oversized numerals, and small panels around the edge.
+
+  The one thing added to the reference: it is all cross-linked. Hover any country
+  anywhere — a strand in the braid, a row in the ranking, a tile in the map — and
+  every panel on the page becomes that country. Let go and it returns to the world
+  average. A poster you can interrogate rather than only read.
+
+  Panels, and what each is for:
+    DONUT   the average day, five slices, callout labels — the "at a glance" anchor
+    BRAID   175 ribbons: 35 countries fanning into 5 activities. The texture is the
+            hook; hovering is the reward
+    GAUGE   how much of the day is already spoken for
+    NUMBERS the figures that survive being read on their own
+    RANK    the ordering, and the only panel that can be read precisely
+-->
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+:root{
+    --ink-deep:#141414; --panel:#1C1C1C; --edge:#2E2E2E;
+    --accent:#C0392B; --accent-pale:#E8A79F; --accent-bright:#E0503F;
+    --paper:#FCFCFB; --ink-faint:#7C7C7C;
+    /* the five, stepped lighter than the story's own so they clear a dark ground */
+    --c-pca:#7A8189; --c-paw:#C0392B; --c-upw:#E8A79F; --c-lei:#C9CED3; --c-oth:#5F6469;
+    --txt:#EDEDED; --txt-soft:#A8A8A8;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ink-deep);color:var(--txt);
+    font:400 16px/1.6 'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.poster{max-width:1240px;margin:0 auto;padding:26px 22px 70px}
+
+/* ── header ─────────────────────────────────────────────── */
+.head{display:grid;gap:20px 34px;grid-template-columns:1fr;border-bottom:1px solid var(--edge);
+    padding-bottom:20px;margin-bottom:22px}
+@media (min-width:860px){.head{grid-template-columns:minmax(260px,.85fr) 1.15fr}}
+.head h1{margin:0;font-size:clamp(30px,4.6vw,52px);line-height:1.02;font-weight:700;
+    letter-spacing:-.025em}
+.head h1 span{display:block;color:var(--txt-soft);font-weight:400}
+.head p{margin:0 0 10px;font-size:13.5px;line-height:1.6;color:var(--txt-soft);max-width:62ch}
+.head p strong{color:var(--txt);font-weight:600}
+.src-box{border:1px solid var(--edge);border-radius:5px;padding:9px 12px;margin-top:14px;
+    display:inline-block}
+.src-box b{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--accent-pale);margin-bottom:3px}
+.src-box span{font-size:11.5px;color:var(--ink-faint);line-height:1.5}
+
+/* ── grid ───────────────────────────────────────────────── */
+.grid{display:grid;gap:18px;grid-template-columns:1fr}
+@media (min-width:900px){
+    .grid{grid-template-columns:280px 1fr 280px;align-items:start}
+    .span-mid{grid-column:2}
+}
+.panel{background:var(--panel);border:1px solid var(--edge);border-radius:6px;padding:16px 16px 14px}
+.panel h2{margin:0 0 2px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    font-weight:700;color:var(--txt)}
+.panel p.sub{margin:0 0 12px;font-size:11.5px;color:var(--ink-faint);line-height:1.5}
+svg{display:block;width:100%;height:auto;overflow:visible}
+
+/* ── who is selected ────────────────────────────────────── */
+.who{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:0 0 14px}
+.who b{font-size:clamp(19px,2.4vw,26px);font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.who span{font-size:11.5px;color:var(--ink-faint)}
+.who em{font-style:normal;color:var(--accent-pale);font-size:11.5px;font-weight:600}
+
+/* ── donut callouts ─────────────────────────────────────── */
+.dn-lead{stroke:var(--edge);stroke-width:1;fill:none}
+.dn-lab{font-size:10.5px;font-weight:600;fill:var(--txt-soft)}
+.dn-val{font-size:14px;font-weight:700;fill:var(--txt)}
+.dn-seg{transition:opacity .25s ease,transform .3s cubic-bezier(.2,.9,.25,1);
+    transform-origin:center;cursor:pointer}
+.dn-seg.mute{opacity:.28}
+.dn-mid{font-size:22px;font-weight:700;fill:var(--txt);text-anchor:middle}
+.dn-sub{font-size:9.5px;fill:var(--ink-faint);text-anchor:middle;letter-spacing:.1em;
+    text-transform:uppercase}
+
+/* ── the braid ──────────────────────────────────────────── */
+.rib{transition:opacity .3s ease}
+.braid.probing .rib{opacity:.07}
+.braid.probing .rib.on{opacity:.95}
+.br-cap{font-size:9.5px;fill:var(--ink-faint)}
+.br-band{font-size:10px;font-weight:700}
+.br-tick{font-size:8.5px;fill:var(--ink-faint)}
+.br-hit{fill:transparent;cursor:pointer}
+.br-hl{transition:x .25s ease,width .25s ease,opacity .25s ease;pointer-events:none}
+.br-name{font-size:9px;fill:var(--txt);font-weight:600;opacity:0;transition:opacity .2s}
+.br-flag{font-size:12.5px;opacity:.9}
+.nofl .br-flag{font-size:6.5px;fill:var(--faint,#7C7C7C);font-weight:700}
+.br-name.on{opacity:1}
+
+/* ── big numerals ───────────────────────────────────────── */
+.nums{display:grid;gap:9px}
+.nums div{display:flex;align-items:baseline;gap:10px;border-bottom:1px solid var(--edge);
+    padding-bottom:8px}
+.nums div:last-child{border-bottom:0}
+/* scoped to the direct child: the descriptions contain their own emphasis, and an
+   unscoped `.nums b` turned "paid work" inside a sentence into a 23px numeral */
+.nums > div > b{font-size:23px;font-weight:700;letter-spacing:-.02em;line-height:1;
+    min-width:88px;font-variant-numeric:tabular-nums}
+.nums span{font-size:11.5px;color:var(--txt-soft);line-height:1.35}
+.nums span em{font-style:normal;font-weight:600;color:var(--txt)}
+.pinnote{margin:0 0 10px;min-height:1.2em;font-size:11px;font-weight:700;
+    color:var(--accent-bright);letter-spacing:.02em}
+
+/* ── donut callouts, as a list rather than SVG text ─────── */
+.dn-list{display:grid;grid-template-columns:1fr 1fr;gap:9px 12px;margin:12px 0 0}
+.dn-list div{border-top:1px solid var(--edge);padding-top:6px}
+.dn-list b{display:block;font-size:14.5px;font-weight:700;line-height:1.15;
+    font-variant-numeric:tabular-nums}
+.dn-list span{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--ink-faint);
+    line-height:1.3;margin-top:2px}
+.dn-list i{width:8px;height:8px;border-radius:2px;flex:0 0 auto}
+
+/* ── ranking ────────────────────────────────────────────── */
+.rank{position:relative}
+.rk-row{position:absolute;left:0;right:0;display:grid;
+    grid-template-columns:9.4rem 1fr 3.4rem;gap:10px;align-items:center;
+    transition:transform .6s cubic-bezier(.22,.61,.36,1),opacity .25s ease;cursor:pointer}
+.rk-name{display:flex;align-items:center;justify-content:flex-end;gap:5px;
+    font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;color:var(--txt-soft)}
+.rk-track{height:9px;background:#242424;border-radius:2px;overflow:hidden;display:flex}
+.rk-track i{display:block;height:100%}
+.rk-val{font-size:10px;text-align:right;color:var(--ink-faint);
+    font-variant-numeric:tabular-nums}
+.rank.probing .rk-row{opacity:.3}
+.rank.probing .rk-row.on{opacity:1}
+.rk-row.on .rk-name{color:var(--accent-bright);font-size:13px}
+.rk-row.on{z-index:6}
+.rk-row.on .rk-track{height:15px}
+.rk-row.on .rk-val{font-size:12px;color:var(--txt)}
+.rk-row.pinned .rk-track{outline:1.5px solid var(--accent-bright);outline-offset:2px}
+/* pinned ribbons keep full strength even when the pointer is elsewhere */
+.braid.probing .rib.pinned{opacity:.45}
+.braid.probing .rib.pinned.on{opacity:.95}
+
+/* ── gauge ──────────────────────────────────────────────── */
+.gg-track{fill:none;stroke:#262626}
+.gg-fill{fill:none;stroke:var(--accent);transition:stroke-dashoffset .55s cubic-bezier(.22,.61,.36,1)}
+.gg-val{font-size:26px;font-weight:700;fill:var(--txt);text-anchor:middle}
+.gg-lab{font-size:9.5px;fill:var(--ink-faint);text-anchor:middle;letter-spacing:.1em;
+    text-transform:uppercase}
+
+.pills{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 12px}
+.pills button{font:inherit;font-size:11px;font-weight:600;cursor:pointer;padding:.26rem .6rem;
+    border-radius:999px;border:1px solid var(--edge);background:transparent;color:var(--txt-soft)}
+.pills button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.pills button:focus-visible{outline:2px solid var(--accent-pale);outline-offset:2px}
+.key{display:flex;flex-wrap:wrap;gap:5px 14px;margin:12px 0 0;font-size:10.5px;color:var(--txt-soft)}
+.key i{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:5px;
+    vertical-align:-1px}
+.note{font-size:11px;color:var(--ink-faint);line-height:1.55;margin:12px 0 0}
+.note em{font-style:normal;font-weight:700;color:var(--txt-soft)}
+footer{max-width:1240px;margin:26px auto 0;padding:16px 22px 0;border-top:1px solid var(--edge);
+    font-size:11px;color:var(--ink-faint)}
+
+/* flag slot: same width whether it holds an emoji or a two-letter fallback chip */
+.flag{display:inline-block;width:1.35em;text-align:center;font-size:1.05em;
+    line-height:1;flex:0 0 auto}
+.flag-chip{font-size:.62em;font-weight:700;letter-spacing:.02em;border:1px solid currentColor;
+    border-radius:2px;padding:1px 2px;opacity:.75;width:auto;min-width:1.9em}
+</style>
+</head>
+<body>
+<div class="poster">
+
+    <div class="head">
+        <div>
+            <h1>A Day in the Life<span>of the World</span></h1>
+            <div class="src-box">
+                <b>Data source</b>
+                <span>OECD Time Use Database · 35 countries<br>minutes per day, both sexes</span>
+            </div>
+        </div>
+        <div>
+            <p><strong>Thirty-five countries keep a time diary</strong> — a record of what thousands
+                of people actually did across 24 hours. They are the only places on earth where an
+                ordinary day has been written down and counted.</p>
+            <p>Everything here is one day. <strong>Hover any country</strong>, in the braid or the
+                ranking, and every panel becomes that country; let go and it returns to the average
+                of all 35. The one finding worth carrying out: the biggest block of the day is also
+                the one nobody disagrees about.</p>
+        </div>
+    </div>
+
+    <div class="who" id="who"></div>
+
+    <div class="grid">
+        <!-- left column -->
+        <div>
+            <div class="panel">
+                <h2>Where it goes</h2>
+                <p class="sub">The day as one circle, five slices.</p>
+                <div id="donut"></div>
+                <div class="dn-list" id="dn-list"></div>
+            </div>
+            <div class="panel" style="margin-top:18px">
+                <h2>Already spoken for</h2>
+                <p class="sub">Work and sleep, as a share of 24 hours.</p>
+                <div id="gauge"></div>
+            </div>
+        </div>
+
+        <!-- centre: the braid -->
+        <div class="span-mid">
+            <div class="panel">
+                <h2>Thirty-five days, five demands</h2>
+                <p class="sub">Every country&rsquo;s 24 hours, fanning out into what they are spent
+                    on. One ribbon per country per activity — 175 in all. Hover a column.</p>
+                <div id="braid"></div>
+                <div class="key" id="key"></div>
+                <p class="note" id="braid-note"></p>
+            </div>
+            <!-- the ranking lives in the wide column: 35 country names truncate badly in
+                 a 280px sidebar, and this is the one panel meant to be read exactly -->
+            <div class="panel" style="margin-top:18px">
+                <h2>The ordering</h2>
+                <p class="sub">The one panel you can read precisely. Hover a row and every other
+                    panel follows it.</p>
+                <div class="pills" id="pills"></div>
+                <div class="rank" id="rank"></div>
+            </div>
+        </div>
+
+        <!-- right column -->
+        <div>
+            <div class="panel">
+                <p class="pinnote" id="pinnote"></p>
+                <h2>Total numbers</h2>
+                <p class="sub">Counted across all 35, not asserted.</p>
+                <div class="nums" id="nums"></div>
+            </div>
+            <div class="panel" style="margin-top:18px">
+                <h2>How to read this</h2>
+                <p class="sub">Three things that are easy to get wrong.</p>
+                <p class="note"><em>Order is not time.</em> Every block and ribbon sits in a fixed
+                    order. The data records how much of the day went to something, never when — no
+                    country here is asleep at midnight because the grey band is on the left.</p>
+                <p class="note"><em>Every country counts once.</em> The average is an average of 35
+                    days, not of 4.2 billion people. China and Luxembourg carry the same weight,
+                    which is why the figures differ from a population-weighted world.</p>
+                <p class="note"><em>Ranks are size, not merit.</em> First on work is the longest
+                    working day, not the best one. More sleep is not better than less.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>Sample page · A Day in the Life of the World · every figure computed in the page from
+        <code>data/adl-data.js</code>. Block order is fixed and is not a timeline: the data records
+        how much, never when.</footer>
+</div>
+
+<script src="data/adl-data.js"></script>
+<script>
+(function () {
+    'use strict';
+
+    /* ── flags ──────────────────────────────────────────────
+       Emoji built from the ISO 3166-1 alpha-2 code (two regional indicator symbols),
+       not image assets: every dataset in this project is baked in and works offline
+       from file://, and 35 SVG flags would mean bundling files or hitting a CDN.
+
+       The cost is platform. macOS, iOS and Android draw them; Windows Chrome renders
+       the two letters instead. So support is measured once below and, where it is
+       missing, a bordered two-letter chip is used. Both occupy the same slot, so the
+       layout never depends on the glyph being available. */
+    var ISO2 = {
+        'Australia': 'AU', 'Austria': 'AT', 'Belgium': 'BE', 'Bulgaria': 'BG',
+        'Canada': 'CA', 'China': 'CN', 'Croatia': 'HR', 'Denmark': 'DK',
+        'Estonia': 'EE', 'Finland': 'FI', 'France': 'FR', 'Germany': 'DE',
+        'Greece': 'GR', 'Hungary': 'HU', 'India': 'IN', 'Ireland': 'IE',
+        'Italy': 'IT', 'Japan': 'JP', 'Korea': 'KR', 'Latvia': 'LV',
+        'Lithuania': 'LT', 'Luxembourg': 'LU', 'Mexico': 'MX', 'Netherlands': 'NL',
+        'New Zealand': 'NZ', 'Norway': 'NO', 'Poland': 'PL', 'Portugal': 'PT',
+        'Slovenia': 'SI', 'South Africa': 'ZA', 'Spain': 'ES', 'Sweden': 'SE',
+        'T\u00fcrkiye': 'TR', 'United Kingdom': 'GB', 'United States': 'US'
+    };
+    var FLAG_OK = (function () {
+        try {
+            var cv = document.createElement('canvas');
+            var x = cv.getContext('2d');
+            x.font = '20px sans-serif';
+            // one glyph if the pair is composed; two letter-boxes if it is not
+            var pair = x.measureText('\uD83C\uDDFA\uD83C\uDDF8').width;
+            var one = x.measureText('\uD83C\uDDFA').width;
+            return pair < one * 1.8;
+        } catch (e) {
+            return false;
+        }
+    })();
+    function flagChar(name) {
+        var cc = ISO2[name];
+        if (!cc) return '';
+        if (!FLAG_OK) return cc;
+        return String.fromCodePoint(0x1F1E6 + cc.charCodeAt(0) - 65,
+                                    0x1F1E6 + cc.charCodeAt(1) - 65);
+    }
+    /* For HTML. The chip class only bites when the emoji is unavailable. */
+    function flagHTML(name) {
+        return '<span class="flag' + (FLAG_OK ? '' : ' flag-chip') + '">' +
+            flagChar(name) + '</span>';
+    }
+    var NS = 'http://www.w3.org/2000/svg';
+    var C = ADL.countries;
+    var CATS = [
+        { key: 'PCA', label: 'Sleep & self-care', color: 'var(--c-pca)', hex: '#7A8189' },
+        { key: 'PAW', label: 'Paid work', color: 'var(--c-paw)', hex: '#C0392B' },
+        { key: 'UPW', label: 'Unpaid work', color: 'var(--c-upw)', hex: '#E8A79F' },
+        { key: 'LEI', label: 'Leisure', color: 'var(--c-lei)', hex: '#C9CED3' },
+        { key: 'OTH', label: 'Other', color: 'var(--c-oth)', hex: '#5F6469' }
+    ];
+    var DAY = 1440;
+    var nice = function (n) { return n.replace(' (People\u2019s Republic of)', ''); };
+    var hm = function (v) {
+        var h = Math.floor(v / 60), m = Math.round(v % 60);
+        return h + 'h' + (m < 10 ? '0' : '') + m;
+    };
+    var el = function (n, a, t) {
+        var e = document.createElementNS(NS, n);
+        for (var k in a) e.setAttribute(k, a[k]);
+        if (t != null) e.textContent = t;
+        return e;
+    };
+    var R = Object.keys(C).filter(function (k) { return C[k].minutes; }).map(function (k) {
+        var m = C[k].minutes;
+        return { name: nice(k), m: m, work: m.PAW + m.UPW, sleep: m.PCA, leisure: m.LEI,
+                 paid: m.PAW, unpaid: m.UPW };
+    });
+    /* The world average of the 35 — the resting state of every panel. An average of
+       averages, which is fine here because every country contributes exactly one day:
+       no weighting by population, and the panel says so. */
+    var AVG = { name: 'All 35 countries', m: {}, avg: true };
+    CATS.forEach(function (k) {
+        AVG.m[k.key] = R.reduce(function (s, c) { return s + (c.m[k.key] || 0); }, 0) / R.length;
+    });
+    AVG.work = AVG.m.PAW + AVG.m.UPW;
+    AVG.sleep = AVG.m.PCA; AVG.leisure = AVG.m.LEI;
+    AVG.paid = AVG.m.PAW; AVG.unpaid = AVG.m.UPW;
+
+    document.getElementById('key').innerHTML = CATS.map(function (k) {
+        return '<span><i style="background:' + k.color + '"></i>' + k.label + '</span>';
+    }).join('');
+
+    // ══ DONUT ═════════════════════════════════════════════
+    var donut = (function () {
+        var W = 248, H = 200, cx = W / 2, cy = 96, r = 74, sw = 24;
+        var svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img' });
+        document.getElementById('donut').appendChild(svg);
+        var circ = 2 * Math.PI * r;
+        var g = el('g', { transform: 'rotate(-90 ' + cx + ' ' + cy + ')' });
+        svg.appendChild(g);
+        var segs = CATS.map(function (k) {
+            var s = el('circle', { class: 'dn-seg', cx: cx, cy: cy, r: r, fill: 'none',
+                stroke: k.color, 'stroke-width': sw });
+            g.appendChild(s);
+            return s;
+        });
+        var mid = el('text', { class: 'dn-mid', x: cx, y: cy + 2 });
+        var midsub = el('text', { class: 'dn-sub', x: cx, y: cy + 16 }, 'minutes');
+        svg.appendChild(mid); svg.appendChild(midsub);
+
+        /* The callouts are HTML under the ring, not SVG text around it. Five leader
+           lines fanning off a 74px radius collide at this panel width — the first
+           attempt had "Unpaid work" sitting on top of "Other" — and a two-column list
+           in the flow cannot overlap however the numbers change. */
+        var list = document.getElementById('dn-list');
+        list.innerHTML = CATS.map(function (k) {
+            return '<div><b data-v="' + k.key + '"></b><span><i style="background:' + k.color +
+                '"></i>' + k.label + '</span></div>';
+        }).join('');
+        var vals = {};
+        CATS.forEach(function (k) { vals[k.key] = list.querySelector('[data-v="' + k.key + '"]'); });
+
+        return {
+            draw: function (c) {
+                var acc = 0;
+                CATS.forEach(function (k, i) {
+                    var v = c.m[k.key] || 0, len = v / DAY * circ;
+                    segs[i].setAttribute('stroke-dasharray', len + ' ' + (circ - len));
+                    segs[i].setAttribute('stroke-dashoffset', -acc);
+                    acc += len;
+                    vals[k.key].innerHTML = Math.round(v / DAY * 100) + '%';
+                    vals[k.key].title = hm(v);
+                    vals[k.key].nextElementSibling.lastChild.textContent = k.label + ' · ' + hm(v);
+                });
+                mid.textContent = '1,440';
+            },
+            focus: function (key) {
+                segs.forEach(function (s, i) {
+                    s.classList.toggle('mute', !!key && CATS[i].key !== key);
+                });
+            }
+        };
+    })();
+
+    // ══ GAUGE ═════════════════════════════════════════════
+    var gauge = (function () {
+        var W = 248, H = 132, cx = W / 2, cy = 112, r = 82, sw = 17;
+        var svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img' });
+        document.getElementById('gauge').appendChild(svg);
+        var half = Math.PI * r;
+        var d = 'M' + (cx - r) + ',' + cy + ' A' + r + ',' + r + ' 0 0 1 ' + (cx + r) + ',' + cy;
+        svg.appendChild(el('path', { class: 'gg-track', d: d, 'stroke-width': sw }));
+        var fill = el('path', { class: 'gg-fill', d: d, 'stroke-width': sw,
+            'stroke-dasharray': half + ' ' + half, 'stroke-dashoffset': half });
+        svg.appendChild(fill);
+        var val = el('text', { class: 'gg-val', x: cx, y: cy - 12 });
+        var lab = el('text', { class: 'gg-lab', x: cx, y: cy + 6 }, 'of 24 hours');
+        svg.appendChild(val); svg.appendChild(lab);
+        return function (c) {
+            var p = (c.work + c.sleep) / DAY;
+            fill.setAttribute('stroke-dashoffset', half * (1 - p));
+            val.textContent = Math.round(p * 100) + '%';
+            svg.setAttribute('aria-label', Math.round(p * 100) + '% of the day is work or sleep');
+        };
+    })();
+
+    // ══ NUMBERS ═══════════════════════════════════════════
+    (function () {
+        function spread(get) {
+            var a = R.map(get), mn = Math.min.apply(null, a), mx = Math.max.apply(null, a);
+            var mu = a.reduce(function (x, y) { return x + y; }, 0) / a.length;
+            return { mn: mn, mx: mx, pct: Math.round((mx - mn) / mu * 100) };
+        }
+        var sl = spread(function (c) { return c.sleep; });
+        var pd = spread(function (c) { return c.paid; });
+        var wk = spread(function (c) { return c.work; });
+        var top = R.slice().sort(function (a, b) { return b.work - a.work; });
+        var upw = R.filter(function (c) { return c.unpaid > c.paid; });
+        var rows = [
+            ['35', 'countries on earth that keep a diary of the day'],
+            ['1,440', 'minutes each of them is counting'],
+            [hm(AVG.sleep), 'average sleep and self-care — the largest block of all'],
+            [sl.pct + '%', 'how far sleep spreads, end to end, against its own average'],
+            [pd.pct + '%', 'how far <em>paid work</em> spreads. Same day, three times the disagreement'],
+            [hm(wk.mx), 'the longest working day, in ' + top[0].name],
+            [hm(wk.mn), 'the shortest, in ' + top[top.length - 1].name],
+            [upw.length + ' of 35', 'countries where unpaid work beats paid: ' +
+                upw.map(function (c) { return c.name; }).join(', ')]
+        ];
+        document.getElementById('nums').innerHTML = rows.map(function (r) {
+            return '<div><b>' + r[0] + '</b><span>' + r[1] + '</span></div>';
+        }).join('');
+    })();
+
+    // ══ BRAID ═════════════════════════════════════════════
+    var braid = (function () {
+        var W = 900, H = 430, TOP = 34, BOT = 60, BAND = 13;
+        var svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img',
+            'aria-label': '175 ribbons: the day of 35 countries fanning into five activities' });
+        var host = document.getElementById('braid');
+        host.appendChild(svg);
+        svg.classList.add('braid');
+
+        /* Top: one band per activity, width proportional to its share of all the days
+           added together. Bottom: one column per country, all equal, because every
+           country's day is the same 1,440 minutes long — that equality is the premise of
+           the chapter and the reason this shape is honest. */
+        var order = R.slice().sort(function (a, b) { return b.work - a.work; });
+        var grand = R.length * DAY;
+        var GAPT = 6, GAPB = 1.2;
+        var topTotal = W - GAPT * (CATS.length - 1);
+        var botTotal = W - GAPB * (R.length - 1);
+        var colW = botTotal / R.length;
+
+        var topX = {}, x = 0;
+        CATS.forEach(function (k) {
+            var tot = R.reduce(function (s, c) { return s + (c.m[k.key] || 0); }, 0);
+            topX[k.key] = { x0: x, w: tot / grand * topTotal, tot: tot, cur: x };
+            x += tot / grand * topTotal + GAPT;
+        });
+
+        var ribs = {}, hits = {}, names = {};
+        var y0 = TOP + BAND, y1 = H - BOT;
+        // bands
+        CATS.forEach(function (k) {
+            var b = topX[k.key];
+            svg.appendChild(el('rect', { x: b.x0, y: TOP, width: b.w, height: BAND,
+                fill: k.hex, rx: 1.5 }));
+            if (b.w > 54) {
+                svg.appendChild(el('text', { class: 'br-band', x: b.x0 + b.w / 2, y: TOP - 6,
+                    'text-anchor': 'middle', fill: k.hex },
+                    Math.round(b.tot / grand * 100) + '%'));
+            }
+        });
+        // ribbons, country by country
+        order.forEach(function (c, ci) {
+            var bx = ci * (colW + GAPB), byAcc = 0;
+            var g = el('g', { class: 'rib', 'data-name': c.name });
+            CATS.forEach(function (k) {
+                var v = c.m[k.key] || 0;
+                if (!v) return;
+                var tw = v / topX[k.key].tot * topX[k.key].w;
+                var tx = topX[k.key].cur;
+                topX[k.key].cur += tw;
+                var bw = v / DAY * colW;
+                var bxs = bx + byAcc;
+                byAcc += bw;
+                var ym = (y0 + y1) / 2;
+                g.appendChild(el('path', {
+                    d: 'M' + tx + ',' + y0 +
+                       ' C' + tx + ',' + ym + ' ' + bxs + ',' + ym + ' ' + bxs + ',' + y1 +
+                       ' L' + (bxs + bw) + ',' + y1 +
+                       ' C' + (bxs + bw) + ',' + ym + ' ' + (tx + tw) + ',' + ym + ' ' +
+                       (tx + tw) + ',' + y0 + ' Z',
+                    fill: k.hex, 'fill-opacity': .82
+                }));
+            });
+            svg.appendChild(g);
+            ribs[c.name] = g;
+            // a full-height invisible target: the ribbons themselves are too thin to hit
+            var hit = el('rect', { class: 'br-hit', x: bx, y: TOP, width: colW,
+                height: H - BOT - TOP, 'data-name': c.name });
+            svg.appendChild(hit);
+            hits[c.name] = hit;
+            var nm = el('text', { class: 'br-name', x: bx + colW / 2, y: y1 + 12,
+                'text-anchor': 'end',
+                transform: 'rotate(-90 ' + (bx + colW / 2) + ',' + (y1 + 12) + ')' },
+                flagChar(c.name) + ' ' + c.name);
+            svg.appendChild(nm);
+            names[c.name] = nm;
+            /* A flag under every column all the time. The names can only appear on
+               hover — 35 of them would collide — but a flag is one glyph wide and
+               fits, so the braid gets a permanent axis instead of an anonymous one. */
+            svg.appendChild(el('text', {
+                class: 'br-flag', x: bx + colW / 2, y: y1 + 17, 'text-anchor': 'middle'
+            }, flagChar(c.name)));
+        });
+        svg.appendChild(el('text', { class: 'br-cap', x: 0, y: H - 22 },
+            'each column is one country \u00b7 each ribbon one activity \u00b7 widths are minutes'));
+        var hl = el('rect', { class: 'br-hl', y: TOP, height: H - BOT - TOP, x: 0, width: 0,
+            fill: 'var(--accent-pale)', opacity: 0 });
+        svg.insertBefore(hl, svg.firstChild);
+        return { svg: svg, hits: hits, ribs: ribs, names: names, order: order, hl: hl };
+    })();
+
+    // ══ RANKING ═══════════════════════════════════════════
+    var rank = (function () {
+        var host = document.getElementById('rank'), ROW = 15, rows = {};
+        R.forEach(function (c) {
+            var d = document.createElement('div');
+            d.className = 'rk-row';
+            d.innerHTML = '<span class="rk-name">' + flagHTML(c.name) + c.name + '</span>' +
+                '<div class="rk-track">' + CATS.map(function (k) {
+                    return '<i style="width:' + ((c.m[k.key] || 0) / DAY * 100) +
+                        '%;background:' + k.color + '"></i>';
+                }).join('') + '</div><span class="rk-val" data-v></span>';
+            host.appendChild(d);
+            rows[c.name] = d;
+        });
+        host.style.height = (R.length * ROW) + 'px';
+        var MEASURES = [
+            { id: 'work', label: 'Work', get: function (c) { return c.work; } },
+            { id: 'sleep', label: 'Sleep', get: function (c) { return c.sleep; } },
+            { id: 'paid', label: 'Paid', get: function (c) { return c.paid; } },
+            { id: 'unpaid', label: 'Unpaid', get: function (c) { return c.unpaid; } },
+            { id: 'leisure', label: 'Leisure', get: function (c) { return c.leisure; } }
+        ];
+        var bar = document.getElementById('pills');
+        bar.innerHTML = MEASURES.map(function (m) {
+            return '<button type="button" data-id="' + m.id + '" aria-pressed="false">' +
+                m.label + '</button>';
+        }).join('');
+        function apply(id) {
+            var m = MEASURES.filter(function (x) { return x.id === id; })[0];
+            bar.querySelectorAll('button').forEach(function (b) {
+                b.setAttribute('aria-pressed', b.dataset.id === id ? 'true' : 'false');
+            });
+            R.slice().sort(function (a, b) { return m.get(b) - m.get(a); })
+                .forEach(function (c, i) {
+                    rows[c.name].style.transform = 'translateY(' + (i * ROW) + 'px)';
+                    rows[c.name].querySelector('[data-v]').textContent = hm(m.get(c));
+                });
+            donut.focus(m.id === 'work' ? null : { sleep: 'PCA', paid: 'PAW', unpaid: 'UPW',
+                leisure: 'LEI' }[m.id]);
+        }
+        bar.addEventListener('click', function (e) {
+            var b = e.target.closest('button[data-id]');
+            if (b) apply(b.dataset.id);
+        });
+        apply('work');
+        return { rows: rows, host: host };
+    })();
+
+    // ══ ONE HOVER, EVERY PANEL ════════════════════════════
+    var who = document.getElementById('who');
+    var bnote = document.getElementById('braid-note');
+    function show(c) {
+        donut.draw(c);
+        gauge(c);
+        var pct = Math.round((c.work + c.sleep) / DAY * 100);
+        who.innerHTML = '<b>' + (c.avg ? '' : flagChar(c.name) + ' ') + c.name + '</b>' +
+            (c.avg
+                ? '<span>the average of all 35 · hover a country to replace it</span>'
+                : '<em>' + hm(c.work) + ' of work</em><span>&middot; ' + hm(c.leisure) +
+                  ' of leisure &middot; ' + pct + '% of the day already spoken for</span>');
+        bnote.innerHTML = c.avg
+            ? 'Ribbons carry the whole picture at once, which is the point of the shape and also its ' +
+              'limit: it is a texture until you touch it. Every column is the same width because ' +
+              'every country is spending the same 1,440 minutes.'
+            : '<b>' + c.name + '</b> gives <b>' + hm(c.m.PAW) + '</b> to paid work and <b>' +
+              hm(c.m.UPW) + '</b> to work nobody pays for, sleeps <b>' + hm(c.m.PCA) +
+              '</b>, and has <b>' + hm(c.m.LEI) + '</b> left.';
+    }
+    /* hov previews, sel sticks; active() prefers the pointer so a pinned country can
+       be compared against others without losing it. */
+    var hov = null, sel = null;
+    function active() { return hov || sel; }
+    function paint() {
+        var name = active();
+        braid.svg.classList.toggle('probing', !!name);
+        rank.host.classList.toggle('probing', !!name);
+        Object.keys(braid.ribs).forEach(function (n) {
+            braid.ribs[n].classList.toggle('on', n === name);
+            braid.names[n].classList.toggle('on', n === name);
+            braid.ribs[n].classList.toggle('pinned', n === sel);
+        });
+        Object.keys(rank.rows).forEach(function (n) {
+            rank.rows[n].classList.toggle('on', n === name);
+            rank.rows[n].classList.toggle('pinned', n === sel);
+        });
+        // a band behind the active column, so the braid has somewhere to point
+        if (name && braid.hits[name]) {
+            var h = braid.hits[name];
+            braid.hl.setAttribute('x', h.getAttribute('x'));
+            braid.hl.setAttribute('width', h.getAttribute('width'));
+            braid.hl.setAttribute('opacity', sel && sel === name ? .16 : .09);
+        } else {
+            braid.hl.setAttribute('opacity', 0);
+        }
+        var pin = document.getElementById('pinnote');
+        if (pin) pin.textContent = sel ? 'Pinned: ' + sel + ' · click again to release' : '';
+        show(name ? R.filter(function (c) { return c.name === name; })[0] : AVG);
+    }
+    function hover(n) { hov = n; paint(); }
+    function pick(n) { sel = sel === n ? null : n; hov = null; paint(); }
+    addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && sel) { sel = null; paint(); }
+    });
+    Object.keys(braid.hits).forEach(function (n) {
+        var h = braid.hits[n];
+        h.addEventListener('mouseenter', function () { hover(n); });
+        h.addEventListener('mouseleave', function () { hover(null); });
+        h.addEventListener('click', function () { pick(n); });
+    });
+    Object.keys(rank.rows).forEach(function (n) {
+        rank.rows[n].addEventListener('mouseenter', function () { hover(n); });
+        rank.rows[n].addEventListener('mouseleave', function () { hover(null); });
+        rank.rows[n].addEventListener('click', function () { pick(n); });
+    });
+    show(AVG);
+})();
+</script>
+</body>
+</html>

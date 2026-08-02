@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sample · The day, mapped</title>
+<!--
+  SAMPLE ONLY. index.html is untouched.
+
+  Three things asked for at once: a map, a hover that rewards exploring, and a visual
+  that is not a chart shape people have seen a hundred times. One object below does
+  all three, and it keeps the counted cell from the baseline lab.
+
+  Why a tile map rather than a real one. There is no geometry in this repo — no
+  geojson, no topojson, not even a latitude — only ISO3 codes in
+  data/world_population.csv. A true outline map means fetching a topology from a CDN,
+  which breaks the rule that every dataset here is baked and works offline. A tile
+  grid map needs no geometry at all: one square per country, placed by hand, roughly
+  where it belongs. It is also the more honest map for this data, because the story is
+  about 35 countries and not about the 160 a world map would draw empty.
+
+  Positions are schematic. Every tile is the same size, so no country's day is
+  weighted by how large it happens to be on a globe — which for once is the correct
+  distortion: Luxembourg's day counts as much as China's here.
+-->
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+:root{
+    --ink-deep:#1A1A1A; --accent:#C0392B; --accent-pale:#E8A79F;
+    --support:#55595E; --support-pale:#A8ADB3;
+    --white:#fff; --paper:#FCFCFB; --card:#F2F2F1; --line:#DEDEDD; --neutral:#C6C6C4;
+    --ink:#1A1A1A; --ink-soft:#45484B; --ink-faint:#83868A;
+    --accent-deep:#96271B; --accent-wash:#FBEDEB; --track:#fff;
+    --care:var(--support); --paid:var(--accent); --unpaid:var(--accent-pale);
+    --leisure:var(--support-pale); --other:var(--neutral);
+    --rail:156px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+    font:400 16px/1.6 'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+main{max-width:1180px;margin:0 auto;padding:0 24px 90px}
+@media (min-width:1100px){main{padding-inline:var(--rail)}}
+.tag{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);
+    font-weight:600;margin:56px 0 10px}
+h1{font-size:clamp(30px,4.4vw,44px);line-height:1.1;font-weight:700;margin:0 0 18px;
+    letter-spacing:-.02em}
+h2.opt{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);
+    font-weight:600;margin:60px 0 6px;padding-top:16px;border-top:2px solid var(--ink-deep)}
+h3.optname{font-size:clamp(20px,2.6vw,27px);font-weight:700;letter-spacing:-.015em;
+    margin:0 0 12px;line-height:1.15}
+hr.rule{border:0;border-top:1px solid var(--line);margin:20px 0}
+.lead{font-size:18px;line-height:1.55;max-width:64ch;margin:0 0 14px}
+.body{color:var(--ink-soft);max-width:66ch;margin:0 0 14px;font-size:15px}
+strong{color:var(--accent);font-weight:600}
+.card{background:var(--card);border:1px solid var(--line);border-radius:6px;
+    padding:20px 22px 18px;margin:22px 0}
+.card-head{font-size:13px;font-weight:600;margin-bottom:2px}
+.card-sub{font-size:12.5px;color:var(--ink-faint);margin-bottom:14px}
+.fig-cap{font-size:12.5px;line-height:1.55;color:var(--ink-soft);margin:16px 0 0;max-width:74ch}
+.fig-cap b{display:block;color:var(--ink);font-weight:600;font-size:12.5px}
+.verdict{display:grid;gap:6px;margin:14px 0 0;padding-top:12px;border-top:1px solid var(--line)}
+.verdict p{margin:0;font-size:12.5px;line-height:1.5;color:var(--ink-faint)}
+.verdict b{color:var(--ink-soft);font-weight:600}
+.key{display:flex;flex-wrap:wrap;gap:6px 16px;margin:14px 0 0;font-size:12px;color:var(--ink-soft)}
+.key i{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:6px;
+    vertical-align:-1px}
+.key span:has(i:only-child){margin-right:-12px}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 18px}
+.pills button{font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;
+    padding:.32rem .75rem;border-radius:999px;border:1px solid var(--line);
+    background:var(--white);color:var(--ink-soft)}
+.pills button[aria-pressed="true"]{background:var(--accent-wash);border-color:var(--accent-pale);
+    color:var(--accent-deep)}
+.pills button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.readout{font-size:13.5px;color:var(--ink-soft);min-height:3em;margin:16px 0 0;max-width:74ch}
+.readout b{color:var(--ink)}
+.pinnote{margin:6px 0 0;min-height:1.3em;font-size:12px;font-weight:600;color:var(--accent-deep)}
+.readout em{font-style:normal;color:var(--accent);font-variant-numeric:tabular-nums;font-weight:600}
+
+/* ── the tile map ────────────────────────────────────────── */
+.map{position:relative;margin:0 auto}
+.tile{
+    position:absolute; border-radius:3px; overflow:hidden; cursor:pointer;
+    background:var(--white); border:1px solid var(--line);
+    transition:transform .34s cubic-bezier(.2,.9,.25,1), opacity .3s ease,
+               box-shadow .34s ease, border-color .3s ease;
+    transform-origin:center center;
+}
+/* the day, as a column: the tile IS one country's 24 hours read top to bottom */
+.tile-stack{position:absolute;inset:0;display:flex;flex-direction:column}
+.tile-stack i{display:block;width:100%;transition:opacity .35s ease}
+.tile-code{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    /* a flag glyph needs real size to be recognisable; the two-letter fallback does not */
+    font-size:17px;font-weight:700;letter-spacing:.02em;color:var(--ink);
+    text-shadow:0 0 3px rgb(255 255 255 / .9), 0 0 3px rgb(255 255 255 / .9);
+    transition:opacity .3s ease;
+}
+.map.nofl .tile-code{font-size:9.5px}
+/* what hover does: the tile lifts out of the grid, the rest of the world recedes,
+   and the detail that is illegible at 46px becomes legible at 2.6x */
+.map.probing .tile{opacity:.3}
+.map.probing .tile.on{opacity:1;transform:scale(2.6);z-index:20;
+    box-shadow:0 10px 24px rgb(0 0 0 / .22);border-color:var(--ink-deep)}
+.map.probing .tile.on .tile-code{opacity:0}
+.tile-detail{position:absolute;inset:0;opacity:0;transition:opacity .3s ease;
+    padding:3px 4px;display:flex;flex-direction:column;justify-content:space-between}
+.tile.on .tile-detail{opacity:1}
+.tile-detail b{font-size:5.4px;font-weight:700;line-height:1.15;color:var(--ink);
+    text-shadow:0 0 2px #fff,0 0 2px #fff}
+.tile-detail span{font-size:5px;font-weight:600;color:var(--ink-deep);
+    text-shadow:0 0 2px #fff,0 0 2px #fff;font-variant-numeric:tabular-nums}
+.tile.choro .tile-stack i.off{opacity:0}
+/* on a filled tile the code needs to read against a dark swatch as well as a pale one,
+   so it carries its own halo rather than trusting the background */
+.tile.choro .tile-code{color:var(--ink-deep)}
+/* below 34px a three-letter code no longer fits inside a tile */
+.map.tiny .tile-code{opacity:0}
+
+/* ── the linked waffle, kept from the baseline ───────────── */
+.waf{position:relative;margin-top:6px}
+.waf-row{position:absolute;left:0;right:0;display:grid;
+    grid-template-columns:8.6rem 1fr 3.6rem;gap:.7rem;align-items:center;
+    transition:transform .62s cubic-bezier(.22,.61,.36,1),opacity .25s ease}
+.waf-name{display:flex;align-items:center;justify-content:flex-end;gap:5px;
+    font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden}
+.waf-cells{display:flex;gap:1.5px}
+.waf-cells i{display:block;flex:1 1 0;height:14px;border-radius:1px;
+    transition:transform .25s ease}
+.waf-val{text-align:right;font-size:12.5px;font-variant-numeric:tabular-nums;
+    color:var(--ink-soft)}
+.waf.probing .waf-row{opacity:.32}
+.waf.probing .waf-row.on{opacity:1}
+.waf-row.on .waf-name{color:var(--accent-deep)}
+.waf-row.on .waf-cells i{transform:scaleY(1.6)}
+.waf-row.on{z-index:6}
+.waf-row.on .waf-name{font-size:14px}
+.waf-row.pinned .waf-cells{outline:2px solid var(--accent);outline-offset:3px}
+/* the pinned tile keeps a ring so a stuck state is distinguishable from a followed one */
+.tile.pinned{box-shadow:0 0 0 2px var(--accent),0 10px 24px rgb(0 0 0 / .25)!important}
+.map.probing .tile.pinned{opacity:1}
+footer{margin-top:60px;padding-top:16px;border-top:1px solid var(--line);
+    font-size:11.5px;color:var(--ink-faint)}
+
+/* flag slot: same width whether it holds an emoji or a two-letter fallback chip */
+.flag{display:inline-block;width:1.35em;text-align:center;font-size:1.05em;
+    line-height:1;flex:0 0 auto}
+.flag-chip{font-size:.62em;font-weight:700;letter-spacing:.02em;border:1px solid currentColor;
+    border-radius:2px;padding:1px 2px;opacity:.75;width:auto;min-width:1.9em}
+</style>
+</head>
+<body>
+<main>
+    <p class="tag">Sample · index.html untouched</p>
+    <h1>The day, mapped</h1>
+    <hr class="rule">
+    <p class="lead">One square per country, placed roughly where it belongs. Each square
+        <em>is</em> that country's 24 hours, read top to bottom. Hover one and it lifts out of the
+        world while the rest recedes.</p>
+    <p class="body">Not a chart shape you have seen before, because it is two things at once: a map
+        and 35 stacked days. Pick a measure and every square keeps only that band at full colour, so
+        the geography of the finding appears — <strong>unpaid work</strong> is a southern and eastern
+        European story, <strong>paid work</strong> an East Asian one, and sleep is the same
+        everywhere, which is the chapter's whole point.</p>
+
+    <div class="card">
+        <div class="card-head">Thirty-five days, in place</div>
+        <div class="card-sub">Hover a square to open it. The row it belongs to lights up below.</div>
+        <div class="pills" id="pills"></div>
+        <div class="map" id="map"></div>
+        <div class="key" id="key"></div>
+        <p class="readout" id="read"></p>
+        <p class="pinnote" id="pinnote"></p>
+
+        <div class="waf" id="waffle"></div>
+
+        <p class="fig-cap"><b>The Day, Mapped</b>
+            One tile per country, positions schematic rather than projected — no geometry is used, so
+            no country is weighted by its area on a globe. Each tile is a stacked day: 24 hours read
+            from the top of the square to the bottom. Every tile is the same size, which means
+            Luxembourg's day counts for as much as China's. The rows beneath are the same 35 days as
+            48 counted half-hour cells, allocated by largest remainder so each row sums to exactly 48.
+            Cell and band order is fixed and is <b>not a timeline</b> — the data records how much,
+            never when. OECD Time Use Database, both sexes.</p>
+        <div class="verdict">
+            <p><b>Buys:</b> a geographic read the story has never had, an unfamiliar object that still
+                resolves into something readable, and a hover that is worth doing — the tile is
+                deliberately too small to read until you open it, which is what makes opening it feel
+                like finding something.</p>
+            <p><b>Costs:</b> a tile map has to be learned; the first two seconds are "what am I looking
+                at". Only 35 of ~195 countries exist here, so the empty space is not "no data", it is
+                "not in this story", and the caption has to carry that. And schematic placement will
+                irritate anyone who knows where Croatia is.</p>
+        </div>
+    </div>
+
+    <footer>Sample page · A Day in the Life of the World · reads
+        <code>data/adl-data.js</code>, 35 countries, OECD Time Use Database</footer>
+</main>
+
+<script src="data/adl-data.js"></script>
+<script>
+(function () {
+    'use strict';
+
+    /* ── flags ──────────────────────────────────────────────
+       Emoji built from the ISO 3166-1 alpha-2 code (two regional indicator symbols),
+       not image assets: every dataset in this project is baked in and works offline
+       from file://, and 35 SVG flags would mean bundling files or hitting a CDN.
+
+       The cost is platform. macOS, iOS and Android draw them; Windows Chrome renders
+       the two letters instead. So support is measured once below and, where it is
+       missing, a bordered two-letter chip is used. Both occupy the same slot, so the
+       layout never depends on the glyph being available. */
+    var ISO2 = {
+        'Australia': 'AU', 'Austria': 'AT', 'Belgium': 'BE', 'Bulgaria': 'BG',
+        'Canada': 'CA', 'China': 'CN', 'Croatia': 'HR', 'Denmark': 'DK',
+        'Estonia': 'EE', 'Finland': 'FI', 'France': 'FR', 'Germany': 'DE',
+        'Greece': 'GR', 'Hungary': 'HU', 'India': 'IN', 'Ireland': 'IE',
+        'Italy': 'IT', 'Japan': 'JP', 'Korea': 'KR', 'Latvia': 'LV',
+        'Lithuania': 'LT', 'Luxembourg': 'LU', 'Mexico': 'MX', 'Netherlands': 'NL',
+        'New Zealand': 'NZ', 'Norway': 'NO', 'Poland': 'PL', 'Portugal': 'PT',
+        'Slovenia': 'SI', 'South Africa': 'ZA', 'Spain': 'ES', 'Sweden': 'SE',
+        'T\u00fcrkiye': 'TR', 'United Kingdom': 'GB', 'United States': 'US'
+    };
+    var FLAG_OK = (function () {
+        try {
+            var cv = document.createElement('canvas');
+            var x = cv.getContext('2d');
+            x.font = '20px sans-serif';
+            // one glyph if the pair is composed; two letter-boxes if it is not
+            var pair = x.measureText('\uD83C\uDDFA\uD83C\uDDF8').width;
+            var one = x.measureText('\uD83C\uDDFA').width;
+            return pair < one * 1.8;
+        } catch (e) {
+            return false;
+        }
+    })();
+    function flagChar(name) {
+        var cc = ISO2[name];
+        if (!cc) return '';
+        if (!FLAG_OK) return cc;
+        return String.fromCodePoint(0x1F1E6 + cc.charCodeAt(0) - 65,
+                                    0x1F1E6 + cc.charCodeAt(1) - 65);
+    }
+    /* For HTML. The chip class only bites when the emoji is unavailable. */
+    function flagHTML(name) {
+        return '<span class="flag' + (FLAG_OK ? '' : ' flag-chip') + '">' +
+            flagChar(name) + '</span>';
+    }
+    var C = ADL.countries;
+    var CATS = [
+        { key: 'PCA', label: 'Sleep & self-care', color: 'var(--care)', hex: [85, 89, 94] },
+        { key: 'PAW', label: 'Paid work', color: 'var(--paid)', hex: [192, 57, 43] },
+        { key: 'UPW', label: 'Unpaid work', color: 'var(--unpaid)', hex: [232, 167, 159] },
+        { key: 'LEI', label: 'Leisure', color: 'var(--leisure)', hex: [168, 173, 179] },
+        { key: 'OTH', label: 'Other', color: 'var(--other)', hex: [198, 198, 196] }
+    ];
+    /* Five steps from near-paper to the category's colour. Quintiles rather than a
+       continuous ramp because at 46px a reader is matching swatches, not judging
+       shades, and five is about as many as a swatch match can carry.
+       The dark end is deepened first. Two of the five categories are pale by design —
+       unpaid work is a light pink so it can read as a thinner version of paid work —
+       and a ramp that ends there spans almost no contrast at all: the top quintile came
+       out barely darker than the middle. Deepening to a fixed target luminance keeps
+       each measure's hue while giving every ramp the same usable range. */
+    var STEPS = 5;
+    function deepen(hex) {
+        var lum = (0.2126 * hex[0] + 0.7152 * hex[1] + 0.0722 * hex[2]) / 255;
+        if (lum <= 0.42) return hex;
+        var k = 0.42 / lum;
+        return hex.map(function (v) { return Math.round(v * k); });
+    }
+    function rampCss(hex, step) {
+        var end = deepen(hex);
+        var t = 0.14 + (step / (STEPS - 1)) * 0.86;
+        return 'rgb(' + end.map(function (v) {
+            return Math.round(255 + (v - 255) * t);
+        }).join(',') + ')';
+    }
+    var DAY = 1440, CELLS = 48;
+    var nice = function (n) { return n.replace(' (People\u2019s Republic of)', ''); };
+    var hm = function (v) {
+        var h = Math.floor(v / 60), m = Math.round(v % 60);
+        return h + 'h' + (m < 10 ? '0' : '') + m;
+    };
+
+    /* The map, by hand: [column, row, ISO3]. Columns run west to east, rows north to
+       south. Europe holds 24 of the 35 so it needs most of the grid; the code below
+       asserts that every country in the data has a tile and that no two share a cell,
+       because a silently dropped or stacked country is exactly the kind of error a
+       hand-built layout invites. */
+    var GRID = {
+        'Canada':          [1, 1, 'CAN'],
+        'United States':   [1, 2, 'USA'],
+        'Mexico':          [1, 3, 'MEX'],
+        'Norway':          [6, 0, 'NOR'],
+        'Sweden':          [7, 0, 'SWE'],
+        'Finland':         [8, 0, 'FIN'],
+        'Ireland':         [4, 1, 'IRL'],
+        'United Kingdom':  [5, 1, 'GBR'],
+        'Denmark':         [6, 1, 'DNK'],
+        'Estonia':         [8, 1, 'EST'],
+        'Netherlands':     [5, 2, 'NLD'],
+        'Germany':         [6, 2, 'DEU'],
+        'Poland':          [7, 2, 'POL'],
+        'Latvia':          [8, 2, 'LVA'],
+        'Belgium':         [5, 3, 'BEL'],
+        'Luxembourg':      [6, 3, 'LUX'],
+        'Austria':         [7, 3, 'AUT'],
+        'Lithuania':       [8, 3, 'LTU'],
+        'Portugal':        [3, 4, 'PRT'],
+        'Spain':           [4, 4, 'ESP'],
+        'France':          [5, 4, 'FRA'],
+        'Italy':           [6, 4, 'ITA'],
+        'Slovenia':        [7, 4, 'SVN'],
+        'Hungary':         [8, 4, 'HUN'],
+        'Croatia':         [6, 5, 'HRV'],
+        'Greece':          [7, 5, 'GRC'],
+        'Bulgaria':        [8, 5, 'BGR'],
+        'T\u00fcrkiye':    [9, 5, 'TUR'],
+        'Korea':           [11, 2, 'KOR'],
+        'Japan':           [12, 2, 'JPN'],
+        'China':           [11, 3, 'CHN'],
+        'India':           [10, 4, 'IND'],
+        'South Africa':    [6, 7, 'ZAF'],
+        'Australia':       [11, 7, 'AUS'],
+        'New Zealand':     [12, 8, 'NZL']
+    };
+
+    var R = Object.keys(C).filter(function (k) { return C[k].minutes; }).map(function (k) {
+        var m = C[k].minutes;
+        return { name: nice(k), m: m, work: m.PAW + m.UPW, sleep: m.PCA, leisure: m.LEI,
+                 paid: m.PAW, unpaid: m.UPW, other: m.OTH };
+    });
+
+    // the layout has to cover the data exactly, and no cell may hold two countries
+    var seen = {}, missing = [], clash = [];
+    R.forEach(function (c) {
+        if (!GRID[c.name]) missing.push(c.name);
+    });
+    Object.keys(GRID).forEach(function (n) {
+        var cell = GRID[n][0] + ',' + GRID[n][1];
+        if (seen[cell]) clash.push(cell + ' ' + seen[cell] + '/' + n);
+        seen[cell] = n;
+    });
+    if (missing.length || clash.length) {
+        document.getElementById('read').innerHTML =
+            '<b>Layout error.</b> missing: ' + (missing.join(', ') || 'none') +
+            ' · clashing cells: ' + (clash.join(', ') || 'none');
+    }
+
+    document.getElementById('key').innerHTML = CATS.map(function (k) {
+        return '<span><i style="background:' + k.color + '"></i>' + k.label + '</span>';
+    }).join('');
+
+    /* Largest remainder, so 48 cells are exactly used up rather than 47 or 49. */
+    function allocate(c) {
+        var raw = CATS.map(function (k) { return (c.m[k.key] || 0) / DAY * CELLS; });
+        var base = raw.map(Math.floor);
+        var left = CELLS - base.reduce(function (x, y) { return x + y; }, 0);
+        raw.map(function (v, i) { return { i: i, f: v - base[i] }; })
+            .sort(function (a, b) { return b.f - a.f; })
+            .slice(0, left).forEach(function (o) { base[o.i]++; });
+        return base;
+    }
+
+    // ── build the map ──────────────────────────────────────
+    var GAP = 5;
+    var cols = Math.max.apply(null, Object.keys(GRID).map(function (n) { return GRID[n][0]; })) + 1;
+    var rows = Math.max.apply(null, Object.keys(GRID).map(function (n) { return GRID[n][1]; })) + 1;
+    var minCol = Math.min.apply(null, Object.keys(GRID).map(function (n) { return GRID[n][0]; }));
+    var span = cols - minCol;
+    var map = document.getElementById('map');
+
+    if (!FLAG_OK) map.classList.add('nofl');
+    var tiles = {};
+    R.forEach(function (c) {
+        var g = GRID[c.name];
+        if (!g) return;
+        var t = document.createElement('div');
+        t.className = 'tile';
+        t.tabIndex = 0;
+        t.setAttribute('role', 'img');
+        var stack = CATS.map(function (k) {
+            return '<i data-cat="' + k.key + '" style="height:' +
+                ((c.m[k.key] || 0) / DAY * 100) + '%;background:' + k.color + '"></i>';
+        }).join('');
+        t.innerHTML = '<div class="tile-stack">' + stack + '</div>' +
+            '<div class="tile-code">' + flagChar(c.name) + '</div>' +
+            '<div class="tile-detail"><b>' + flagChar(c.name) + ' ' + c.name +
+            '</b><span data-v></span></div>';
+        map.appendChild(t);
+        tiles[c.name] = t;
+    });
+
+    /* Tile size follows the container rather than being fixed at 46px. A 13-column grid
+       at 46px is 607px wide, which overflowed every viewport under about 700px — the
+       one bug the width sweep caught. Below 34px the three-letter codes stop fitting,
+       so they are dropped and hover carries the identification instead. */
+    function layoutMap() {
+        var avail = (map.parentElement.clientWidth || 640) - 2;
+        var tile = Math.max(20, Math.min(46, Math.floor((avail + GAP) / span) - GAP));
+        var step = tile + GAP;
+        map.style.width = (span * step - GAP) + 'px';
+        map.style.height = (rows * step - GAP) + 'px';
+        map.classList.toggle('tiny', tile < 34);
+        Object.keys(tiles).forEach(function (n) {
+            var g = GRID[n], t = tiles[n];
+            t.style.width = tile + 'px';
+            t.style.height = tile + 'px';
+            t.style.left = ((g[0] - minCol) * step) + 'px';
+            t.style.top = (g[1] * step) + 'px';
+        });
+    }
+    layoutMap();
+    addEventListener('resize', layoutMap);
+
+    // ── the linked waffle ──────────────────────────────────
+    var host = document.getElementById('waffle'), ROW = 24, wrows = {};
+    R.forEach(function (c) {
+        var cells = '';
+        allocate(c).forEach(function (n, i) {
+            for (var j = 0; j < n; j++) cells += '<i style="background:' + CATS[i].color + '"></i>';
+        });
+        var d = document.createElement('div');
+        d.className = 'waf-row';
+        d.innerHTML = '<span class="waf-name">' + flagHTML(c.name) + c.name + '</span>' +
+            '<div class="waf-cells">' + cells + '</div>' +
+            '<span class="waf-val" data-val></span>';
+        host.appendChild(d);
+        wrows[c.name] = d;
+    });
+    host.style.height = (R.length * ROW) + 'px';
+
+    // ── hover: one country out, the rest of the world back ─
+    var wafEl = document.getElementById('waffle');
+    /* hov previews, sel sticks. active() prefers the pointer, so a pinned tile can be
+       compared against others without releasing it. The tile is already scaled 2.6x by
+       .on, so pinning keeps it open — the two asks turn out to be one mechanism. */
+    var hov = null, sel = null;
+    function active() { return hov || sel; }
+    function paint() {
+        var name = active();
+        map.classList.toggle('probing', !!name);
+        wafEl.classList.toggle('probing', !!name);
+        Object.keys(tiles).forEach(function (n) {
+            tiles[n].classList.toggle('on', n === name);
+            tiles[n].classList.toggle('pinned', n === sel);
+        });
+        Object.keys(wrows).forEach(function (n) {
+            wrows[n].classList.toggle('on', n === name);
+            wrows[n].classList.toggle('pinned', n === sel);
+        });
+        var pin = document.getElementById('pinnote');
+        if (pin) pin.textContent = sel ? 'Pinned: ' + sel + ' · click again to release' : '';
+    }
+    function hover(n) { hov = n; paint(); }
+    function pick(n) { sel = sel === n ? null : n; hov = null; paint(); }
+    addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && sel) { sel = null; paint(); }
+    });
+    Object.keys(tiles).forEach(function (n) {
+        var t = tiles[n];
+        t.addEventListener('mouseenter', function () { hover(n); });
+        t.addEventListener('focus', function () { hover(n); });
+        t.addEventListener('mouseleave', function () { hover(null); });
+        t.addEventListener('blur', function () { hover(null); });
+        t.addEventListener('click', function () { pick(n); });
+        t.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(n); }
+        });
+    });
+    Object.keys(wrows).forEach(function (n) {
+        wrows[n].style.cursor = 'pointer';
+        wrows[n].addEventListener('mouseenter', function () { hover(n); });
+        wrows[n].addEventListener('mouseleave', function () { hover(null); });
+        wrows[n].addEventListener('click', function () { pick(n); });
+    });
+
+    // ── measures ───────────────────────────────────────────
+    var MEASURES = [
+        { id: 'all', label: 'The whole day', key: null },
+        { id: 'sleep', label: 'Sleep & self-care', key: 'PCA', get: function (c) { return c.sleep; } },
+        { id: 'paid', label: 'Paid work', key: 'PAW', get: function (c) { return c.paid; } },
+        { id: 'unpaid', label: 'Unpaid work', key: 'UPW', get: function (c) { return c.unpaid; } },
+        { id: 'leisure', label: 'Leisure', key: 'LEI', get: function (c) { return c.leisure; } }
+    ];
+    var bar = document.getElementById('pills'), read = document.getElementById('read');
+    bar.innerHTML = MEASURES.map(function (m) {
+        return '<button type="button" data-id="' + m.id + '" aria-pressed="false">' +
+            m.label + '</button>';
+    }).join('');
+
+    function apply(id) {
+        var m = MEASURES.filter(function (x) { return x.id === id; })[0];
+        bar.querySelectorAll('button').forEach(function (b) {
+            b.setAttribute('aria-pressed', b.dataset.id === id ? 'true' : 'false');
+        });
+        /* Two different tile encodings, because one cannot do both jobs.
+           "The whole day" shows the stacked bands — composition everywhere.
+           A single measure fills the tile as a choropleth instead: the band for a block
+           that is 13% of the day is six pixels tall inside a 46px tile and sits at a
+           different offset in every country, so comparing 35 of them by eye is
+           impossible. Filling the whole tile gives every country the same canvas and a
+           shared scale, which is the one thing a map is genuinely good at. */
+        var cat = m.key ? CATS.filter(function (k) { return k.key === m.key; })[0] : null;
+        var vals = m.get ? R.map(m.get).slice().sort(function (a, b) { return a - b; }) : null;
+        Object.keys(tiles).forEach(function (n) {
+            var t = tiles[n], c = R.filter(function (x) { return x.name === n; })[0];
+            t.classList.toggle('choro', !!m.key);
+            t.querySelectorAll('.tile-stack i').forEach(function (i) {
+                i.classList.toggle('off', !!m.key);
+            });
+            if (!m.key) {
+                t.style.background = 'var(--white)';
+                return;
+            }
+            // rank into quintiles, so an outlier cannot flatten everyone else
+            var rank = vals.indexOf(m.get(c));
+            var step = Math.min(STEPS - 1, Math.floor(rank / (vals.length / STEPS)));
+            t.style.background = rampCss(cat.hex, step);
+        });
+        // the key follows the encoding: categories, or the scale being used
+        document.getElementById('key').innerHTML = m.key
+            ? '<span style="color:var(--ink-faint)">' + m.label + ', least</span>' +
+              Array.apply(null, { length: STEPS }).map(function (_, s) {
+                  return '<span><i style="background:' + rampCss(cat.hex, s) +
+                      ';border:1px solid var(--line)"></i></span>';
+              }).join('') +
+              '<span style="color:var(--ink-faint)">most</span>'
+            : CATS.map(function (k) {
+                  return '<span><i style="background:' + k.color + '"></i>' + k.label + '</span>';
+              }).join('');
+        var order = m.get
+            ? R.slice().sort(function (a, b) { return m.get(b) - m.get(a); })
+            : R.slice().sort(function (a, b) { return b.work - a.work; });
+        order.forEach(function (c, i) {
+            wrows[c.name].style.transform = 'translateY(' + (i * ROW) + 'px)';
+            var v = m.get ? hm(m.get(c)) : hm(c.work);
+            wrows[c.name].querySelector('[data-val]').textContent = v;
+            tiles[c.name].querySelector('[data-v]').textContent = v;
+            tiles[c.name].setAttribute('aria-label', c.name + ', ' +
+                (m.get ? m.label + ' ' + v : 'all work ' + v));
+        });
+        if (!m.get) {
+            read.innerHTML = 'Every band at full colour: each tile is one country&rsquo;s whole day, ' +
+                'top to bottom. Rows below are ordered by <b>all work</b>. Pick a single measure to ' +
+                'let the geography show.';
+            return;
+        }
+        var a = R.map(m.get);
+        var mn = Math.min.apply(null, a), mx = Math.max.apply(null, a);
+        var mu = a.reduce(function (x, y) { return x + y; }, 0) / a.length;
+        read.innerHTML = '<b>' + m.label + '</b> only. <b>' + order[0].name + '</b> spends most at ' +
+            '<em>' + hm(mx) + '</em>, <b>' + order[order.length - 1].name + '</b> least at <em>' +
+            hm(mn) + '</em> — a spread of <em>' + hm(mx - mn) + '</em>, which is <em>' +
+            Math.round((mx - mn) / mu * 100) + '%</em> of this block&rsquo;s own average. ' +
+            (id === 'sleep'
+                ? 'The tightest of any measure here, and the reason the map looks almost uniform.'
+                : 'Compare that with sleep, which spreads only 22%.');
+    }
+    bar.addEventListener('click', function (e) {
+        var b = e.target.closest('button[data-id]');
+        if (b) apply(b.dataset.id);
+    });
+    apply('unpaid');
+})();
+</script>
+</body>
+</html>

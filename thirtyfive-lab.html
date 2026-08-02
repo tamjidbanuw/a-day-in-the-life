@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sample · The story at 35 countries, without life expectancy</title>
+<!--
+  SAMPLE ONLY. index.html is untouched.
+
+  This answers one question: if life expectancy comes out, does the story still
+  read at 35 countries instead of 12?
+
+  Why those two things are the same question — js/app.js line 20 filters the
+  country list to those with life AND happiness AND tourism. data/life_expectancy.csv
+  only carries 15 entities, and three of them (Brazil, Russia, Switzerland) have no
+  time-use data. That single filter is what produces the twelve. Drop life
+  expectancy from it and the same code runs at 34.
+
+  Not 35, and that catch is the first thing on the page below.
+-->
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+:root{
+    --ink-deep:#1A1A1A; --accent:#C0392B; --accent-pale:#E8A79F;
+    --support:#55595E; --support-pale:#A8ADB3;
+    --white:#fff; --paper:#FCFCFB; --card:#F2F2F1; --line:#DEDEDD; --neutral:#C6C6C4;
+    --ink:#1A1A1A; --ink-soft:#45484B; --ink-faint:#83868A;
+    --accent-deep:#96271B; --accent-wash:#FBEDEB;
+    --care:var(--support); --paid:var(--accent); --unpaid:var(--accent-pale);
+    --leisure:var(--support-pale); --other:var(--neutral);
+    --rail:156px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+    font:400 16px/1.6 'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+main{max-width:1180px;margin:0 auto;padding:0 24px 80px}
+@media (min-width:1100px){main{padding-inline:var(--rail)}}
+.tag{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);
+    font-weight:600;margin:56px 0 10px}
+h1{font-size:clamp(30px,4.4vw,46px);line-height:1.1;font-weight:700;margin:0 0 18px;
+    letter-spacing:-.02em}
+h2{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);
+    font-weight:600;margin:52px 0 14px;padding-top:14px;border-top:1px solid var(--line)}
+hr.rule{border:0;border-top:1px solid var(--line);margin:22px 0}
+.lead{font-size:19px;line-height:1.55;max-width:62ch;margin:0 0 14px}
+.body{color:var(--ink-soft);max-width:64ch;margin:0 0 14px}
+strong{color:var(--accent);font-weight:600}
+code{font-size:.88em}
+
+.warn{background:var(--accent-wash);border-left:3px solid var(--accent);
+    padding:14px 18px;margin:22px 0;max-width:64ch}
+.warn p{margin:0;font-size:14px;line-height:1.55;color:var(--ink-soft)}
+.warn b{color:var(--accent-deep)}
+
+.fig{background:var(--card);border:1px solid var(--line);border-radius:4px;
+    padding:22px 24px 18px;margin:26px 0}
+.card-head{font-size:13px;font-weight:600;margin-bottom:2px}
+.card-sub{font-size:12.5px;color:var(--ink-faint);margin-bottom:16px}
+.fig-cap{font-size:12.5px;line-height:1.55;color:var(--ink-soft);margin:16px 0 0;max-width:70ch}
+.fig-cap b{color:var(--ink);font-weight:600}
+.fig-cap b:after{content:'  ';white-space:pre}
+.fig-meta{margin:12px 0 0;padding-top:10px;border-top:1px solid var(--line);display:grid;gap:5px}
+.fig-meta p{margin:0;font-size:11.5px;line-height:1.5;color:var(--ink-faint)}
+.fig-meta b{font-weight:600;color:var(--ink-soft)}
+svg{display:block;width:100%;overflow:visible}
+.key{display:flex;flex-wrap:wrap;gap:16px;margin:14px 0 0;font-size:12px;color:var(--ink-soft)}
+.key i{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:6px;
+    vertical-align:-1px}
+.key i.dot{border-radius:50%}
+
+table{border-collapse:collapse;width:100%;margin:18px 0;font-size:13.5px}
+th,td{text-align:left;padding:9px 12px 9px 0;border-bottom:1px solid var(--line);
+    vertical-align:top}
+th{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);
+    font-weight:600}
+td.was{color:var(--ink-faint);text-decoration:line-through}
+td.now{color:var(--ink);font-weight:500}
+td.now b{color:var(--accent);font-weight:600}
+.verdict{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+.ok{color:#2f6b3a} .bad{color:var(--accent)} .meh{color:var(--ink-faint)}
+
+#tip{position:fixed;pointer-events:none;opacity:0;transition:opacity .12s;
+    background:var(--ink-deep);color:var(--white);padding:8px 11px;border-radius:3px;
+    font-size:12px;line-height:1.45;z-index:50;max-width:240px}
+#tip b{display:block;margin-bottom:2px}
+#tip span{color:var(--support-pale)}
+footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);
+    font-size:11.5px;color:var(--ink-faint)}
+</style>
+</head>
+<body>
+<div id="tip" role="status" aria-live="polite"></div>
+<main>
+    <p class="tag">Sample · index.html untouched</p>
+    <h1>The story at 35 countries,<br>with life expectancy pulled out</h1>
+    <hr class="rule">
+    <p class="lead">Removing life expectancy and widening to 35 countries are the same edit. One
+        line in <code>js/app.js</code> keeps only countries that have life expectancy, happiness and
+        tourism, and that line is the entire reason the story follows twelve.</p>
+
+    <div class="warn"><p><b>It is 34, not 35.</b> Luxembourg has no World Happiness Report score in
+        <code>adl-data.js</code>, so any chart gated on happiness drops it. Time use and tourism
+        cover all 35. Below, each chart states its own <i>n</i> rather than the page forcing one
+        number on all of them — which is the honest fix, but it does mean the country count changes
+        between charts.</p></div>
+
+    <h2>1 · The ranked bars, the chart most at risk</h2>
+    <p class="body">This is the Chapter One workhorse: paid and unpaid work stacked, countries
+        ranked by total. At twelve it is a tidy block. At 35 it is three times as tall, and the
+        question is whether a reader still reads it or just scrolls past.</p>
+
+    <div class="fig">
+        <div class="card-head">Hours of work per day, paid and unpaid</div>
+        <div class="card-sub">All 35 countries in the time-use file, ranked by total. The twelve the
+            story currently follows are marked.</div>
+        <svg id="c-work" role="img" aria-label="Stacked bar chart of paid and unpaid work per day for 35 countries, ranked by total"></svg>
+        <div class="key">
+            <span><i style="background:var(--paid)"></i>Paid work</span>
+            <span><i style="background:var(--unpaid)"></i>Unpaid work</span>
+            <span style="color:var(--ink);font-weight:600">Bold names</span>
+            <span style="margin-left:-10px">are the twelve the story follows now</span>
+        </div>
+        <p class="fig-cap"><b>The Second Shift, Widened</b>
+            Stacked bars, paid and unpaid work in minutes per day, 35 countries, ranked by total.
+            Unpaid work covers cooking, cleaning, shopping and care.</p>
+        <div class="fig-meta">
+            <p><b>Data source:</b> OECD Time Use Database, via <code>data/time_use_oecd.csv</code>.</p>
+            <p><b>Note:</b> 60 of the file's 525 observations are flagged <i>Definition differs</i>
+                by the OECD, meaning that country drew a category boundary in its own way. Those
+                countries are still shown; the flag is the reason small gaps between neighbours
+                should not be read as real.</p>
+        </div>
+    </div>
+
+    <h2>2 · The slope chart, the chart most likely to break</h2>
+    <p class="body">Chapter Three ranks every country on five measures to show that no country leads
+        on all of them. Life expectancy was one of the five, so it becomes four. Four measures still
+        produce four different winners, and the new winners are the more recognisable
+        ones.<span id="win"></span></p>
+
+    <div class="fig">
+        <div class="card-head">Rank on four measures</div>
+        <div class="card-sub">Rank 1 is the most of that thing. Hover any line to follow one country
+            through. Happiness is <i>n</i>=34, so the happiness column has one fewer rank than the
+            other three.</div>
+        <svg id="c-slope" role="img" aria-label="Slope chart ranking countries on work, sleep, leisure and happiness"></svg>
+        <p class="fig-cap"><b>Four Measures, Four Winners</b>
+            Bump chart, one line per country, rank on each of four daily measures. Lines are grey
+            except the twelve the story currently follows.</p>
+        <div class="fig-meta">
+            <p><b>Data source:</b> OECD Time Use Database; World Happiness Report via
+                <code>data/adl-data.js</code>.</p>
+            <p><b>Note:</b> Ranking discards distance. Two countries a minute apart sit a whole rank
+                apart here, which at 35 countries happens far more often than at twelve.</p>
+        </div>
+    </div>
+
+    <p class="body">That chart does not work, and it is the clearest argument on this page for
+        keeping something at twelve. Thirty-five lines crossing four columns is a texture, not a
+        reading: the finding it exists to deliver — that no country leads everywhere — is buried by
+        the very evidence meant to prove it. The same chart, same code, twelve countries:</p>
+
+    <div class="fig">
+        <div class="card-head">The same chart at twelve</div>
+        <div class="card-sub">Identical code, identical measures, ranks recomputed within the twelve.</div>
+        <svg id="c-slope12" role="img" aria-label="The same slope chart restricted to twelve countries"></svg>
+        <p class="fig-cap"><b>Four Measures, Twelve Countries</b>
+            The crossings are now countable, which is the whole job of the chart.</p>
+        <div class="fig-meta">
+            <p><b>Note:</b> Ranks here are within the twelve, so a country&rsquo;s number changes
+                between the two charts even though its underlying minutes do not. Rank is a statement
+                about the comparison set, not about the country.</p>
+        </div>
+    </div>
+
+    <h2>3 · What fills the hole life expectancy leaves</h2>
+    <p class="body">Chapter Two was built on two ways of scoring a life: count the years, or ask.
+        Take the years away and the chapter has one measure and no argument. The repo already holds a
+        replacement it has never used — GDP per capita, present for all 35 countries — and it
+        correlates with happiness harder than life expectancy ever did.</p>
+
+    <div class="fig">
+        <div class="card-head">Money against mood</div>
+        <div class="card-sub">GDP per capita on a log scale against the happiness ladder,
+            <i>n</i>=34.</div>
+        <svg id="c-gdp" role="img" aria-label="Scatter plot of GDP per capita against happiness score for 34 countries"></svg>
+        <p class="fig-cap"><b>The Measure That Actually Agrees</b>
+            One dot per country, GDP per capita (log scale) against the World Happiness Report
+            ladder score. The line is the least-squares fit.</p>
+        <div class="fig-meta">
+            <p><b>Data source:</b> World Happiness Report and GDP per capita, both via
+                <code>data/adl-data.js</code>.</p>
+            <p><b>Note:</b> A log scale is used because a dollar matters less the more of them you
+                have; on a linear axis the same relationship looks like a curve and reads as weaker
+                than it is. Correlation is not cause in either direction.</p>
+        </div>
+    </div>
+
+    <h2>4 · Every number in the copy that changes</h2>
+    <p class="body">Widening the country set moves the facts, not just the charts. These are
+        recomputed from the same files, twelve against 35.</p>
+    <table id="tbl">
+        <thead><tr><th>Claim in the copy</th><th>At 12</th><th>At 35</th><th>Verdict</th></tr></thead>
+        <tbody></tbody>
+    </table>
+
+    <h2>5 · What breaks and cannot be recomputed</h2>
+    <p class="body">Three things depend on life expectancy in ways that widening does not fix.</p>
+    <table>
+        <thead><tr><th>Feature</th><th>What happens</th></tr></thead>
+        <tbody>
+        <tr><td><b>Chapter Two</b><br><span style="color:var(--ink-faint);font-size:12px">
+            <code>#sec-life</code>, its blurb and title</span></td>
+            <td>Dies as conceived. &ldquo;Where the Two Measures Part&rdquo; names life expectancy and
+            happiness; with one measure there is nothing to part. GDP against happiness, above, is a
+            replacement, but it is a different chapter with a different point.</td></tr>
+        <tr><td><b>The DNA match</b><br><span style="color:var(--ink-faint);font-size:12px">
+            <code>#sec-dna</code>, four dials</span></td>
+            <td>Loses its <i>Health</i> dial and drops to three. Worse, the <code>dna</code>
+            percentiles in <code>adl-data.js</code> are hard-coded for twelve countries only, and no
+            generator script for that file exists in the repo. Widening the match to 35 means writing
+            one.</td></tr>
+        <tr><td><b>The Amateur Actuary badge</b><br><span style="color:var(--ink-faint);font-size:12px">
+            8 badges &rarr; 7</span></td>
+            <td>Its hint points at the life-expectancy scale and its fact is India&rsquo;s 69 years.
+            Both go. The badge grid is built two-across, so seven leaves a gap.</td></tr>
+        </tbody>
+    </table>
+
+    <footer>Sample page · A Day in the Life of the World · every figure recomputed from
+        <code>data/adl-data.js</code> and <code>data/time_use_oecd.csv</code> at load</footer>
+</main>
+
+<script src="data/adl-data.js"></script>
+<script>
+(function () {
+    'use strict';
+    var SVG = 'http://www.w3.org/2000/svg', tip = document.getElementById('tip');
+    function el(n, a, t) {
+        var e = document.createElementNS(SVG, n);
+        for (var k in a) e.setAttribute(k, a[k]);
+        if (t != null) e.textContent = t;
+        return e;
+    }
+    function hm(v) { return Math.floor(v / 60) + 'h' + (v % 60 < 10 ? '0' : '') + (v % 60); }
+
+    /* The twelve, derived the way the story derives them rather than typed out:
+       the countries that have a life-expectancy figure. That is the whole rule. */
+    var TWELVE = {};
+    Object.keys(ADL.countries).forEach(function (k) {
+        if (ADL.countries[k].life != null) TWELVE[k.replace(' (People\u2019s Republic of)', '')] = 1;
+    });
+
+    var R = Object.keys(ADL.countries).map(function (k) {
+        var v = ADL.countries[k], m = v.minutes;
+        var nm = k.replace(' (People\u2019s Republic of)', '');
+        return {
+            name: nm, twelve: !!TWELVE[nm],
+            paid: m.PAW, unpaid: m.UPW, work: m.PAW + m.UPW,
+            sleep: m.PCA, leisure: m.LEI,
+            happy: v.happiness, gdp: v.gdp
+        };
+    });
+
+    function showTip(ev, html) {
+        tip.innerHTML = html; tip.style.opacity = 1;
+        var r = ev.target.getBoundingClientRect();
+        tip.style.left = Math.min(r.left + 12, innerWidth - 260) + 'px';
+        tip.style.top = Math.max(r.top - 6, 8) + 'px';
+    }
+    function hideTip() { tip.style.opacity = 0; }
+
+    /* ── 1 · ranked bars, all 35 ───────────────────────────── */
+    (function () {
+        var d = R.slice().sort(function (a, b) { return b.work - a.work; });
+        var rowH = 19, L = 132, RGT = 62, T = 24, W = 900,
+            H = T + d.length * rowH + 22;
+        var max = Math.max.apply(null, d.map(function (o) { return o.work; }));
+        var w = W - L - RGT, sc = function (v) { return v / max * w; };
+        var svg = document.getElementById('c-work');
+        svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+        svg.setAttribute('height', H);
+
+        /* Hour gridlines, labelled at both ends. At 35 rows the chart is 700px tall,
+           and a scale printed only at the top is out of sight by the time you reach
+           the countries at the bottom — which is one of the real costs of widening. */
+        for (var t = 120; t <= max; t += 120) {
+            svg.appendChild(el('line', { x1: L + sc(t), y1: T - 6, x2: L + sc(t), y2: H - 18,
+                stroke: 'var(--line)', 'stroke-width': 1 }));
+            [T - 11, H - 5].forEach(function (y) {
+                svg.appendChild(el('text', { x: L + sc(t), y: y, 'text-anchor': 'middle',
+                    fill: 'var(--ink-faint)', 'font-size': 10 }, (t / 60) + 'h'));
+            });
+        }
+        d.forEach(function (o, i) {
+            var y = T + i * rowH, bh = rowH - 6;
+            var g = el('g');
+            g.appendChild(el('text', {
+                x: L - 10, y: y + bh - 2, 'text-anchor': 'end', 'font-size': 11.5,
+                fill: o.twelve ? 'var(--ink)' : 'var(--ink-faint)',
+                'font-weight': o.twelve ? 600 : 400
+            }, o.name));
+            g.appendChild(el('rect', { x: L, y: y, width: sc(o.paid), height: bh,
+                fill: 'var(--paid)' }));
+            g.appendChild(el('rect', { x: L + sc(o.paid), y: y, width: sc(o.unpaid), height: bh,
+                fill: 'var(--unpaid)' }));
+            g.appendChild(el('text', { x: L + sc(o.work) + 8, y: y + bh - 2, 'font-size': 11,
+                fill: 'var(--ink-soft)', 'font-variant-numeric': 'tabular-nums' }, hm(o.work)));
+            g.addEventListener('mouseenter', function (e) {
+                showTip(e, '<b>' + o.name + '</b>Paid ' + hm(o.paid) + ' · Unpaid ' +
+                    hm(o.unpaid) + '<br><span>Total ' + hm(o.work) + '</span>');
+            });
+            g.addEventListener('mouseleave', hideTip);
+            svg.appendChild(g);
+        });
+    })();
+
+    /* ── 2 · slope chart, four measures ─────────────────────
+       Written as a function so it can be drawn twice from the same code, once at
+       35 countries and once at twelve. The comparison is the point: the chart is
+       the one piece of the story that widening actually breaks, and that is easier
+       to see than to argue. */
+    function slope(svgId, rows) {
+        var AX = [
+            { k: 'work', label: 'Work', fmt: hm },
+            { k: 'sleep', label: 'Sleep & self-care', fmt: hm },
+            { k: 'leisure', label: 'Leisure', fmt: hm },
+            { k: 'happy', label: 'Happiness', fmt: function (v) { return v.toFixed(2); } }
+        ];
+        var R = rows;
+        var W = 900, T = 40, B = 26, rowH = 17,
+            nMax = R.length, H = T + nMax * rowH + B,
+            L = 128, RGT = 128, w = W - L - RGT;
+        var svg = document.getElementById(svgId);
+        svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+        svg.setAttribute('height', H);
+
+        /* one rank map per measure; countries missing that measure get no rank and
+           simply have no point in that column */
+        var rank = AX.map(function (a) {
+            var m = new Map();
+            R.filter(function (o) { return o[a.k] != null; })
+                .sort(function (x, y) { return y[a.k] - x[a.k]; })
+                .forEach(function (o, i) { m.set(o.name, i + 1); });
+            return m;
+        });
+        var cx = function (i) { return L + (AX.length === 1 ? 0 : i * w / (AX.length - 1)); };
+        var cy = function (r) { return T + (r - .5) * rowH; };
+
+        AX.forEach(function (a, i) {
+            svg.appendChild(el('line', { x1: cx(i), y1: T - 10, x2: cx(i), y2: T + nMax * rowH,
+                stroke: 'var(--line)', 'stroke-width': 1 }));
+            svg.appendChild(el('text', { x: cx(i), y: T - 18, 'text-anchor': 'middle',
+                'font-size': 11.5, 'font-weight': 600, fill: 'var(--ink)' }, a.label));
+            svg.appendChild(el('text', { x: cx(i), y: T + nMax * rowH + 16, 'text-anchor': 'middle',
+                'font-size': 10, fill: 'var(--ink-faint)' },
+                'n=' + rank[i].size));
+        });
+
+        R.forEach(function (o) {
+            var pts = [];
+            AX.forEach(function (a, i) {
+                var r = rank[i].get(o.name);
+                if (r) pts.push([cx(i), cy(r)]);
+            });
+            if (pts.length < 2) return;
+            var g = el('g'), hot = o.twelve;
+            var path = el('polyline', {
+                points: pts.map(function (p) { return p.join(','); }).join(' '),
+                fill: 'none',
+                stroke: hot ? 'var(--accent)' : 'var(--neutral)',
+                'stroke-width': hot ? 1.6 : 1,
+                'stroke-opacity': hot ? .95 : .55
+            });
+            g.appendChild(path);
+            pts.forEach(function (p) {
+                g.appendChild(el('circle', { cx: p[0], cy: p[1], r: hot ? 3 : 2,
+                    fill: hot ? 'var(--accent)' : 'var(--neutral)' }));
+            });
+            /* Names on both ends, so a line can be entered from either side. The
+               right-hand name goes at the far right only if the country actually has
+               a rank in the final column — Luxembourg has no happiness score, so its
+               line stops one column early and its name has to stop there too. */
+            var first = rank[0].get(o.name),
+                lastCol = -1, lastRank = null;
+            for (var i = AX.length - 1; i >= 0; i--) {
+                if (rank[i].get(o.name)) { lastCol = i; lastRank = rank[i].get(o.name); break; }
+            }
+            if (first) g.appendChild(el('text', { x: L - 9, y: cy(first) + 3.5,
+                'text-anchor': 'end', 'font-size': 10.5,
+                fill: hot ? 'var(--accent-deep)' : 'var(--ink-faint)',
+                'font-weight': hot ? 600 : 400 }, first + '  ' + o.name));
+            if (lastRank) g.appendChild(el('text', {
+                x: cx(lastCol) + 9, y: cy(lastRank) + 3.5, 'font-size': 10.5,
+                fill: hot ? 'var(--accent-deep)' : 'var(--ink-faint)',
+                'font-weight': hot ? 600 : 400,
+                /* haloed because a name stopping mid-chart lands on other lines */
+                stroke: 'var(--card)', 'stroke-width': lastCol === AX.length - 1 ? 0 : 3,
+                'paint-order': 'stroke'
+            }, o.name + (lastCol === AX.length - 1 ? '' : ' (no score)')));
+
+            g.style.cursor = 'default';
+            g.addEventListener('mouseenter', function (e) {
+                path.setAttribute('stroke', 'var(--ink-deep)');
+                path.setAttribute('stroke-width', 2.4);
+                path.setAttribute('stroke-opacity', 1);
+                showTip(e, '<b>' + o.name + '</b>' + AX.map(function (a, i) {
+                    var r = rank[i].get(o.name);
+                    return a.label + ': ' + (r ? '#' + r + ' (' + a.fmt(o[a.k]) + ')' : 'no data');
+                }).join('<br>'));
+            });
+            g.addEventListener('mouseleave', function () {
+                path.setAttribute('stroke', hot ? 'var(--accent)' : 'var(--neutral)');
+                path.setAttribute('stroke-width', hot ? 1.6 : 1);
+                path.setAttribute('stroke-opacity', hot ? .95 : .55);
+                hideTip();
+            });
+            svg.appendChild(g);
+        });
+
+        /* hand the winners back rather than writing the sentence here, so the same
+           function can serve both charts and the copy stays counted, not typed */
+        return AX.map(function (a, i) {
+            return R.filter(function (o) { return rank[i].get(o.name) === 1; })[0].name;
+        });
+    }
+
+    (function () {
+        var at35 = slope('c-slope', R);
+        var at12 = slope('c-slope12', R.filter(function (o) { return o.twelve; }));
+        function sentence(names) {
+            return names.slice(0, -1).join(', ') + ' and ' + names.slice(-1) +
+                ' — ' + new Set(names).size + ' different countries for 4 measures';
+        }
+        document.getElementById('win').textContent =
+            ' At 35 they are ' + sentence(at35) + '. At twelve they were ' +
+            sentence(at12).replace(/ — .*/, '') + '.';
+    })();
+
+    /* ── 3 · GDP against happiness ─────────────────────────── */
+    (function () {
+        var d = R.filter(function (o) { return o.happy != null && o.gdp; });
+        var W = 780, H = 470, L = 54, RGT = 18, T = 20, B = 46;
+        var w = W - L - RGT, h = H - T - B;
+        var lg = function (v) { return Math.log10(v); };
+        var xs = d.map(function (o) { return lg(o.gdp); }), ys = d.map(function (o) { return o.happy; });
+        var x0 = Math.floor(Math.min.apply(null, xs) * 10) / 10 - .05,
+            x1 = Math.ceil(Math.max.apply(null, xs) * 10) / 10 + .05,
+            y0 = Math.floor(Math.min.apply(null, ys)) - .3,
+            y1 = Math.ceil(Math.max.apply(null, ys)) + .1;
+        var sx = function (v) { return L + (lg(v) - x0) / (x1 - x0) * w; },
+            sy = function (v) { return T + h - (v - y0) / (y1 - y0) * h; };
+        var svg = document.getElementById('c-gdp');
+        svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+        svg.setAttribute('height', H);
+
+        [1000, 2000, 5000, 10000, 20000, 50000, 100000].forEach(function (v) {
+            if (lg(v) < x0 || lg(v) > x1) return;
+            svg.appendChild(el('line', { x1: sx(v), y1: T, x2: sx(v), y2: T + h,
+                stroke: 'var(--line)' }));
+            svg.appendChild(el('text', { x: sx(v), y: T + h + 16, 'text-anchor': 'middle',
+                'font-size': 10.5, fill: 'var(--ink-faint)' },
+                v >= 1000 ? '$' + (v / 1000) + 'k' : '$' + v));
+        });
+        for (var yv = Math.ceil(y0); yv <= y1; yv++) {
+            svg.appendChild(el('line', { x1: L, y1: sy(yv), x2: L + w, y2: sy(yv),
+                stroke: 'var(--line)' }));
+            svg.appendChild(el('text', { x: L - 9, y: sy(yv) + 3.5, 'text-anchor': 'end',
+                'font-size': 10.5, fill: 'var(--ink-faint)' }, yv));
+        }
+
+        /* least-squares fit on log x */
+        var n = d.length, mx = xs.reduce(function (a, b) { return a + b; }) / n,
+            my = ys.reduce(function (a, b) { return a + b; }) / n,
+            num = 0, den = 0, sy2 = 0;
+        for (var i = 0; i < n; i++) {
+            num += (xs[i] - mx) * (ys[i] - my);
+            den += (xs[i] - mx) * (xs[i] - mx);
+            sy2 += (ys[i] - my) * (ys[i] - my);
+        }
+        var b1 = num / den, r = num / Math.sqrt(den * sy2);
+        var fy = function (lx) { return my + b1 * (lx - mx); };
+        svg.appendChild(el('line', {
+            x1: L, y1: sy(fy(x0)), x2: L + w, y2: sy(fy(x1)),
+            stroke: 'var(--ink-soft)', 'stroke-width': 1.25, 'stroke-dasharray': '5 4'
+        }));
+        svg.appendChild(el('text', { x: L + w - 6, y: sy(fy(x1)) - 9, 'text-anchor': 'end',
+            'font-size': 11.5, 'font-weight': 600, fill: 'var(--ink)' },
+            'r = ' + (r > 0 ? '+' : '') + r.toFixed(2) + ' · n = ' + n));
+
+        d.forEach(function (o) {
+            var c = el('circle', { cx: sx(o.gdp), cy: sy(o.happy), r: o.twelve ? 5 : 3.6,
+                fill: o.twelve ? 'var(--accent)' : 'var(--support-pale)',
+                stroke: 'var(--paper)', 'stroke-width': o.twelve ? 1.4 : 1 });
+            c.addEventListener('mouseenter', function (e) {
+                showTip(e, '<b>' + o.name + '</b>$' + o.gdp.toLocaleString() +
+                    ' per person<br><span>Happiness ' + o.happy.toFixed(2) + '</span>');
+            });
+            c.addEventListener('mouseleave', hideTip);
+            svg.appendChild(c);
+        });
+        /* Luxembourg is deliberately not in this list: with no happiness score it is
+           not on this chart at all, which is the n=34 caveat made visible. */
+        ['India', 'Finland', 'Mexico', 'United States'].forEach(function (nm) {
+            var o = d.filter(function (q) { return q.name === nm; })[0];
+            if (!o) return;
+            svg.appendChild(el('text', { x: sx(o.gdp), y: sy(o.happy) - 10,
+                'text-anchor': 'middle', 'font-size': 11, 'font-weight': 600,
+                fill: o.twelve ? 'var(--accent-deep)' : 'var(--ink-soft)',
+                stroke: 'var(--paper)', 'stroke-width': 3, 'paint-order': 'stroke' }, nm));
+        });
+        svg.appendChild(el('text', { x: L + w / 2, y: H - 6, 'text-anchor': 'middle',
+            'font-size': 11, 'font-weight': 600, fill: 'var(--ink-soft)' },
+            'GDP per capita, log scale'));
+        svg.appendChild(el('text', { x: 13, y: T + h / 2, 'text-anchor': 'middle',
+            'font-size': 11, 'font-weight': 600, fill: 'var(--ink-soft)',
+            transform: 'rotate(-90 13 ' + (T + h / 2) + ')' }, 'Happiness ladder'));
+    })();
+
+    /* ── 4 · the copy table, both figures computed here ────── */
+    (function () {
+        var A = R, T12 = R.filter(function (o) { return o.twelve; });
+        function cv(rows, k) {
+            var v = rows.map(function (o) { return o[k]; }),
+                m = v.reduce(function (a, b) { return a + b; }) / v.length,
+                s = Math.sqrt(v.reduce(function (a, b) { return a + (b - m) * (b - m); }, 0) / v.length);
+            return s / m * 100;
+        }
+        function most(rows, k) {
+            return rows.filter(function (o) { return o[k] != null; })
+                .reduce(function (a, b) { return b[k] > a[k] ? b : a; });
+        }
+        function unpaidBeatsPaid(rows) {
+            return rows.filter(function (o) { return o.unpaid > o.paid; });
+        }
+        var rows = [
+            ['Sleep varies least, paid work most',
+             cv(T12, 'sleep').toFixed(1) + '% vs ' + cv(T12, 'paid').toFixed(1) +
+                '% &nbsp;(' + (cv(T12, 'paid') / cv(T12, 'sleep')).toFixed(1) + '&times;)',
+             '<b>' + cv(A, 'sleep').toFixed(1) + '% vs ' + cv(A, 'paid').toFixed(1) + '%</b>' +
+                ' &nbsp;(' + (cv(A, 'paid') / cv(A, 'sleep')).toFixed(1) + '&times;)',
+             'ok', 'Holds. Weaker ratio, far more evidence.'],
+            ['Countries doing more unpaid than paid work',
+             unpaidBeatsPaid(T12).length + ' of 12 &nbsp;(' +
+                Math.round(unpaidBeatsPaid(T12).length / 12 * 100) + '%)',
+             '<b>' + unpaidBeatsPaid(A).length + ' of 35</b> &nbsp;(' +
+                Math.round(unpaidBeatsPaid(A).length / A.length * 100) + '%)',
+             'bad', 'Needs rewriting: ' + unpaidBeatsPaid(A).map(function (o) { return o.name; }).join(', ') + '.'],
+            ['Longest working day',
+             most(T12, 'work').name + ' ' + hm(most(T12, 'work').work),
+             '<b>' + most(A, 'work').name + ' ' + hm(most(A, 'work').work) + '</b>',
+             'ok', 'Unchanged. Mexico still tops 35.'],
+            ['Most leisure',
+             most(T12, 'leisure').name + ' ' + hm(most(T12, 'leisure').leisure),
+             '<b>' + most(A, 'leisure').name + ' ' + hm(most(A, 'leisure').leisure) + '</b>',
+             'bad', 'New winner. Every leisure sentence moves.'],
+            ['Happiest',
+             most(T12, 'happy').name + ' ' + most(T12, 'happy').happy.toFixed(2),
+             '<b>' + most(A, 'happy').name + ' ' + most(A, 'happy').happy.toFixed(2) + '</b>',
+             'bad', 'New winner, and a more expected one.'],
+            ['Share of world population covered',
+             '47.9%', '<b>52.5%</b>', 'meh',
+             'Tripling the countries buys 4.6 points. The cover&rsquo;s &ldquo;48% of the dots&rdquo; line is rewritten for little gain.']
+        ];
+        document.querySelector('#tbl tbody').innerHTML = rows.map(function (r) {
+            return '<tr><td>' + r[0] + '</td><td class="was">' + r[1] + '</td><td class="now">' +
+                r[2] + '</td><td class="verdict ' + r[3] + '">' +
+                (r[3] === 'ok' ? 'holds' : r[3] === 'bad' ? 'rewrite' : 'marginal') +
+                '<div style="font-weight:400;text-transform:none;letter-spacing:0;font-size:12px;color:var(--ink-faint);margin-top:3px">' +
+                r[4] + '</div></td></tr>';
+        }).join('');
+    })();
+})();
+</script>
+</body>
+</html>

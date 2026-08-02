@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<!--
+  DESIGN LAB — a scratch page, not part of the story.
+
+  Two axes to choose along:
+    ARRANGEMENT  how a chart section is composed on the page (six options)
+    PALETTE      what it is coloured with (six options)
+
+  Every component here is drawn with the story's own custom properties, so a
+  palette is nothing more than an override of those same token names. That means
+  what you see is what index.html would look like, not an impression of it — the
+  chart, the callout and the caption are all reading the tokens the real page
+  reads. The bar figures are the real minutes from data/adl-data.js.
+
+  Delete this file once you have picked.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design lab — arrangements and palettes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+/* ══ PALETTES ══════════════════════════════════════════════════════════════
+   Each one redeclares the tokens the story already uses, so nothing downstream
+   has to know a palette changed.
+
+   Note the category tokens are restated in every palette rather than left to
+   inherit. A custom property whose value contains var() is substituted where it
+   is *declared*, not where it is used, so --paid: var(--copper) declared in
+   :root keeps pointing at the original copper however far down the tree the hue
+   is overridden. They have to be repeated to follow. */
+.pal {
+    --track: var(--white);
+    --care: var(--h-cool); --paid: var(--h-warm);
+    --unpaid: var(--h-warm-pale); --leisure: var(--h-cool-pale); --other: var(--neutral);
+    --blue: var(--h-cool); --purple: var(--h-warm); --indigo: var(--night);
+    --magenta: var(--h-warm); --pink: var(--h-warm); --gold: var(--h-warm);
+    --lav-card: var(--card);
+}
+
+/* 1 · what the story ships with today */
+.pal-now {
+    --night: #0E1230; --h-warm: #B87333; --h-warm-pale: #DFB48B;
+    --h-cool: #3D5C80; --h-cool-pale: #8FB0D1;
+    --white: #ffffff; --paper: #FBF9F5; --card: #F4EEE6; --line: #E5DED3;
+    --neutral: #CEC4B6; --ink: #1F2937; --ink-soft: #4B5563; --ink-faint: #8a8177;
+    --copper: #B87333; --copper-pale: #DFB48B; --slate: #3D5C80; --slate-pale: #8FB0D1;
+    --copper-deep: #8A5424; --copper-wash: #F7EDE3;
+    --font: 'Poppins', -apple-system, sans-serif;
+}
+
+/* 2 · one accent and a lot of restraint */
+.pal-amber {
+    --night: #14110F; --h-warm: #C8811B; --h-warm-pale: #E8C79A;
+    --h-cool: #6B6560; --h-cool-pale: #B8B1A8;
+    --white: #ffffff; --paper: #FCFAF6; --card: #F3EFE7; --line: #E3DDD1;
+    --neutral: #CFC7B8; --ink: #14110F; --ink-soft: #4A443E; --ink-faint: #8B8377;
+    --copper: #C8811B; --copper-pale: #E8C79A; --slate: #6B6560; --slate-pale: #B8B1A8;
+    --copper-deep: #8E5B10; --copper-wash: #FAF1E2;
+    --font: 'Fraunces', Georgia, serif;
+}
+
+/* 3 · grey with one signal colour, like a printed page */
+.pal-news {
+    --night: #1A1A1A; --h-warm: #C0392B; --h-warm-pale: #E8A79F;
+    --h-cool: #55595E; --h-cool-pale: #A8ADB3;
+    --white: #ffffff; --paper: #FCFCFB; --card: #F2F2F1; --line: #DEDEDD;
+    --neutral: #C6C6C4; --ink: #1A1A1A; --ink-soft: #45484B; --ink-faint: #83868A;
+    --copper: #C0392B; --copper-pale: #E8A79F; --slate: #55595E; --slate-pale: #A8ADB3;
+    --copper-deep: #96271B; --copper-wash: #FBEDEB;
+    --font: 'IBM Plex Sans', -apple-system, sans-serif;
+}
+
+/* 4 · the whole story inverted onto a dark ground */
+.pal-midnight {
+    --night: #050914; --h-warm: #E9A13B; --h-warm-pale: #F2CE93;
+    --h-cool: #4E9FC4; --h-cool-pale: #9BD0E5;
+    --white: #ffffff; --paper: #0B1020; --card: #141B2E; --line: #26304A;
+    --neutral: #59637A; --ink: #EEF2F8; --ink-soft: #B3BDCE; --ink-faint: #7D879B;
+    --copper: #E9A13B; --copper-pale: #F2CE93; --slate: #4E9FC4; --slate-pale: #9BD0E5;
+    --copper-deep: #F2CE93; --copper-wash: #1B2438;
+    --track: #1B2438;
+    --font: 'Space Grotesk', -apple-system, sans-serif;
+}
+
+/* 5 · clay and olive on sand */
+.pal-terracotta {
+    --night: #2B211C; --h-warm: #B5502F; --h-warm-pale: #E0A88E;
+    --h-cool: #6B7A52; --h-cool-pale: #B3BE9B;
+    --white: #ffffff; --paper: #FAF4EC; --card: #F1E7D9; --line: #E2D5C2;
+    --neutral: #CBBBA4; --ink: #2B211C; --ink-soft: #5A4A40; --ink-faint: #8F7F70;
+    --copper: #B5502F; --copper-pale: #E0A88E; --slate: #6B7A52; --slate-pale: #B3BE9B;
+    --copper-deep: #8C3A1F; --copper-wash: #F8E8DD;
+    --font: 'Fraunces', Georgia, serif;
+}
+
+/* 6 · cool blue-grey with a mustard accent */
+.pal-nordic {
+    --night: #16212B; --h-warm: #C9A227; --h-warm-pale: #E8D591;
+    --h-cool: #3E6B7E; --h-cool-pale: #9CBECC;
+    --white: #ffffff; --paper: #F7F9FA; --card: #ECF1F3; --line: #DAE2E6;
+    --neutral: #BAC6CC; --ink: #16212B; --ink-soft: #41545F; --ink-faint: #7C8B94;
+    --copper: #C9A227; --copper-pale: #E8D591; --slate: #3E6B7E; --slate-pale: #9CBECC;
+    --copper-deep: #9A7B12; --copper-wash: #F6F1DC;
+    --font: 'Space Grotesk', -apple-system, sans-serif;
+}
+
+/* ══ LAB CHROME ═══════════════════════════════════════════════════════════
+   Deliberately outside the palette: the controls keep one fixed appearance so a
+   dark palette in the preview cannot be mistaken for the page around it. */
+body { background: #EFEFEA; color: #1F2937; font-family: 'Poppins', sans-serif; margin: 0; }
+.lab-wrap { max-width: 1400px; margin: 0 auto; padding: 2rem 1.4rem 4rem; }
+.lab-h1 { font-size: 1.45rem; margin: 0 0 0.3rem; letter-spacing: -0.02em; }
+.lab-sub { color: #4B5563; font-size: 0.88rem; margin: 0 0 1.6rem; max-width: 70ch; line-height: 1.6; }
+.lab-cols { display: grid; grid-template-columns: 262px 1fr; gap: 1.8rem; align-items: start; }
+@media (max-width: 1000px) { .lab-cols { grid-template-columns: 1fr; } }
+.lab-panel {
+    background: #fff; border: 1px solid #DDDDD6; border-radius: 12px;
+    padding: 1rem 1.1rem 1.2rem; position: sticky; top: 1rem;
+    max-height: calc(100vh - 2rem); overflow-y: auto;
+}
+.lab-legend {
+    font-size: 0.64rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+    color: #8B8377; margin: 0 0 0.5rem;
+}
+.lab-opts + .lab-legend { margin-top: 1.2rem; }
+.lab-opt {
+    display: grid; grid-template-columns: 15px 1fr; gap: 0.5rem;
+    padding: 0.38rem 0.45rem; border-radius: 7px; cursor: pointer;
+    font-size: 0.82rem; line-height: 1.3; align-items: start;
+}
+.lab-opt:hover { background: #F5F2EC; }
+.lab-opt:has(input:checked) { background: #F5F2EC; box-shadow: inset 2px 0 0 #B87333; }
+.lab-opt input { margin: 0.16rem 0 0; accent-color: #B87333; }
+.lab-opt b { font-weight: 600; display: block; }
+.lab-opt s { text-decoration: none; color: #8B8377; font-size: 0.71rem; display: block; margin-top: 0.08rem; }
+.chips { display: flex; gap: 3px; margin-top: 0.3rem; }
+.chips i { width: 100%; height: 9px; border-radius: 2px; display: block; }
+.note { font-size: 0.72rem; color: #8B8377; line-height: 1.5; margin: 1rem 0 0; }
+
+/* the preview frame — its inside is entirely the story's own styling */
+.stage {
+    border: 1px solid #DDDDD6; border-radius: 14px; overflow: hidden;
+    box-shadow: 0 30px 60px -44px rgba(0,0,0,0.4);
+}
+.stage-bar {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.5rem 0.8rem; background: #fff; border-bottom: 1px solid #E7E7E1;
+    font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: #8B8377; font-weight: 700;
+}
+.stage-bar b { color: #1F2937; letter-spacing: 0.04em; }
+.stage-bar span { margin-left: auto; text-transform: none; letter-spacing: 0; font-weight: 400; }
+.paper { background: var(--paper); color: var(--ink); font-family: var(--font); padding: 0 0 2rem; }
+
+/* ══ SAMPLE COMPONENTS ════════════════════════════════════════════════════
+   Cut down from the real ones, and reading the same tokens. */
+.s-chapter {
+    text-align: center; padding: 2.4rem 1.5rem 0.6rem;
+}
+.s-eyebrow {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--copper);
+}
+.s-chapname {
+    font-size: clamp(1.6rem, 3.4vw, 2.4rem); margin: 0.4rem 0 0.3rem;
+    letter-spacing: -0.02em; color: var(--ink);
+}
+.s-blurb { color: var(--ink-soft); font-size: 0.92rem; max-width: 46ch; margin: 0 auto; line-height: 1.6; }
+.s-rule-c { width: 54px; height: 2px; background: var(--copper); margin: 1.1rem auto 0; }
+
+.sample { padding: clamp(1.8rem, 4vw, 3rem) clamp(1.2rem, 3.5vw, 2.6rem); }
+.s-num {
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--copper); display: block;
+}
+.s-title {
+    font-size: clamp(1.5rem, 3.2vw, 2.15rem); line-height: 1.14;
+    letter-spacing: -0.02em; margin: 0.5rem 0 0; color: var(--ink);
+}
+.s-rule { border: 0; border-top: 1px solid var(--line); margin: 1.1rem 0; }
+.s-lead { font-size: 1.02rem; line-height: 1.6; color: var(--ink); margin: 0 0 0.9rem; font-weight: 600; }
+.s-body { font-size: 0.93rem; line-height: 1.75; color: var(--ink-soft); margin: 0; }
+.s-body strong { color: var(--ink); font-weight: 700; }
+
+.s-card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 12px; padding: clamp(1rem, 2.6vw, 1.5rem);
+}
+.s-cardhead {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--ink-faint); margin: 0 0 1rem;
+}
+.s-rank { display: grid; gap: 0.42rem; }
+.s-row { display: grid; grid-template-columns: 5.6rem 1fr 3.4rem; gap: 0.6rem; align-items: center; }
+.s-row > span:first-child {
+    font-size: 0.76rem; color: var(--ink-soft); text-align: right;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.s-bar { display: flex; height: 17px; border-radius: 3px; overflow: hidden; background: var(--track); }
+.s-bar i { display: block; height: 100%; }
+.s-val { font-size: 0.75rem; font-variant-numeric: tabular-nums; color: var(--ink); font-weight: 600; }
+.s-keys { display: flex; flex-wrap: wrap; gap: 0.9rem; margin-top: 1rem; font-size: 0.74rem; color: var(--ink-soft); }
+.s-keys i { width: 11px; height: 11px; border-radius: 2px; display: inline-block; margin-right: 0.35rem; }
+.s-cap {
+    font-size: 0.73rem; line-height: 1.55; color: var(--ink-faint);
+    margin: 1rem 0 0; max-width: 74ch;
+}
+.s-cap b { color: var(--ink-soft); }
+.s-callout {
+    background: var(--night); color: var(--white);
+    border-radius: 12px; padding: 1.1rem 1.2rem; margin-top: 1rem;
+}
+.s-callout p { margin: 0; font-size: 0.86rem; line-height: 1.6; opacity: 0.9; }
+.s-callout b { display: block; font-size: 0.95rem; margin-bottom: 0.3rem; opacity: 1; color: var(--copper-pale); }
+.s-pill {
+    display: inline-block; font-size: 0.68rem; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--copper-deep); background: var(--copper-wash);
+    border-radius: 999px; padding: 0.25rem 0.7rem; margin-bottom: 0.9rem;
+}
+
+/* ══ ARRANGEMENTS ═════════════════════════════════════════════════════════ */
+/* 1 · prose centred, chart wide beneath it — the story's usual */
+.arr-centred .sample { max-width: 1100px; margin: 0 auto; text-align: center; }
+.arr-centred .txt { max-width: 62ch; margin: 0 auto 1.8rem; }
+.arr-centred .s-body, .arr-centred .s-lead { text-align: center; }
+.arr-centred .s-rule { max-width: 8rem; margin-inline: auto; }
+.arr-centred .s-cap { margin-inline: auto; text-align: left; }
+
+/* 2 · two columns, words on the left and the chart to the right */
+.arr-split .sample {
+    max-width: 1240px; margin: 0 auto;
+    display: grid; grid-template-columns: minmax(280px, 400px) 1fr; gap: clamp(1.4rem, 3vw, 3rem);
+    align-items: start;
+}
+.arr-split .txt { position: sticky; top: 1.5rem; }
+
+/* 3 · the same, with the chart taking the left */
+.arr-flip .sample {
+    max-width: 1240px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr minmax(280px, 400px); gap: clamp(1.4rem, 3vw, 3rem);
+    align-items: start;
+}
+.arr-flip .txt { order: 2; position: sticky; top: 1.5rem; }
+.arr-flip .viz { order: 1; }
+
+/* 4 · chart first and nearly edge to edge, the argument underneath in columns */
+.arr-lead .sample { max-width: 1340px; margin: 0 auto; }
+.arr-lead .viz { margin-bottom: 1.6rem; }
+.arr-lead .txt { columns: 2; column-gap: 2.4rem; max-width: 1000px; }
+.arr-lead .s-title { columns: 1; column-span: all; max-width: 28ch; }
+.arr-lead .s-num { column-span: all; }
+@media (max-width: 760px) { .arr-lead .txt { columns: 1; } }
+
+/* 5 · the whole section inside one framed card on a tinted band */
+.arr-framed .paper-inner { background: var(--card); padding: clamp(1.4rem, 3vw, 2.4rem) 0; }
+.arr-framed .sample {
+    max-width: 1080px; margin: 0 auto;
+    background: var(--paper); border: 1px solid var(--line); border-radius: 16px;
+}
+.arr-framed .s-card { background: transparent; border: 0; padding: 0; margin-top: 1.4rem; }
+
+/* 6 · chart wide, words as a narrow column of notes beside it */
+.arr-notes .sample {
+    max-width: 1340px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr minmax(210px, 260px); gap: clamp(1.2rem, 3vw, 2.4rem);
+    align-items: start;
+}
+.arr-notes .txt {
+    order: 2; border-left: 2px solid var(--copper); padding-left: 1rem;
+    position: sticky; top: 1.5rem;
+}
+.arr-notes .viz { order: 1; }
+.arr-notes .s-title { font-size: clamp(1.2rem, 2vw, 1.5rem); }
+.arr-notes .s-lead { font-size: 0.92rem; }
+.arr-notes .s-body { font-size: 0.86rem; }
+.arr-notes .s-rule { display: none; }
+@media (max-width: 900px) {
+    .arr-split .sample, .arr-flip .sample, .arr-notes .sample { grid-template-columns: 1fr; }
+    .arr-flip .txt, .arr-notes .txt { order: 1; position: static; }
+    .arr-flip .viz, .arr-notes .viz { order: 2; }
+}
+</style>
+</head>
+<body>
+<div class="lab-wrap">
+    <h1 class="lab-h1">Arrangements and palettes</h1>
+    <p class="lab-sub">Six ways to compose a chart section, six ways to colour it, on real copy and
+        real figures. Every component below reads the story's own custom properties, so a palette here
+        is only an override of those same names — what you see is what <b>index.html</b> would look
+        like. Pick one of each and I will apply it across the piece.</p>
+
+    <div class="lab-cols">
+        <aside class="lab-panel">
+            <p class="lab-legend">Arrangement</p>
+            <div class="lab-opts" id="arr-opts"></div>
+
+            <p class="lab-legend">Palette</p>
+            <div class="lab-opts" id="pal-opts"></div>
+
+            <p class="note" id="pal-note"></p>
+        </aside>
+
+        <div>
+            <div class="stage">
+                <div class="stage-bar">
+                    <b id="bar-arr">Centred</b> · <b id="bar-pal">As it ships</b>
+                    <span id="bar-note"></span>
+                </div>
+                <div class="paper pal pal-now arr-centred" id="paper">
+                    <div class="paper-inner">
+                        <!-- a chapter mark, so the palette can be judged on a heading too -->
+                        <div class="s-chapter">
+                            <span class="s-eyebrow">Chapter One</span>
+                            <h2 class="s-chapname">How We Live</h2>
+                            <p class="s-blurb">Sleep, work, rest. Three demands every day makes. No two
+                                countries meet them the same way.</p>
+                            <div class="s-rule-c"></div>
+                        </div>
+
+                        <section class="sample">
+                            <div class="txt">
+                                <span class="s-num">The second shift</span>
+                                <h2 class="s-title">Half your waking hours go to work</h2>
+                                <hr class="s-rule">
+                                <p class="s-lead">Every day carries two workloads: the job you're paid
+                                    for, and the cooking, cleaning and caring that no one puts on a
+                                    payslip.</p>
+                                <p class="s-body">Count both and <strong>Mexico</strong> works the
+                                    longest day here, <strong>10h05m</strong>. <strong>Canada</strong>
+                                    is next at <strong>9h02m</strong>, though more of its day is paid.
+                                    <strong>Italy</strong> has the shortest paid day measured,
+                                    <strong>2h57m</strong>, and still does more unpaid work than
+                                    paid.</p>
+                            </div>
+                            <div class="viz">
+                                <div class="s-card">
+                                    <p class="s-cardhead">Hours of work per day, paid and unpaid</p>
+                                    <div class="s-rank" id="rank"></div>
+                                    <div class="s-keys">
+                                        <span><i style="background:var(--paid)"></i>Paid work</span>
+                                        <span><i style="background:var(--unpaid)"></i>Unpaid work (chores &amp; care)</span>
+                                    </div>
+                                </div>
+                                <div class="s-callout">
+                                    <p><b>The work you never clock out of</b>In Italy 55% of all work is
+                                        unpaid. In Japan, 25% — on much the same national income per
+                                        head.</p>
+                                </div>
+                                <p class="s-cap"><b>Fig 3.1 — The Second Shift</b> Stacked bars, paid and
+                                    unpaid work in minutes per day, 12 countries, ranked by total. Unpaid
+                                    work covers cooking, cleaning, shopping and care. OECD Time Use
+                                    Database.</p>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="data/adl-data.js"></script>
+<script>
+/* ─── the options ──────────────────────────────────────────────────────── */
+const ARRANGEMENTS = [
+    { id: 'arr-centred', name: 'Centred',      note: 'Prose centred, chart wide beneath. The story\'s usual, and the calmest.' },
+    { id: 'arr-split',   name: 'Split',        note: 'Words left and sticky, chart right. Reads as an argument with evidence beside it.' },
+    { id: 'arr-flip',    name: 'Split, flipped', note: 'Chart leads on the left. Better when the shape is the point and the words explain it.' },
+    { id: 'arr-lead',    name: 'Figure first', note: 'Chart nearly edge to edge, argument underneath in two columns. Most editorial.' },
+    { id: 'arr-framed',  name: 'Framed card',  note: 'Whole section inside one card on a tinted band. Good for separating chapters.' },
+    { id: 'arr-notes',   name: 'Margin notes', note: 'Chart takes the width, words become a narrow annotated column. Densest.' }
+];
+
+const PALETTES = [
+    { id: 'pal-now',        name: 'As it ships',  note: 'Night, copper and slate on warm paper. Poppins.',
+      chips: ['#0E1230', '#B87333', '#DFB48B', '#3D5C80', '#8FB0D1', '#FBF9F5'] },
+    { id: 'pal-amber',      name: 'Ink & amber',  note: 'Near-black, one amber accent, greys for everything else. Fraunces, a serif.',
+      chips: ['#14110F', '#C8811B', '#E8C79A', '#6B6560', '#B8B1A8', '#FCFAF6'] },
+    { id: 'pal-news',       name: 'Newsprint',    note: 'Greys and a single signal red. IBM Plex Sans.',
+      chips: ['#1A1A1A', '#C0392B', '#E8A79F', '#55595E', '#A8ADB3', '#FCFCFB'] },
+    { id: 'pal-midnight',   name: 'Midnight',     note: 'The whole story inverted onto a dark ground, amber and cyan on navy. Space Grotesk.',
+      chips: ['#050914', '#E9A13B', '#F2CE93', '#4E9FC4', '#9BD0E5', '#0B1020'] },
+    { id: 'pal-terracotta', name: 'Terracotta',   note: 'Clay and olive on sand. Warmest of the six. Fraunces.',
+      chips: ['#2B211C', '#B5502F', '#E0A88E', '#6B7A52', '#B3BE9B', '#FAF4EC'] },
+    { id: 'pal-nordic',     name: 'Nordic',       note: 'Cool blue-grey with a mustard accent. Space Grotesk.',
+      chips: ['#16212B', '#C9A227', '#E8D591', '#3E6B7E', '#9CBECC', '#F7F9FA'] }
+];
+
+let arr = 'arr-centred', pal = 'pal-now';
+const paper = document.getElementById('paper');
+
+/* ─── the chart, from the real minutes ─────────────────────────────────── */
+function bars() {
+    const rows = Object.entries(ADL.countries)
+        .filter(([, d]) => d.life != null && d.happiness != null && d.tourism != null)
+        .map(([name, d]) => ({
+            name: name.replace(' (People\u2019s Republic of)', ''),
+            paid: d.minutes.PAW, unpaid: d.minutes.UPW
+        }))
+        .map(r => Object.assign(r, { total: r.paid + r.unpaid }))
+        .sort((a, b) => b.total - a.total);
+    const max = rows[0].total;
+    const hm = m => Math.floor(m / 60) + 'h' + String(m % 60).padStart(2, '0');
+    document.getElementById('rank').innerHTML = rows.map(r => `
+        <div class="s-row">
+            <span>${r.name}</span>
+            <span class="s-bar">
+                <i style="width:${(100 * r.paid / max).toFixed(2)}%;background:var(--paid)"></i>
+                <i style="width:${(100 * r.unpaid / max).toFixed(2)}%;background:var(--unpaid)"></i>
+            </span>
+            <span class="s-val">${hm(r.total)}</span>
+        </div>`).join('');
+    return rows.length;
+}
+
+/* ─── controls ─────────────────────────────────────────────────────────── */
+function radios(host, list, current, onPick) {
+    host.innerHTML = list.map(o => `
+        <label class="lab-opt">
+            <input type="radio" name="${host.id}" value="${o.id}"${o.id === current ? ' checked' : ''}>
+            <span><b>${o.name}</b><s>${o.note}</s>${o.chips
+                ? '<span class="chips">' + o.chips.map(c => '<i style="background:' + c + '"></i>').join('') + '</span>'
+                : ''}</span>
+        </label>`).join('');
+    host.addEventListener('change', e => onPick(e.target.value));
+}
+
+function apply() {
+    paper.className = 'paper pal ' + pal + ' ' + arr;
+    document.getElementById('bar-arr').textContent =
+        (ARRANGEMENTS.find(a => a.id === arr) || {}).name;
+    document.getElementById('bar-pal').textContent =
+        (PALETTES.find(p => p.id === pal) || {}).name;
+    const cs = getComputedStyle(paper);
+    document.getElementById('bar-note').textContent =
+        'paper ' + cs.getPropertyValue('--paper').trim() +
+        ' · accent ' + cs.getPropertyValue('--copper').trim() +
+        ' · ' + cs.getPropertyValue('--font').trim().split(',')[0].replace(/['"]/g, '');
+    document.getElementById('pal-note').textContent =
+        (PALETTES.find(p => p.id === pal) || {}).note;
+}
+
+radios(document.getElementById('arr-opts'), ARRANGEMENTS, arr, id => { arr = id; apply(); });
+radios(document.getElementById('pal-opts'), PALETTES, pal, id => { pal = id; apply(); });
+
+bars();
+apply();
+</script>
+</body>
+</html>
