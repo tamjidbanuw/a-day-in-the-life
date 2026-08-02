@@ -1847,3 +1847,52 @@ html.bdg-locked, html.bdg-locked body { overflow: hidden; }
        wrapped to three and stranded "look like?" on its own. */
     max-width: 48ch;
 }
+
+/* ── a stat whose phrase wraps its figure ─────────────────────────────────────
+   Most stats lead with the number. One now reads "Every country spends / 2–4¼
+   hours / on unpaid work every day", so it needs a line above the figure. Sized
+   and coloured like the text below it, not like the number, so the figure keeps
+   the emphasis. */
+.stat-pre {
+    display: block;
+    font-size: 0.98rem; line-height: 1.45; color: var(--ink-soft);
+    margin-bottom: 0.35rem;
+}
+/* That one figure carries its unit — "2–4¼ hours" — which is three times the
+   width of "2h31m" and wrapped onto a second line at the shared display size,
+   leaving the middle stat a head taller than the two beside it. */
+.stat.wide b { font-size: clamp(1.9rem, 3.6vw, 2.7rem); }
+
+/* The pre-line also pushed that stat's number a line below its neighbours', so the
+   three figures no longer shared a baseline and the band read as misaligned rather
+   than as one row of three. Subgrid lets all three stats share the band's rows —
+   pre-line, figure, sentence — so the figures line up whether a stat has a
+   pre-line or not. Where subgrid is unsupported this rule simply does not apply
+   and the stats keep their own flow, which is the current behaviour. */
+@supports (grid-template-rows: subgrid) {
+    .band-inner { grid-template-rows: auto auto auto; }
+    .band-inner > .stat {
+        display: grid;
+        grid-row: span 3;
+        grid-template-rows: subgrid;
+    }
+    /* Each child is pinned to its row. Subgrid on its own is not enough: with no
+       pre-line the figure auto-places into row 1 and the sentence into row 2, so a
+       stat that has one stays a whole row lower than the two that do not. */
+    .stat-pre { grid-row: 1; margin-bottom: 0; align-self: end; }
+    .band-inner > .stat > b { grid-row: 2; }
+    .band-inner > .stat > p { grid-row: 3; }
+}
+
+/* ── an editorial beat between charts ─────────────────────────────────────────
+   One sentence, no chart and no icon, with air around it: a deliberate pause in a
+   run of visualisations. Ink rather than accent, because it states something
+   rather than asking it — the accent is reserved for the transition questions. */
+.beat {
+    margin: clamp(2.25rem, 5vw, 3.5rem) auto;
+    max-width: 34ch;
+    font-size: clamp(1.15rem, 2.4vw, 1.5rem); font-weight: 700;
+    line-height: 1.3; letter-spacing: -0.01em;
+    color: var(--ink-deep);
+    text-align: center; text-wrap: balance;
+}

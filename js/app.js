@@ -115,7 +115,10 @@ function initDayCard() {
             </div>`).join('');
 
         const workRank = rank(c, x => x.work), leiRank = rank(c, x => x.m.LEI);
-        el('dc-title').textContent = `${c.name} spends its day like this`;
+        /* The heading is authored now — "Every country gets the same day" — so it is
+           deliberately NOT rewritten per country. It used to read "<name> spends its
+           day like this", which made the one section heading on the page that stated
+           no finding. The id stays because COPY.md anchors on it. */
         el('dc-lead').innerHTML =
             `Of 1,440 minutes, ${c.name} gives <strong>${hm(c.work)}</strong> to work, paid and unpaid
              together. That is <strong>${ord(workRank)} of ${N}</strong>.`;
