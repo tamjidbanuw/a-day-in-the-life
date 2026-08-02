@@ -210,11 +210,14 @@
         $('gl-f-share').textContent = Math.round(sl.mu / DAY * 100) + '%';
         $('gl-f-sleep').textContent = sl.pct + '%';
         $('gl-f-paid').textContent = pd.pct + '%';
+        /* The third caveat used to name the American figures to make "nobody lives the
+           average day" concrete. The copy no longer does, so these two slots may not
+           exist — each is written only if its element is actually in the markup, which
+           keeps the copy free to drop or restore them without touching this file. */
         var us = R.filter(function (c) { return c.name === 'United States'; })[0];
-        if (us) {
-            $('gl-f-us-sleep').textContent = hmS(us.m.PCA);
-            $('gl-f-us-paid').textContent = hmS(us.m.PAW);
-        }
+        var usSleep = $('gl-f-us-sleep'), usPaid = $('gl-f-us-paid');
+        if (us && usSleep) usSleep.textContent = hmS(us.m.PCA);
+        if (us && usPaid) usPaid.textContent = hmS(us.m.PAW);
     })();
 
     // ══ THE BRAID ═════════════════════════════════════════════════════════════

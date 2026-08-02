@@ -19,7 +19,7 @@
         <svg class="cover-clock" viewBox="0 0 300 300" aria-hidden="true" id="cover-clock"></svg>
         <div class="cover-center">
             <h1 class="cover-title">A Day in the Life<br>of the World</h1>
-            <p class="cover-sub">Eight billion people. One planet. 1,440 shared minutes.</p>
+            <p class="cover-sub">Eight billion people.<br>One planet.<br>1,440 shared minutes.</p>
         </div>
 
     </header>
@@ -32,16 +32,15 @@
              shrink-and-fade groups read as a stutter. Just .reveal, like the rest.
              Every line is separately anchored in COPY.md so the wording round-trips. -->
         <section class="section center reveal" id="sec-intro">
-            <p class="intro-open">Imagine pressing pause on Earth. Eight billion people.
-                One ordinary day.</p>
+            <p class="intro-open">Imagine pressing pause on Earth.<br>Eight billion people.<br>One ordinary day.</p>
             <ul class="intro-lives">
-                <li class="intro-life">Somewhere, a child is taking their first steps.</li>
-                <li class="intro-life">Somewhere else, a nurse is finishing a night shift.</li>
-                <li class="intro-life">A family is eating dinner.</li>
-                <li class="intro-life">A farmer is beginning work.</li>
-                <li class="intro-life">A student is falling asleep.</li>
+                <li class="intro-life">A child takes their very first steps.</li>
+                <li class="intro-life">A nurse finishes a long night shift.</li>
+                <li class="intro-life">A family gathers for dinner.</li>
+                <li class="intro-life">A farmer begins work before sunrise.</li>
+                <li class="intro-life">A student falls asleep after a long day.</li>
             </ul>
-            <p class="intro-count">Every one of them has exactly 1,440 minutes.</p>
+            <p class="intro-count">Every one of them is given exactly 1,440 minutes.</p>
             <p class="intro-ask">What becomes of those minutes?</p>
         </section>
 
@@ -55,27 +54,26 @@
                      and that is now the title itself. -->
                 <h2 class="sec-title">Meet the World</h2>
                 <hr class="rule">
-                <p class="lead">How do you measure a day? Thousands of people keep detailed time diaries,
-                    recording everything they do over 24 hours. Only 35 countries collect this kind of
-                    data.</p>
-                <p class="body">We often measure countries by their economy, population or geography.
-                    But what if we measured them by something everyone receives equally? Time.
-                    Only 35 countries have asked thousands of ordinary people to record every minute of
-                    an ordinary day in detailed time diaries. Together, these countries represent more
-                    than half of the world’s population. This story follows them — not because they are
-                    the whole world, but because they are the places where an ordinary day has been
-                    carefully recorded.</p>
+                <p class="lead">How do you measure a day? Most countries count people, money, and
+                    borders. Only 35 countries have asked thousands of ordinary people to record every
+                    minute of an ordinary day.</p>
+                <p class="body">We often compare countries by their wealth, population, or geography.
+                    But there is one thing every person receives equally: time. Across these 35
+                    countries, thousands of people kept detailed time diaries, recording how they spent
+                    every minute of a normal day. Together, these countries represent more than half of
+                    humanity. This story follows them — not because they are the whole world, but
+                    because they reveal how an ordinary day is lived across it.</p>
 
                 <!-- the field leads the section: visual first, explanation after -->
                 <div class="df-stage"><canvas id="df-canvas"></canvas></div>
 
                 <div class="df-legend">
-                    <span class="df-key"><i class="on"></i>Countries this story follows</span>
-                    <span class="df-key"><i class="off"></i>Everyone else</span>
+                    <span class="df-key"><i class="on"></i>Countries in this story</span>
+                    <span class="df-key"><i class="off"></i>Rest of the world</span>
                 </div>
 
                 <p class="fig-cap">Every dot represents millions of people.
-                    The highlighted dots are the countries in this story.</p>
+                    The highlighted countries are home to more than half the world’s population.</p>
             </div>
 
         </section>
@@ -87,15 +85,15 @@
              Wide screens make it a rail fixed to the right edge that follows the
              reader; narrow ones leave it in the flow, straight after the opener.
              Filled by initBadges() in js/app.js. -->
-        <aside class="badges" id="badges" aria-label="Your badge collection">
+        <aside class="badges" id="badges" aria-label="Your discoveries">
             <div class="badges-head">
-                <span class="badges-title">Your collection</span>
-                <span class="badges-count" id="badge-count">0 of 8 found</span>
+                <span class="badges-title">Your discoveries</span>
+                <span class="badges-count" id="badge-count">0 of 8 discovered</span>
                 <!-- the rules of the game, folded behind an i: worth reading once,
                      not worth a standing paragraph in a panel this size -->
                 <button class="badges-info" id="badges-info" type="button"
                         aria-expanded="false" aria-controls="badges-note"
-                        aria-label="How the badges work">
+                        aria-label="How discoveries work">
                     <svg viewBox="0 0 16 16" aria-hidden="true">
                         <circle cx="8" cy="8" r="6.7" fill="none" stroke="currentColor" stroke-width="1.5"/>
                         <path d="M8 7.2v4.1" fill="none" stroke="currentColor" stroke-width="1.8"
@@ -113,10 +111,10 @@
                 </button>
             </div>
             <div class="badges-body" id="badges-body">
-                <p class="badges-note" id="badges-note" hidden>Eight badges are hidden in the charts
-                    below, and every chart here does something when you touch it. Each one you find
-                    comes with a figure from the data that appears nowhere else. One is not on a
-                    chart at all.</p>
+                <p class="badges-note" id="badges-note" hidden>Hidden throughout this story are eight
+                    discoveries. Explore the charts, hover over countries, answer questions, and follow
+                    the data. Every discovery reveals an insight that appears nowhere else. One of them
+                    isn’t hidden in a chart at all.</p>
                 <ul class="badge-tray" id="badge-tray"></ul>
                 <div class="badges-foot" id="badge-reset"></div>
             </div>
@@ -125,14 +123,14 @@
         <!-- Hands the opener over to Chapter One. In COPY.md this line was written at
              the foot of the badges note, but #badges-note is `hidden` behind the info
              button, so a transition sentence would never have been seen there. -->
-        <p class="section-ask reveal">What does an ordinary day look like?</p>
+        <p class="section-ask reveal">Before we compare countries&hellip;<br>What does an ordinary day actually look like?</p>
 
         <!-- ═══ CHAPTER ONE · HOW WE LIVE ═══════════════════ -->
         <div class="chapter-mark reveal">
             <span class="chapter-eyebrow">Chapter One</span>
             <h2 class="chapter-name">Sleep Is the Only Constant</h2>
-            <p class="chapter-blurb">Paid work varies nearly four times as much as sleep across all
-                thirty-five. And in four of them, more of the day goes to work that nobody pays for.</p>
+            <p class="chapter-blurb">Across the world, people spend their days very differently.
+                But one part of every day changes surprisingly little.</p>
             <div class="chapter-rule"></div>
         </div>
 
@@ -151,21 +149,19 @@
              .rank-row is the static grid #work-rank and #rest-rank use, while these
              rows are absolutely positioned so they can animate between sort orders. -->
         <section class="section reveal" id="sec-glance">
-            <span class="sec-num">Chapter One &middot; at a glance</span>
-            <h2 class="sec-title">Everyone gets 24 hours.<br>Only the spending differs.</h2>
+            <span class="sec-num">Chapter One &middot; At a Glance</span>
+            <h2 class="sec-title">Everyone gets the same 24 hours.<br>Only the spending changes.</h2>
             <hr class="rule">
-            <p class="lead">Thirty-five countries keep a time diary &mdash; a record of what thousands
-                of people actually did across a day. They are the only places on earth where an
-                ordinary day has been written down and counted.</p>
-            <p class="body">Every panel here is one day. <strong>Hover any country</strong> to preview
-                it, <strong>click to pin it</strong>, and the whole sheet follows &mdash; the card, the
-                ordering and the ribbons. The one finding worth carrying out: the biggest block of the
-                day is also the one nobody argues about. Sleep and self-care take
-                <strong id="gl-f-share"></strong> of the average day and stretch only
-                <strong id="gl-f-sleep"></strong> of their own average from the shortest country to the
-                longest. Paid work is a third the size and stretches
-                <strong id="gl-f-paid"></strong>.</p>
-            <span class="howto">Hover to preview &middot; click to pin &middot; Escape to release</span>
+            <p class="lead">Thirty-five countries have measured an ordinary day in extraordinary
+                detail. Every chart in this chapter comes from those time diaries.</p>
+            <p class="body">Each panel represents one country&rsquo;s average day. Hover over any
+                country to explore it, or click to keep it selected throughout the chapter. One pattern
+                appears immediately. Sleep and personal care make up
+                <strong id="gl-f-share"></strong> of the average day, varying by only
+                <strong id="gl-f-sleep"></strong> from the shortest to the longest. Paid work occupies
+                only about a third as much time &mdash; and varies far more, stretching
+                <strong id="gl-f-paid"></strong> across countries.</p>
+            <span class="howto">Hover to explore &bull; Click to compare &bull; Press Esc to clear</span>
 
             <div class="gl-who" id="gl-who"></div>
             <p class="gl-pinnote" id="gl-pinnote"></p>
@@ -174,20 +170,15 @@
                 <!-- ── the braid, full width, the one dark chart ground ─────────── -->
                 <div class="gl-full">
                     <div class="pc-panel">
-                        <h3>Thirty-five days, five demands</h3>
-                        <p class="sub">Every country&rsquo;s 24 hours fanning out into what they are
-                            spent on &mdash; one ribbon per country per activity, 175 in all. Hover a
-                            column, or its flag; click to pin it. The bar across the top is all 35
-                            days pooled, so its five widths never move; the figure written on each
-                            band is the share belonging to whoever is named there.</p>
+                        <h3>Thirty-five countries.<br>One shared clock.</h3>
+                        <p class="sub">Each column is one country&rsquo;s 1,440 minutes, divided among
+                            five major activities. Hover over a country or an activity to compare how
+                            differently the world&rsquo;s days are spent.</p>
                         <div id="gl-braid"></div>
                         <div class="gl-key" id="gl-key-braid"></div>
                         <p class="gl-note" id="gl-braid-note"></p>
-                        <p class="fig-cap"><b>One Country per Column</b>
-                            Each column is one country and each ribbon one activity; every width is
-                            minutes. All 35 columns are the same width because all 35 are spending the
-                            same 1,440 minutes &mdash; the difference is only in how the ribbons
-                            leaving them are divided.</p>
+                        <p class="fig-cap">Every country has the same 1,440 minutes.
+                            Only how those minutes are divided changes.</p>
                     </div>
                 </div>
 
@@ -198,13 +189,13 @@
                             <!-- The panel is titled, not the selection: the live country name is
                                  already set in large type in .gl-who above, and the <select> shows
                                  it a third time. -->
-                            <span class="dc-who">The same clock</span>
+                            <span class="dc-who">One country&rsquo;s day</span>
                             <label class="dc-pick">
                                 <span class="vh">Choose a country</span>
                                 <select id="gl-dc-pick" aria-label="Choose a country"></select>
                             </label>
                         </div>
-                        <p class="dc-lab">The day, 1,440 minutes</p>
+                        <p class="dc-lab">1,440 minutes<br>One ordinary day</p>
                         <div class="dc-bar" id="gl-dc-bar" role="img"
                              aria-label="How this country’s 24 hours divide across sleep, work and leisure"></div>
                         <div class="dc-scale"><span>0h</span><span>6h</span><span>12h</span><span>18h</span><span>24h</span></div>
@@ -216,37 +207,30 @@
                          in a strip at the foot of the sheet where a reader meets them after
                          they have already misread everything. -->
                     <div class="callout" style="margin-top:18px">
-                        <p class="callout-head">Three things easy to get wrong</p>
+                        <p class="callout-head">Three things worth remembering</p>
                         <div class="callout-row"><span class="callout-ic">&#10022;</span>
-                            <p><strong>Order is not time.</strong> Every block sits in a fixed order.
-                                The data records how much of the day went to something, never
-                                when.</p></div>
+                            <p>The order of the blocks is not a timeline. It shows how much time
+                                people spend &mdash; not when they spend it.</p></div>
                         <div class="callout-row"><span class="callout-ic">&#10022;</span>
-                            <p><strong>Every country counts once.</strong> The average is an average
-                                of 35 days, not of the people living them &mdash; China and Luxembourg
-                                carry equal weight.</p></div>
+                            <p>Every country counts equally. China and Luxembourg each contribute
+                                one average day.</p></div>
                         <div class="callout-row"><span class="callout-ic">&#10022;</span>
-                            <p><strong>Nobody lives the average day.</strong> Each figure is a whole
-                                population&rsquo;s diaries averaged together. No one in the United
-                                States spends <span id="gl-f-us-sleep"></span> on sleep and self-care
-                                and <span id="gl-f-us-paid"></span> at paid work &mdash; that is the
-                                shape of the country, not of a person.</p></div>
+                            <p>No individual lives this exact schedule. These are national averages
+                                built from thousands of real diaries.</p></div>
                     </div>
                 </div>
 
                 <!-- ── the ordering, the panel you can read precisely ───────────── -->
                 <div>
                     <div class="day-card">
-                        <div class="card-head">The ordering</div>
-                        <p class="card-sub">The one panel you can read precisely. Hover a row and
-                            every other panel follows it.</p>
+                        <div class="card-head">Rank the day</div>
+                        <p class="card-sub">Compare countries activity by activity and see how every
+                            other chart updates instantly.</p>
                         <div class="gl-pills" id="gl-pills"></div>
                         <div class="gl-rank" id="gl-rank"></div>
                         <div class="gl-key" id="gl-key-rank"></div>
-                        <p class="fig-cap"><b>Ranked by Size, Not Merit</b>
-                            Stacked bars to 24 hours, ordered by the chosen measure. First on work is
-                            the longest working day, not the best one; more sleep is not better than
-                            less.</p>
+                        <p class="fig-cap">Longer doesn&rsquo;t always mean better.
+                            These rankings measure time, not quality of life.</p>
                     </div>
                 </div>
             </div>

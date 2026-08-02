@@ -834,7 +834,7 @@ const Badges = (function () {
         if (count) {
             count.textContent = earned.size === BADGES.length
                 ? `All ${BADGES.length} found`
-                : `${earned.size} of ${BADGES.length} found`;
+                : `${earned.size} of ${BADGES.length} discovered`;
             if (justEarned) {
                 count.classList.remove('bump');
                 void count.offsetWidth;              // restart the animation
@@ -1033,7 +1033,7 @@ const Badges = (function () {
         card.querySelector('[data-fact]').textContent = b.fact;
         card.querySelector('[data-foot]').textContent = earned.size === BADGES.length
             ? 'That is all eight. Nothing left hidden.'
-            : `${earned.size} of ${BADGES.length} found · ${BADGES.length - earned.size} still out there`;
+            : `${earned.size} of ${BADGES.length} discovered · ${BADGES.length - earned.size} still out there`;
         /* Remember where the reader was, but never remember the card's own close
            button: showing is already false when a queued card takes over, so
            without the containment check the second card would overwrite the

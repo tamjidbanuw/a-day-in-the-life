@@ -1831,6 +1831,8 @@ html.bdg-locked, html.bdg-locked body { overflow: hidden; }
 .intro-ask,
 .section-ask {
     margin: 0.85rem auto 0; max-width: 30ch; text-wrap: balance;
+    /* the measure is set per element below: these two now carry different line
+       lengths, and one measure forced the longer of them into a third line */
     font-size: clamp(1.25rem, 3vw, 1.7rem); font-weight: 700;
     line-height: 1.2; letter-spacing: -0.015em;
     color: var(--accent);
@@ -1841,4 +1843,7 @@ html.bdg-locked, html.bdg-locked body { overflow: hidden; }
    field, little below because the chapter mark brings its own. */
 .section-ask {
     padding: clamp(1.5rem, 4vw, 3rem) 1.5rem 0;
+    /* two authored lines, the longer of them 44 characters. At the shared 30ch it
+       wrapped to three and stranded "look like?" on its own. */
+    max-width: 48ch;
 }
