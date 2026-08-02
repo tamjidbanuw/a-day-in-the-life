@@ -19,27 +19,52 @@
         <svg class="cover-clock" viewBox="0 0 300 300" aria-hidden="true" id="cover-clock"></svg>
         <div class="cover-center">
             <h1 class="cover-title">A Day in the Life<br>of the World</h1>
-            <p class="cover-sub">Eight billion lives. One shared day.</p>
+            <p class="cover-sub">Eight billion people. One planet. 1,440 shared minutes.</p>
         </div>
 
     </header>
 
     <main>
+        <!-- ═══ INTRODUCTION ════════════════════════════════ -->
+        <!-- Sits between the cover and the dot field: five lives happening at once,
+             then the question the rest of the page answers. No .sec-exit here — the
+             cover already hands off to the opener's exit group, and two consecutive
+             shrink-and-fade groups read as a stutter. Just .reveal, like the rest.
+             Every line is separately anchored in COPY.md so the wording round-trips. -->
+        <section class="section center reveal" id="sec-intro">
+            <p class="intro-open">Imagine pressing pause on Earth. Eight billion people.
+                One ordinary day.</p>
+            <ul class="intro-lives">
+                <li class="intro-life">Somewhere, a child is taking their first steps.</li>
+                <li class="intro-life">Somewhere else, a nurse is finishing a night shift.</li>
+                <li class="intro-life">A family is eating dinner.</li>
+                <li class="intro-life">A farmer is beginning work.</li>
+                <li class="intro-life">A student is falling asleep.</li>
+            </ul>
+            <p class="intro-count">Every one of them has exactly 1,440 minutes.</p>
+            <p class="intro-ask">What becomes of those minutes?</p>
+        </section>
+
         <!-- ═══ OPENER · PEOPLE DOT-FIELD ═══════════════════ -->
         <section class="section center reveal" id="sec-people">
             <!-- .sec-exit is the group that shrinks and fades on the way out, the
                  same handoff the cover makes. It sits inside the section so it does
                  not clash with the .reveal transition on the section itself. -->
             <div class="sec-exit">
-                <span class="sec-num">Meet the World</span>
-                <h2 class="sec-title">8 Billion People</h2>
+                <!-- No .sec-num here any more: the eyebrow used to read "Meet the World"
+                     and that is now the title itself. -->
+                <h2 class="sec-title">Meet the World</h2>
                 <hr class="rule">
                 <p class="lead">How do you measure a day? Thousands of people keep detailed time diaries,
                     recording everything they do over 24 hours. Only 35 countries collect this kind of
                     data.</p>
-                <p class="body">This story follows all 35 of them. Together they hold
-                    <strong>52%</strong> of the world’s population. They aren’t the whole world—but they
-                    are everyone who writes the day down.</p>
+                <p class="body">We often measure countries by their economy, population or geography.
+                    But what if we measured them by something everyone receives equally? Time.
+                    Only 35 countries have asked thousands of ordinary people to record every minute of
+                    an ordinary day in detailed time diaries. Together, these countries represent more
+                    than half of the world’s population. This story follows them — not because they are
+                    the whole world, but because they are the places where an ordinary day has been
+                    carefully recorded.</p>
 
                 <!-- the field leads the section: visual first, explanation after -->
                 <div class="df-stage"><canvas id="df-canvas"></canvas></div>
@@ -49,9 +74,8 @@
                     <span class="df-key"><i class="off"></i>Everyone else</span>
                 </div>
 
-                <p class="fig-cap"><b>Eight Billion Days</b>
-                    Dot field spelling WORLD. Red marks the 35 countries this story follows: 52% of the
-                    dots, matching their 52% share of world population. Positions are not geographic.</p>
+                <p class="fig-cap">Every dot represents millions of people.
+                    The highlighted dots are the countries in this story.</p>
             </div>
 
         </section>
@@ -97,6 +121,11 @@
                 <div class="badges-foot" id="badge-reset"></div>
             </div>
         </aside>
+
+        <!-- Hands the opener over to Chapter One. In COPY.md this line was written at
+             the foot of the badges note, but #badges-note is `hidden` behind the info
+             button, so a transition sentence would never have been seen there. -->
+        <p class="section-ask reveal">What does an ordinary day look like?</p>
 
         <!-- ═══ CHAPTER ONE · HOW WE LIVE ═══════════════════ -->
         <div class="chapter-mark reveal">

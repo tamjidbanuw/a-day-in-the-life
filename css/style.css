@@ -1790,3 +1790,55 @@ html.bdg-locked, html.bdg-locked body { overflow: hidden; }
     .gl-name { font-size: 0.74rem; }
     .gl-row.on .gl-name { font-size: 0.8rem; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   INTRODUCTION  ·  #sec-intro, and the two transition asks
+   ═══════════════════════════════════════════════════════════════════════════════
+   Between the cover and the dot field. Five lives happening at once, then the
+   question the rest of the page answers.
+
+   Set quieter than a section title on purpose: this sits directly under the cover,
+   and two display-sized headings stacked that close fight each other. The only
+   accent is the closing question, which is the one line doing work.
+   ═══════════════════════════════════════════════════════════════════════════════ */
+#sec-intro {
+    padding-top: clamp(1.75rem, 4vw, 3.25rem);
+    padding-bottom: clamp(1.75rem, 4vw, 3.25rem);
+}
+.intro-open {
+    /* balance, not a hand-placed <br>: at a fixed measure this line broke as
+       "…Earth. Eight / billion people…", splitting the number off its unit. */
+    max-width: 38ch; margin: 0 auto; text-wrap: balance;
+    font-size: clamp(1.3rem, 3vw, 1.75rem); font-weight: 700;
+    line-height: 1.25; letter-spacing: -0.015em;
+    color: var(--ink-deep);
+}
+/* Five parallel clauses, so they are a list rather than a paragraph pretending
+   not to be one. Centred and unbulleted: a bullet before a centred line leaves the
+   markers ragged down the middle, which reads as a mistake. */
+.intro-lives {
+    list-style: none; margin: 1.5rem auto 0; padding: 0;
+    max-width: 44ch; display: grid; gap: 0.5rem;
+}
+.intro-life {
+    font-size: clamp(0.98rem, 1.9vw, 1.08rem);
+    line-height: 1.5; color: var(--ink-soft);
+}
+.intro-count {
+    margin: 1.5rem auto 0; max-width: 40ch;
+    font-size: clamp(1rem, 2vw, 1.12rem); font-weight: 600; color: var(--ink);
+}
+.intro-ask,
+.section-ask {
+    margin: 0.85rem auto 0; max-width: 30ch; text-wrap: balance;
+    font-size: clamp(1.25rem, 3vw, 1.7rem); font-weight: 700;
+    line-height: 1.2; letter-spacing: -0.015em;
+    color: var(--accent);
+    text-align: center;
+}
+/* The handoff into Chapter One. It is a sibling of the sections rather than part of
+   one, so it carries its own rhythm: enough air above to separate it from the dot
+   field, little below because the chapter mark brings its own. */
+.section-ask {
+    padding: clamp(1.5rem, 4vw, 3rem) 1.5rem 0;
+}
