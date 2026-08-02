@@ -9,9 +9,14 @@
     const ctx = canvas.getContext('2d');
     let W, H, dots = [], raf;
 
-    // The 12 countries this story follows hold 3.82bn of 7.97bn people, so the
-    // copper dots are held to that share of the field. See build().
-    const SHARE = 0.48;
+    // The 35 countries that keep time diaries hold 4.19bn of the 7.97bn people in
+    // data/world_population.csv, so the accent dots are held to that share of the
+    // field and the caption can quote a real number. See build().
+    //
+    // It was 0.48 when the story followed twelve countries. Tripling the sample
+    // moved it by four and a half points, because the twelve already contained
+    // China, India and the United States.
+    const SHARE = 0.525;
 
     /* The two dot colours, as "r,g,b" for the canvas. Taken from the tokens: as
        literals they stayed the old copper and the old grey through a palette

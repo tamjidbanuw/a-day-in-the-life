@@ -15,10 +15,25 @@ const ICONS = {
 };
 
 const ADL = window.ADL;
-// Only countries with complete data across every metric feature in the story.
+/**
+ * Every country that keeps a time diary: all 35 in the file.
+ *
+ * This list used to demand life expectancy, happiness and tourism all at once,
+ * and that single condition is what made the story a story about twelve
+ * countries. Life expectancy was the binding constraint — data/life_expectancy.csv
+ * only ever held 15 countries, three of which keep no time diary — so asking for
+ * it threw away 23 countries whose days were sitting right there in the file.
+ *
+ * Now the requirement is a day, because a day is what the story is about. The one
+ * measure that is still incomplete is happiness, missing for Luxembourg, so the
+ * charts that need it filter for themselves and say n=34 in their own caption
+ * rather than making every other chart pay for it.
+ */
 const COUNTRIES = Object.keys(ADL.countries)
-    .filter(c => { const v = ADL.countries[c]; return v.life && v.happiness && v.tourism; })
+    .filter(c => ADL.countries[c].minutes)
     .sort();
+// the subset with a happiness score: everyone except Luxembourg
+const HAPPY_COUNTRIES = COUNTRIES.filter(c => ADL.countries[c].happiness != null);
 
 const pctOf = (min, codes) => Math.round((codes.reduce((s, c) => s + (min[c] || 0), 0) / 1440) * 100);
 const fmtH  = (min) => { const h = Math.floor(min / 60), m = Math.round(min % 60); return m ? `${h}h ${m}m` : `${h}h`; };
@@ -32,7 +47,7 @@ const possessive = (name) => name + (/s$/i.test(name) ? '’' : '’s');
 
 /**
  * Section 1 — one country's day, in five blocks, with the rank of each block
- * inside the twelve.
+ * inside all 35.
  *
  * Every sentence on the left and every figure in the card is generated from the
  * selected country, so the prose cannot fall out of step with the chart the way
@@ -59,22 +74,23 @@ function initDayCard() {
     };
     const ord = n => n + (['th', 'st', 'nd', 'rd'][n % 10 > 3 || (n > 10 && n < 14) ? 0 : n % 10] || 'th');
 
-    // the twelve with complete records: the set the rest of the story follows
-    const twelve = Object.entries(ADL.countries)
-        .filter(([, d]) => d.life != null && d.happiness != null && d.tourism != null)
+    // every country that keeps a diary: the set the rest of the story follows
+    const all = COUNTRIES
+        .map(name => [name, ADL.countries[name]])
         .map(([name, d]) => ({
             key: name, name: nice(name), m: d.minutes,
             work: d.minutes.PAW + d.minutes.UPW,
             upwShare: d.minutes.UPW / (d.minutes.PAW + d.minutes.UPW)
         }));
-    if (!twelve.length) return;
+    if (!all.length) return;
+    const N = all.length;
 
-    const rank = (c, get) => [...twelve].sort((a, b) => get(b) - get(a))
+    const rank = (c, get) => [...all].sort((a, b) => get(b) - get(a))
         .findIndex(x => x.key === c.key) + 1;
-    const top = get => [...twelve].sort((a, b) => get(b) - get(a))[0];
-    const bottom = get => [...twelve].sort((a, b) => get(a) - get(b))[0];
+    const top = get => [...all].sort((a, b) => get(b) - get(a))[0];
+    const bottom = get => [...all].sort((a, b) => get(a) - get(b))[0];
 
-    pick.innerHTML = [...twelve].sort((a, b) => a.name.localeCompare(b.name))
+    pick.innerHTML = [...all].sort((a, b) => a.name.localeCompare(b.name))
         .map(c => `<option value="${c.key}"${c.key === 'Mexico' ? ' selected' : ''}>${c.name}</option>`).join('');
 
     bar.innerHTML = DC_CATS.map(c =>
@@ -84,7 +100,7 @@ function initDayCard() {
     const el = id => document.getElementById(id);
 
     function draw(key) {
-        const c = twelve.find(x => x.key === key) || twelve[0];
+        const c = all.find(x => x.key === key) || all[0];
         el('dc-who').textContent = c.name;
 
         DC_CATS.forEach(cat =>
@@ -94,33 +110,33 @@ function initDayCard() {
             <div class="dc-row"><i style="background:${cat.color}"></i>
                 <span>${cat.label}</span>
                 <span class="v">${hhmm(c.m[cat.key] || 0)}</span>
-                <span class="r">${ord(rank(c, x => x.m[cat.key] || 0))} of 12</span>
+                <span class="r">${ord(rank(c, x => x.m[cat.key] || 0))} of ${N}</span>
             </div>`).join('');
 
         const workRank = rank(c, x => x.work), leiRank = rank(c, x => x.m.LEI);
         el('dc-title').textContent = `${c.name} spends its day like this`;
         el('dc-lead').innerHTML =
             `Of 1,440 minutes, ${c.name} gives <strong>${hm(c.work)}</strong> to work, paid and unpaid
-             together. That is <strong>${ord(workRank)} of twelve</strong>.`;
+             together. That is <strong>${ord(workRank)} of ${N}</strong>.`;
         el('dc-body').innerHTML =
             `<strong>${hm(c.m.PCA)}</strong> goes to sleep and self-care, and
              <strong>${hm(c.m.LEI)}</strong> is what remains for leisure,
-             <strong>${ord(leiRank)} of twelve</strong>.
+             <strong>${ord(leiRank)} of ${N}</strong>.
              <strong>${(100 * c.upwShare).toFixed(0)}%</strong> of the work is unpaid: cooking, cleaning,
              shopping, care. No payslip records any of it.`;
 
         const mw = top(x => x.work), lw = bottom(x => x.work);
         el('dc-foot').innerHTML = c.key === mw.key
-            ? `<b>The longest working day of the twelve.</b> ${lw.name} works ${hm(mw.work - lw.work)} less.`
+            ? `<b>The longest working day measured anywhere.</b> ${lw.name} works ${hm(mw.work - lw.work)} less.`
             : c.key === lw.key
-            ? `<b>The shortest working day of the twelve.</b> ${mw.name} works ${hm(mw.work - lw.work)} more.`
+            ? `<b>The shortest working day measured anywhere.</b> ${mw.name} works ${hm(mw.work - lw.work)} more.`
             : `<b>${mw.name}</b> works most here at ${hm(mw.work)}, <b>${lw.name}</b> least at
                ${hm(lw.work)}. ${c.name} sits ${hm(Math.abs(c.work - mw.work))} off the top.`;
 
         el('dc-cap').innerHTML =
             `<b>${possessive(c.name)} Day</b>
-             Stacked bar to 24 hours. Ranks are within the 12 countries with complete records, and are by
-             size rather than merit: more sleep is not better than less. Sleep and self-care includes
+             Stacked bar to 24 hours. Ranks are within the ${N} countries that keep time diaries, and are
+             by size rather than merit: more sleep is not better than less. Sleep and self-care includes
              eating and washing; unpaid work covers cooking, cleaning, shopping and care. Blocks sit in a
              fixed order, not a timeline: this is how much, not when. OECD Time Use Database, both sexes,
              average minutes per day.`;
@@ -172,25 +188,71 @@ function renderRank(container, valueFn, fmt, color, highlight) {
     }).join('');
 }
 
-// ── Lifestyle DNA: quiz → fingerprint → nearest-country twin ──
+/* ── Lifestyle DNA: quiz → fingerprint → nearest-country twin ──
+ *
+ * The four axes used to be time, health, community and connectedness, and the
+ * scores were baked into data/adl-data.js as a `dna` object. That object only
+ * ever existed for twelve countries, and two of its axes could not be rebuilt for
+ * the other 23: health was life expectancy, which is gone, and community came
+ * from World Happiness Report sub-scores the file does not carry outside those
+ * twelve. Widening the story would have left this quiz matching you against a
+ * quarter of the sample without saying so.
+ *
+ * So the axes are now four things every one of the 35 countries reports, and the
+ * scores are computed at load instead of stored. Each is a percentile within the
+ * sample, which is what makes a straight-line distance meaningful: the axes are
+ * minutes, dollars and arrivals, and nothing sensible comes of measuring a
+ * distance across raw units like that.
+ */
 const DNA_AXES = [
-    { key: 'time',      label: 'Time',          color: 'var(--leisure)' },
-    { key: 'health',    label: 'Health',        color: 'var(--care)' },
-    { key: 'community', label: 'Community',      color: 'var(--accent)' },
-    { key: 'connect',   label: 'Connectedness', color: 'var(--support)' },
+    { key: 'time',    label: 'Free time', color: 'var(--leisure)' },
+    { key: 'rest',    label: 'Rest',      color: 'var(--care)' },
+    { key: 'money',   label: 'Income',    color: 'var(--accent)' },
+    { key: 'connect', label: 'Openness',  color: 'var(--support)' },
 ];
 // One question per axis. A slider from 0–100 sets the target on that axis;
 // the two ends anchor what low vs high means.
 const DNA_QUESTIONS = [
-    { key: 'time',      q: 'How do you weigh work against free time?',
-      lo: 'Work-driven',   hi: 'Free-time first' },
-    { key: 'health',    q: 'How much does long-term health shape your days?',
-      lo: 'Not a focus',   hi: 'It guides everything' },
-    { key: 'community',  q: 'How central are family and community to your life?',
-      lo: 'Independent',   hi: 'The heart of it all' },
-    { key: 'connect',   q: 'How outward-looking and travel-hungry are you?',
-      lo: 'Homebody',      hi: 'Endlessly curious' },
+    { key: 'time',    q: 'How do you weigh work against free time?',
+      lo: 'Work-driven',  hi: 'Free-time first' },
+    { key: 'rest',    q: 'How much of your day belongs to sleeping and eating?',
+      lo: 'As little as I can get away with', hi: 'I protect it' },
+    { key: 'money',   q: 'How much does earning shape the life you want?',
+      lo: 'Barely',       hi: 'It decides most things' },
+    { key: 'connect', q: 'How outward-looking and travel-hungry are you?',
+      lo: 'Homebody',     hi: 'Endlessly curious' },
 ];
+
+/**
+ * Percentile scores per country on the four axes, built once at load.
+ *
+ * Percentile rather than a min-max stretch because three of these four measures
+ * have one country a very long way from the pack — India on income, France on
+ * arrivals — and under min-max that single country flattens all 34 others into
+ * the bottom of the axis. Ranking spaces them evenly, which is the honest thing
+ * to do when what the quiz needs is "more than most" rather than "how much".
+ */
+const DNA_SCORES = (function () {
+    const raw = COUNTRIES.map(c => {
+        const d = ADL.countries[c];
+        return {
+            c,
+            time: d.minutes.LEI / 1440,      // share of the day that is free
+            rest: d.minutes.PCA,             // sleep, eating, washing
+            money: d.gdp,
+            connect: d.tourism               // international arrivals, millions
+        };
+    });
+    const out = {};
+    raw.forEach(r => { out[r.c] = {}; });
+    DNA_AXES.forEach(ax => {
+        const order = [...raw].sort((a, b) => a[ax.key] - b[ax.key]);
+        order.forEach((r, i) => {
+            out[r.c][ax.key] = Math.round((i / (order.length - 1)) * 100);
+        });
+    });
+    return out;
+})();
 
 function dnaDist(a, b) {
     return Math.sqrt(DNA_AXES.reduce((s, ax) => s + Math.pow(a[ax.key] - b[ax.key], 2), 0));
@@ -265,16 +327,16 @@ function renderDna(root) {
         const you = {};
         DNA_AXES.forEach(ax => you[ax.key] = answers[ax.key] ?? 50);
         const twin = COUNTRIES
-            .map(c => ({ c, d: dnaDist(you, ADL.countries[c].dna) }))
+            .map(c => ({ c, d: dnaDist(you, DNA_SCORES[c]) }))
             .sort((a, b) => a.d - b.d)[0].c;
-        const t = ADL.countries[twin];
         const stage = show(`
             <div class="dna-result">
                 <p class="dna-result-kicker">Your closest match is</p>
                 <p class="dna-result-name">${nice(twin)}</p>
-                ${dnaStrip(t.dna)}
-                <p class="dna-result-note">Matched on how you balance <strong>time, health,
-                    community and connection</strong> — the four measures behind the score.</p>
+                ${dnaStrip(DNA_SCORES[twin])}
+                <p class="dna-result-note">Matched on how you balance <strong>free time, rest,
+                    income and openness</strong> — the four measures behind the score, across all
+                    ${COUNTRIES.length} countries.</p>
                 <button class="dna-go dna-retake">Retake the quiz</button>
             </div>`);
         stage.querySelector('.dna-retake').addEventListener('click', intro);
@@ -545,11 +607,16 @@ const BADGE_ART = {
         <path class="b-ln b-c" d="M13 11h14M13 18h14M13 25h14M13 32h14"/>
         <circle cx="20" cy="14.5" r="3.6" class="b-cpf"/>
         <circle cx="20" cy="14.5" r="3.6" class="b-ln b-n o-35"/>`,
-    hourglass: `<circle cx="20" cy="20" r="14" class="b-cpf o-25"/>
-        <path class="b-ln b-n" d="M12 7h16M12 33h16"/>
-        <path class="b-ln b-s" d="M14 7c0 7 6 8 6 13s-6 6-6 13M26 7c0 7-6 8-6 13s6 6 6 13"/>
-        <path class="b-cf" d="M15 31.6c0-4.6 10-4.6 10 0z"/>
-        <circle cx="20" cy="20" r="1.6" class="b-cf"/>`,
+    /* Was an hourglass, for the life-expectancy badge. That badge is gone with the
+       measure, and this is the scatter that took its place in Chapter Two: an axis
+       and a rising cloud, one mark sitting off the trend. */
+    scatter: `<circle cx="20" cy="20" r="14" class="b-cpf o-25"/>
+        <path class="b-ln b-n" d="M11 10v20h19"/>
+        <circle cx="16" cy="26" r="2.1" class="b-sf"/>
+        <circle cx="21" cy="22" r="2.1" class="b-sf"/>
+        <circle cx="26" cy="18" r="2.1" class="b-cpf"/>
+        <circle cx="30" cy="14" r="2.6" class="b-cf"/>
+        <circle cx="17" cy="15" r="2.6" class="b-cf"/>`,
     trail: `<circle cx="20" cy="20" r="14" class="b-spf o-22"/>
         <path class="b-ln b-n" d="M6 28c4 0 5-6 9-6s5-8 9-8 4 3 8 3"/>
         <circle cx="6" cy="28" r="2.4" class="b-sf"/>
@@ -583,25 +650,25 @@ const BADGES = [
       hint: 'Swap the country in the first chart',
       fact: 'Mexico spends as much of the day working as it does sleeping, washing and eating: 10h05m against 10h06m.' },
     { id: 'day5', art: 'plane', ring: 'accent',
-      kicker: 'Unpaid labour', label: 'Jet Lagged', stat: '3 of 12',
+      kicker: 'Unpaid labour', label: 'Jet Lagged', stat: '4 of 35',
       hint: 'Visit five countries without leaving your chair',
-      fact: 'In Australia, Italy and Spain, more of the day goes to unpaid work than to paid work.' },
+      fact: 'In Australia, Italy, Poland and Spain, more of the day goes to work nobody pays for than to work somebody does.' },
     { id: 'ladder', art: 'ladder', ring: 'accent',
-      kicker: 'Happiness', label: 'Ladder Climber', stat: '10th of 12',
+      kicker: 'Happiness', label: 'Ladder Climber', stat: '4.04 apart',
       hint: 'Poke a country on the happiness scale',
-      fact: 'Japan lives longer than anyone else here, and still finishes 10th of 12 for happiness.' },
-    { id: 'years', art: 'hourglass', ring: 'ink',
-      kicker: 'Life expectancy', label: 'Amateur Actuary', stat: '69 vs 39 years',
-      hint: 'Poke a country on the life expectancy scale',
-      fact: 'India has the lowest life expectancy of the twelve at 69 years — better than any country on earth reached in 1800.' },
+      fact: 'Finland rates its own life 7.82 out of 10 and India rates its own 3.78. Same ten-point scale, four points apart.' },
+    { id: 'money', art: 'scatter', ring: 'ink',
+      kicker: 'Money and mood', label: 'Off the Line', stat: '$456 apart',
+      hint: 'Poke a country on the money and mood chart',
+      fact: 'Türkiye and Mexico earn within $456 a year of each other. Mexico rates its life 1.39 points higher.' },
     { id: 'ranks', art: 'trail', ring: 'ink',
-      kicker: 'Rankings', label: 'Line Stalker', stat: 'Five winners',
-      hint: 'Follow one country through all five measures',
-      fact: 'Australia is happiest, Japan lives longest, Germany rests most, France sleeps most, America earns most.' },
+      kicker: 'Rankings', label: 'Line Stalker', stat: 'Four winners',
+      hint: 'Follow one country through all four measures',
+      fact: 'Mexico works most, France sleeps most, Norway rests most, Finland is happiest. Nobody finishes first twice.' },
     { id: 'quiz', art: 'twin', ring: 'accent',
       kicker: 'The average', label: 'Long-Lost Twin', stat: '34× the pay',
       hint: 'Answer four questions, meet your country',
-      fact: 'An American earns 34 times what an Indian does, and still spends 17 fewer minutes a day working for it.' },
+      fact: 'An American earns 34 times what an Indian does, and still spends 17 fewer minutes a day at the job.' },
     { id: 'now', art: 'owl', ring: 'support',
       kicker: 'Hour by hour', label: 'Clock Watcher', stat: '56% at 8pm',
       hint: 'Find out what the world is doing this minute',
@@ -1120,57 +1187,59 @@ function toRgb(c) {
 }
 
 /**
- * The twelve with complete records: the set the whole story follows. Shared by
- * the metric strips and the effect panels so they cannot disagree about who is
- * in the sample.
+ * One row per country, shared by the metric strip, the money-and-mood scatter
+ * and the rank chart so they cannot disagree about who is in the sample.
+ *
+ * Takes the list to use, because the sample is no longer the same for every
+ * chart: the ones that need a happiness score get HAPPY_COUNTRIES and the rest
+ * get all 35.
  */
-function twelveRows() {
-    return Object.entries(ADL.countries)
-        .filter(([, d]) => d.life != null && d.happiness != null && d.tourism != null)
-        .map(([name, d]) => ({
+function countryRows(list) {
+    return (list || COUNTRIES).map(name => {
+        const d = ADL.countries[name];
+        return {
             name: nice(name),
             work: d.minutes.PAW + d.minutes.UPW,
             paid: d.minutes.PAW,
             unpaid: d.minutes.UPW,
-            life: d.life,
+            sleep: d.minutes.PCA,
+            leisure: d.minutes.LEI,
             happy: d.happiness,
-            gdp: d.gdp
-        }));
+            gdp: d.gdp,
+            tourism: d.tourism
+        };
+    });
 }
 
 /**
- * Metric strips — one measure, twelve countries, on a single line.
+ * Metric strip — one measure, every country with a score, on a single line.
  *
- * Chapter Two introduces its two measures one at a time, and both use this same
- * chart: happiness first, life expectancy second. Reusing one form means the
- * reader learns how to read it once and then only has to absorb the new numbers.
+ * There were two of these, happiness and life expectancy, drawn by the same code
+ * so a reader learned the form once and read it twice. Life expectancy is gone,
+ * and rather than replace it with a second strip the chapter now follows the one
+ * strip with a scatter, because the question changed: it is no longer "how do two
+ * scores of a life compare" but "what does a country's happiness track".
+ *
  * Labels are pushed apart along the axis with a leader back to the true mark, so
- * crowding never costs accuracy.
+ * crowding never costs accuracy. At 34 marks instead of 12 the crowding is the
+ * normal case rather than the exception, which is what the tiering is for.
  */
 function initMetricStrips() {
     if (!window.ADL) return;
-    const rows = twelveRows();
+    const rows = countryRows(HAPPY_COUNTRIES);
     if (rows.length < 2) return;
 
     const STRIPS = [
         {
             host: 'mt-happy', read: 'mt-happy-read', cap: 'mt-happy-cap', badge: 'ladder',
             get: c => c.happy, fmt: v => v.toFixed(2), unit: '',
-            ticks: [4, 5, 6, 7], tickFmt: v => String(v),
+            ticks: [4, 5, 6, 7, 8], tickFmt: v => String(v),
             capTitle: 'Happiness',
             capBody: 'Dot plot, one mark per country, on the 0–10 Cantril ladder: respondents place ' +
                 'their own life between the worst possible (0) and the best possible (10), and the ' +
-                'score is the national average. World Happiness Report. The scale here spans only the ' +
-                'range of these 12 countries, not the full 0–10.'
-        },
-        {
-            host: 'mt-life', read: 'mt-life-read', cap: 'mt-life-cap', badge: 'years',
-            get: c => c.life, fmt: v => v.toFixed(1), unit: ' years',
-            ticks: [70, 75, 80], tickFmt: v => v + 'y',
-            capTitle: 'Life Expectancy',
-            capBody: 'Dot plot, one mark per country, life expectancy at birth in years: the average ' +
-                'lifespan of a baby born today if current mortality held for its whole life. Our World ' +
-                'in Data. The scale spans only the range of these 12 countries.'
+                'score is the national average. World Happiness Report. 34 countries: Luxembourg ' +
+                'keeps a time diary but has no ladder score. The scale spans only the range of these ' +
+                'countries, not the full 0–10.'
         }
     ];
 
@@ -1237,13 +1306,13 @@ function initMetricStrips() {
         });
 
         host.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img"
-            aria-label="Twelve countries on one scale">${s}</svg>`;
+            aria-label="${rows.length} countries on one scale">${s}</svg>`;
         const el = host.querySelector('svg');
 
         const idle = () => {
             read.innerHTML = `<b>${top.name}</b> leads at <em>${cfg.fmt(cfg.get(top))}${cfg.unit}</em>,
                 <b>${bottom.name}</b> trails at <em>${cfg.fmt(cfg.get(bottom))}${cfg.unit}</em>.
-                The twelve average <em>${cfg.fmt(mean)}${cfg.unit}</em>.`;
+                All ${rows.length} average <em>${cfg.fmt(mean)}${cfg.unit}</em>.`;
         };
         function show(name) {
             const c = rows.find(x => x.name === name);
@@ -1274,16 +1343,23 @@ function initMetricStrips() {
 }
 
 /**
- * Rank slope chart — twelve countries, five measures, plotted by rank.
+ * Rank slope chart — 34 countries, four measures, plotted by rank.
  *
  * Rank rather than value on purpose. With value scales, every axis has its own
  * range, so a line's height on one axis means nothing on the next and following
- * a line invites a false reading. Twelve evenly spaced rank slots give all five
- * axes one shared scale, which is what makes the crossings legible: a crossing
- * is two countries swapping order, nothing else.
+ * a line invites a false reading. Evenly spaced rank slots give all four axes one
+ * shared scale, which is what makes the crossings legible: a crossing is two
+ * countries swapping order, nothing else.
  *
- * Ranks are by size, not merit. Only two of the five measures have an obvious
- * good direction, so the axes read "most" to "least" and the caption says so.
+ * Ranks are by size, not merit. Only one of the four measures has an obvious good
+ * direction, so the axes read "most" to "least" and the caption says so.
+ *
+ * The hard part at 34 lines. Twelve lines could all be drawn at full strength and
+ * still be followed; 34 cannot, and drawing them that way produces a texture that
+ * hides the one thing the section exists to say. So the default state names the
+ * argument instead of burying it: the four countries that come first on the four
+ * measures are drawn, everyone else is context. Hovering or picking still isolates
+ * any of the 34, so nothing is hidden — it is only quiet until asked for.
  */
 function initRankParallel() {
     const host = document.getElementById('pc-chart');
@@ -1293,23 +1369,25 @@ function initRankParallel() {
         : n === 'United Kingdom' ? 'UK' : n === 'United States' ? 'US' : n;
     const hhmm = m => Math.floor(m / 60) + 'h' + String(Math.round(m % 60)).padStart(2, '0');
 
-    const rows = Object.entries(ADL.countries)
-        .filter(([, d]) => d.life != null && d.happiness != null && d.tourism != null)
-        .map(([name, d]) => ({
+    /* Happiness is one of the four columns, so this chart needs a ladder score and
+       runs on the 34 rather than all 35. Luxembourg is the one country in the file
+       that keeps a diary without one. */
+    const rows = HAPPY_COUNTRIES.map(name => {
+        const d = ADL.countries[name];
+        return {
             name: shortName(name),
             work: d.minutes.PAW + d.minutes.UPW,
             sleep: d.minutes.PCA,
             leisure: d.minutes.LEI,
-            life: d.life,
             happy: d.happiness
-        }));
+        };
+    });
     if (rows.length < 2) return;
 
     const AX = [
         { label: 'Work',      get: c => c.work,    fmt: hhmm },
         { label: 'Sleep',     get: c => c.sleep,   fmt: hhmm },
         { label: 'Leisure',   get: c => c.leisure, fmt: hhmm },
-        { label: 'Life exp.', get: c => c.life,    fmt: v => v.toFixed(1) + 'y' },
         { label: 'Happiness', get: c => c.happy,   fmt: v => v.toFixed(2) }
     ];
     // rank 1 = most of that measure
@@ -1319,6 +1397,12 @@ function initRankParallel() {
         order.forEach((c, i) => map.set(c.name, i + 1));
         return map;
     });
+    /* Who comes first on each measure, and the set of them. Counted, never typed:
+       the section's whole claim is that this set has more than one member, and if
+       the data ever changed so that one country swept the board, the chart and the
+       sentence under it would both say so instead of the sentence lying. */
+    const firstOn = i => rows.find(c => RANK[i].get(c.name) === 1).name;
+    const WINNERS = new Set(AX.map((a, i) => firstOn(i)));
 
     /**
      * A colour per country, taken from the page palette rather than invented.
@@ -1327,7 +1411,7 @@ function initRankParallel() {
      * same warm/cool logic the day charts use, so the colour is not decoration:
      * position on the ramp is the country's rank for total work. Cool lines are
      * the countries that work least, warm ones the countries that work most.
-     * Twelve rainbow hues said nothing; twelve steps along this ramp say
+     * Rainbow hues said nothing; steps along this ramp say
      * "how much of your day is spoken for".
      */
     const RAMP = [token('--support'), token('--support-pale'),
@@ -1346,8 +1430,13 @@ function initRankParallel() {
     const colour = i => tone.get(rows[i].name);
     const colourOf = name => tone.get(name) || tone.get(rows[0].name);
 
-    // geometry matches the sample exactly
-    const W = 940, H = 420, L = 118, R = 74, T = 58, B = 40;
+    /* Height follows the country count rather than being fixed at the 420 that
+       suited twelve. Below about 15px a rank slot, the left-hand labels have to be
+       pushed so far to clear each other that the leader lines stop pointing at
+       anything believable. */
+    const GAP = 15;
+    const W = 940, L = 118, R = 74, T = 58, B = 40,
+          H = T + (rows.length - 1) * GAP + B;
     const X = i => L + (i / (AX.length - 1)) * (W - L - R);
     const Y = r => T + ((r - 1) / (rows.length - 1)) * (H - T - B);
 
@@ -1374,9 +1463,9 @@ function initRankParallel() {
     }
 
     /**
-     * Twelve labels on one axis always collide somewhere. Push them apart until
-     * each has room, then draw a leader back to the true point, so moving a
-     * label costs no accuracy.
+     * Labels on one axis always collide somewhere, and at 34 they collide
+     * everywhere. Push them apart until each has room, then draw a leader back to
+     * the true point, so moving a label costs no accuracy.
      */
     function declash(items, gap, lo, hi) {
         const out = items.map(o => ({ ...o, ly: o.y })).sort((a, b) => a.ly - b.ly);
@@ -1417,6 +1506,19 @@ function initRankParallel() {
                   r="4" fill="${colour(r.ci)}"/>`;
         });
     });
+    /* The winner's name printed at its own first-place dot, on every axis.
+       Without this the resting state is unreadable: the line colour is the ramp
+       position for total work, which was meaningful when all twelve were drawn but
+       leaves three of the four winners in the cool half and indistinguishable from
+       each other. The sentence above the chart names them, and this is what ties
+       each name to its line. */
+    AX.forEach((a, i) => {
+        const name = firstOn(i);
+        const last = i === AX.length - 1;
+        s += `<text class="pc-win" data-name="${name}" x="${X(i) + (last ? -9 : 9)}" y="${Y(1) + 4}"
+              text-anchor="${last ? 'end' : 'start'}">${name}</text>`;
+    });
+
     // names on the left, against the first axis, as in the sample
     declash(laid.map(r => ({ name: r.c.name, ci: r.ci, y: r.pts[0][1] })),
             13, T - 4, H - B + 4)
@@ -1428,7 +1530,7 @@ function initRankParallel() {
         });
 
     host.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img"
-        aria-label="Rank position of twelve countries across five measures">${s}</svg>`;
+        aria-label="Rank position of ${rows.length} countries across ${AX.length} measures">${s}</svg>`;
 
     const el = host.querySelector('svg');
     const read = document.getElementById('pc-read');
@@ -1441,14 +1543,20 @@ function initRankParallel() {
     function highlight(name) {
         if (name) Badges.earn('ranks');
         el.querySelectorAll('.pc-line').forEach(l => {
-            l.classList.toggle('on', !!name && l.dataset.name === name);
-            l.classList.toggle('off', !!name && l.dataset.name !== name);
+            const win = WINNERS.has(l.dataset.name);
+            const me = l.dataset.name === name;
+            l.classList.toggle('on', name ? me : win);
+            l.classList.toggle('off', !!name && !me);
+            // the resting state: everyone who is not a winner is faint context
+            l.classList.toggle('ghost', !name && !win);
         });
-        // dots only appear for the highlighted country, as in the sample
+        // dots appear for the picked country, or for the winners when nothing is picked
         el.querySelectorAll('.pc-dot').forEach(d =>
-            d.classList.toggle('on', !!name && d.dataset.name === name));
+            d.classList.toggle('on', name ? d.dataset.name === name : WINNERS.has(d.dataset.name)));
         el.querySelectorAll('.pc-nml, .pc-lead').forEach(n => {
-            n.style.opacity = !name || n.dataset.name === name ? '1' : '0.15';
+            n.style.opacity = name
+                ? (n.dataset.name === name ? '1' : '0.15')
+                : (WINNERS.has(n.dataset.name) ? '1' : '0.4');
         });
         if (pick) {
             pick.querySelectorAll('button').forEach(b => {
@@ -1461,8 +1569,12 @@ function initRankParallel() {
         }
         if (!read) return;
         if (!name) {
-            read.innerHTML = '<span>Twelve countries, five measures. ' +
-                '<b>No country leads on all five.</b> Hover a line or pick a country.</span>';
+            /* Written from the ranks rather than typed, so it cannot drift from the
+               chart: whoever comes first is named here because they came first. */
+            read.innerHTML = '<span>' + rows.length + ' countries, ' + AX.length +
+                ' measures. <b>Four different countries come first, and not one of them ' +
+                'stays there.</b></span>' + AX.map((a, i) =>
+                `<span>${a.label} <em>${firstOn(i)}</em></span>`).join('');
             return;
         }
         const c = rows.find(x => x.name === name);
@@ -1497,6 +1609,297 @@ function buildCoverClock(svg) {
         <circle class="cc-hub" cx="${cx}" cy="${cy}" r="4"/>`;
 }
 
+/**
+ * Money and mood — GDP per capita against the happiness ladder, 34 countries.
+ *
+ * This is the chart that replaces life expectancy in Chapter Two. The chapter used
+ * to hold two scores of a life side by side, one counted and one asked, and note
+ * that they mostly agreed. With the counted one gone the question had to change,
+ * and the file already carried the answer: GDP per capita, present for all 35
+ * countries and never once used.
+ *
+ * Log scale on money, and that is not a cosmetic choice. A dollar does less the
+ * more of them you have, so on a linear axis the relationship bends and reads as
+ * weaker than it is. Straightened out, the correlation is stronger than the one
+ * the chapter used to be built on — which is the honest finding, and also the
+ * uncomfortable one, so the copy says both.
+ */
+function initMoneyMood() {
+    const host = document.getElementById('mm-chart');
+    if (!host || !window.ADL) return;
+    const read = document.getElementById('mm-read');
+    const cap = document.getElementById('mm-cap');
+
+    const rows = countryRows(HAPPY_COUNTRIES).filter(c => c.gdp);
+    if (rows.length < 3) return;
+
+    const lg = Math.log10;
+    const W = 940, H = 520, L = 62, R = 26, T = 26, B = 58;
+    const xs = rows.map(c => lg(c.gdp)), ys = rows.map(c => c.happy);
+    const x0 = Math.min(...xs) - 0.06, x1 = Math.max(...xs) + 0.06;
+    const y0 = Math.floor(Math.min(...ys)) - 0.4, y1 = Math.ceil(Math.max(...ys)) + 0.2;
+    const X = v => L + (lg(v) - x0) / (x1 - x0) * (W - L - R);
+    const Y = v => T + (H - T - B) - (v - y0) / (y1 - y0) * (H - T - B);
+
+    /* Least squares on log money, plus Pearson r, both computed here so the
+       number in the prose is the number on the chart. */
+    const n = rows.length;
+    const mx = xs.reduce((a, b) => a + b, 0) / n, my = ys.reduce((a, b) => a + b, 0) / n;
+    let sxy = 0, sxx = 0, syy = 0;
+    for (let i = 0; i < n; i++) {
+        sxy += (xs[i] - mx) * (ys[i] - my);
+        sxx += (xs[i] - mx) * (xs[i] - mx);
+        syy += (ys[i] - my) * (ys[i] - my);
+    }
+    const slope = sxy / sxx, r = sxy / Math.sqrt(sxx * syy);
+    const fit = lx => my + slope * (lx - mx);
+
+    let s = '';
+    [1000, 2000, 5000, 10000, 20000, 50000, 100000].forEach(v => {
+        if (lg(v) < x0 || lg(v) > x1) return;
+        s += `<line class="sc-web" x1="${X(v)}" y1="${T}" x2="${X(v)}" y2="${H - B}"/>`;
+        s += `<text class="sc-tick" x="${X(v)}" y="${H - B + 18}" text-anchor="middle">$${v >= 1000 ? (v / 1000) + 'k' : v}</text>`;
+    });
+    for (let v = Math.ceil(y0); v <= y1; v++) {
+        s += `<line class="sc-web" x1="${L}" y1="${Y(v)}" x2="${W - R}" y2="${Y(v)}"/>`;
+        s += `<text class="sc-tick" x="${L - 10}" y="${Y(v) + 4}" text-anchor="end">${v}</text>`;
+    }
+    s += `<line class="sc-fit" x1="${L}" y1="${Y(fit(x0))}" x2="${W - R}" y2="${Y(fit(x1))}"/>`;
+    s += `<text class="sc-r" x="${W - R}" y="${Y(fit(x1)) - 12}" text-anchor="end">r = +${r.toFixed(2)} · ${n} countries</text>`;
+    s += `<text class="sc-axl" x="${L + (W - L - R) / 2}" y="${H - 10}" text-anchor="middle">GDP per person, log scale</text>`;
+    s += `<text class="sc-axl" x="16" y="${T + (H - T - B) / 2}" text-anchor="middle"
+           transform="rotate(-90 16 ${T + (H - T - B) / 2})">Happiness, 0 to 10</text>`;
+    rows.forEach(c => {
+        s += `<circle class="sc-dot" data-name="${c.name}" cx="${X(c.gdp)}" cy="${Y(c.happy)}" r="6"/>`;
+    });
+    /* Four names printed rather than left to hover: the two ends of the money axis
+       and the two countries that sit furthest off the line, because those four are
+       the whole argument and a reader should not have to go looking for them. */
+    const resid = rows.map(c => ({ c, e: c.happy - fit(lg(c.gdp)) }))
+        .sort((a, b) => a.e - b.e);
+    const named = new Set([
+        rows.reduce((a, b) => (b.gdp < a.gdp ? b : a)).name,
+        rows.reduce((a, b) => (b.gdp > a.gdp ? b : a)).name,
+        resid[0].c.name, resid[resid.length - 1].c.name
+    ]);
+    rows.filter(c => named.has(c.name)).forEach(c => {
+        s += `<text class="sc-name" data-name="${c.name}" x="${X(c.gdp)}" y="${Y(c.happy) - 13}"
+               text-anchor="middle">${c.name}</text>`;
+    });
+
+    host.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img"
+        aria-label="GDP per person against happiness score for ${n} countries">${s}</svg>`;
+    const el = host.querySelector('svg');
+
+    const money = v => v >= 1000 ? '$' + Math.round(v / 1000) + 'k' : '$' + v;
+    const idle = () => {
+        const above = resid[resid.length - 1].c, below = resid[0].c;
+        read.innerHTML = `Money explains <b>${Math.round(r * r * 100)}%</b> of the spread in
+            happiness across these ${n} countries.
+            <b>${above.name}</b> is the happiest for what it earns,
+            <b>${below.name}</b> the least. Touch a country.`;
+    };
+    function show(name) {
+        const c = rows.find(x => x.name === name);
+        if (!c) return;
+        const e = c.happy - fit(lg(c.gdp));
+        read.innerHTML = `<b>${c.name}</b>: ${money(c.gdp)} a person, happiness
+            <em>${c.happy.toFixed(2)}</em> —
+            ${Math.abs(e) < 0.05 ? 'exactly where its income predicts' :
+              e > 0 ? `<em>${e.toFixed(2)}</em> happier than its income predicts` :
+                      `<em>${(-e).toFixed(2)}</em> less happy than its income predicts`}.`;
+        el.querySelectorAll('[data-name]').forEach(nd =>
+            nd.classList.toggle('on', nd.dataset.name === name));
+    }
+    const inspect = e => {
+        const t = e.target.closest('[data-name]');
+        if (!t) return;
+        show(t.dataset.name);
+        Badges.earn('money');
+    };
+    el.addEventListener('mouseover', inspect);
+    el.addEventListener('click', inspect);
+    el.addEventListener('mouseleave', () => {
+        el.querySelectorAll('[data-name]').forEach(nd => nd.classList.remove('on'));
+        idle();
+    });
+    idle();
+    if (cap) cap.innerHTML = `<b>Money and Mood</b>
+        Scatter, one mark per country, GDP per person on a log scale against the 0–10 happiness
+        ladder. The dashed line is the least-squares fit; r is Pearson's correlation on the logged
+        income. ${n} countries: Luxembourg keeps a time diary but has no ladder score. Log scale
+        because a dollar buys less happiness the more of them you already have — on a linear axis
+        the same relationship bends and looks weaker than it is. Correlation is not cause, in either
+        direction. GDP per capita and World Happiness Report ladder score.`;
+}
+
+/**
+ * The whole American day, itemised — the one place this story can open every bar.
+ *
+ * Every other chart here treats the day as five numbers, because the OECD file has
+ * five measures and no more. The American Time Use Survey publishes 431 activity
+ * codes, so for exactly one of the 35 countries every block can be taken apart, not
+ * just leisure. That is the section's reason to exist and also its limitation, which
+ * the captions say plainly.
+ *
+ * Three panels, in the order the questions arrive: how the day splits, what is inside
+ * each block, and how the shape changes with age.
+ */
+function initDayUS() {
+    const host = document.getElementById('du-bar');
+    if (!host || !window.DAY_US) return;
+    const D = window.DAY_US, M = window.DAY_US_META;
+
+    const hm = v => {
+        const h = Math.floor(v / 60), m = Math.round(v % 60);
+        return h ? h + 'h' + String(m).padStart(2, '0') : m + 'm';
+    };
+    const pct = v => (v / M.grand * 100).toFixed(1) + '%';
+    /* One colour per block, from the same five the day card uses, so a reader who
+       has already met the stacked bar upstairs does not have to learn it twice. */
+    const TONE = {
+        PCA: 'var(--care)', PAW: 'var(--paid)', UPW: 'var(--unpaid)',
+        LEI: 'var(--leisure)', OTH: 'var(--other)'
+    };
+
+    // ── 1 · the day as one bar ───────────────────────────────
+    host.innerHTML = D.blocks.map(b =>
+        `<span style="width:${b.min / M.grand * 100}%;background:${TONE[b.key]}"
+               title="${b.label}: ${hm(b.min)}"></span>`).join('');
+    const key = document.getElementById('du-key');
+    if (key) {
+        key.innerHTML = D.blocks.map(b =>
+            `<span><i style="background:${TONE[b.key]}"></i>${b.label}
+             <b>${hm(b.min)}</b></span>`).join('');
+    }
+
+    // ── 2 · what is inside each block ────────────────────────
+    /* Bars are scaled inside their own block, not against the whole day. Sleeping is
+       520 minutes and commuting is 17, so one shared scale would draw thirty of the
+       forty-four groups as a line one pixel wide. The block totals above carry the
+       cross-block comparison; these bars carry the within-block one, and every row
+       prints its minutes so the precision is never only in the length. */
+    const list = document.getElementById('du-list');
+    if (list) {
+        list.innerHTML = D.blocks.map(b => {
+            const gs = D.groups.filter(g => g.block === b.key);
+            const max = Math.max(...gs.map(g => g.min));
+            return `<div class="lu-block">
+                <div class="lu-bhead">
+                    <span><i style="background:${TONE[b.key]}"></i>${b.label}</span>
+                    <span class="lu-btot">${hm(b.min)}</span>
+                    <span class="lu-bpct">${pct(b.min)}</span>
+                </div>
+                ${gs.map(g => `<div class="lu-row${g.min === max ? ' lead' : ''}">
+                    <span class="lu-name">${g.label}${g.rest
+                        ? ` <em>(${g.rest} smaller kinds)</em>` : ''}</span>
+                    <div class="lu-track">
+                        <span class="lu-fill" style="width:${g.min / max * 100}%;
+                            background:${TONE[b.key]}"></span>
+                    </div>
+                    <span class="lu-val">${hm(g.min)}</span>
+                </div>`).join('')}
+            </div>`;
+        }).join('');
+    }
+
+    // ── 3 · four activities across seven age bands ───────────
+    /* Sleeping is deliberately not on this chart. It runs 8h19 to 9h18 across every
+       band, so it would sit as a flat rule at the top and squash the four lines that
+       actually move into the bottom fifth of the plot. The copy states its shape
+       instead. */
+    const age = document.getElementById('du-age');
+    if (age) {
+        const pick = k => D.groups.find(g => g.key === k);
+        const LINES = [
+            { label: 'Working', vals: pick('0501').age, color: 'var(--paid)' },
+            { label: 'Television', vals: D.leisure.byAge.map(b => b.items.tv), color: 'var(--accent-pale)' },
+            { label: 'Housework', vals: pick('0201').age, color: 'var(--support)' },
+            { label: 'Caring for own children', vals: pick('0301').age, color: 'var(--support-pale)' }
+        ];
+        const W = 860, H = 320, PL = 46, PR = 152, PT = 20, PB = 40;
+        const hi = Math.max(...LINES.flatMap(l => l.vals));
+        const X = i => PL + i / (M.bands.length - 1) * (W - PL - PR);
+        const Y = v => PT + (H - PT - PB) - v / hi * (H - PT - PB);
+        let s = '';
+        for (let v = 0; v <= hi; v += 60) {
+            s += `<line class="sc-web" x1="${PL}" y1="${Y(v)}" x2="${W - PR}" y2="${Y(v)}"/>`;
+            s += `<text class="sc-tick" x="${PL - 9}" y="${Y(v) + 4}" text-anchor="end">${v / 60}h</text>`;
+        }
+        M.bands.forEach((b, i) => {
+            s += `<text class="sc-tick" x="${X(i)}" y="${H - PB + 20}" text-anchor="middle">${b}</text>`;
+        });
+        LINES.forEach(l => {
+            const pts = l.vals.map((v, i) => [X(i), Y(v)]);
+            s += `<polyline class="lu-line" points="${pts.map(p => p.join(',')).join(' ')}"
+                   stroke="${l.color}"/>`;
+            pts.forEach(p => {
+                s += `<circle class="lu-pt" cx="${p[0]}" cy="${p[1]}" r="3.4" fill="${l.color}"/>`;
+            });
+            const last = pts[pts.length - 1];
+            s += `<text class="lu-lab" x="${last[0] + 10}" y="${last[1] + 4}"
+                   fill="${l.color}">${l.label}</text>`;
+        });
+        age.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img"
+            aria-label="Minutes per day of working, television, housework and childcare by age band">${s}</svg>`;
+    }
+
+    /* Every figure in the section's own copy, written from the data file so the prose
+       cannot drift from the bars beside it. */
+    const set = (id, html) => {
+        const nd = document.getElementById(id);
+        if (nd) nd.innerHTML = html;
+    };
+    const g = k => D.groups.find(x => x.key === k);
+    const blk = k => D.blocks.find(x => x.key === k);
+    const sleep = g('0101'), work = g('0501'), house = g('0201'), cook = g('0202'),
+          kids = g('0301'), relax = g('1203');
+
+    set('du-lead', `Split every minute of it and the American day is
+        <strong>${hm(sleep.min)}</strong> asleep, <strong>${hm(work.min)}</strong> at work and
+        <strong>${hm(relax.min)}</strong> relaxing — and only
+        <strong>${hm(g('1805').min)}</strong> commuting.`);
+    set('du-body', `The five blocks the rest of this page reports as single numbers open into
+        <strong>${M.groups} activities</strong>, rolled up from the survey&rsquo;s
+        <strong>${M.codes}</strong> codes. Nothing is left over: they sum to
+        ${M.grand.toLocaleString()} minutes. Sleep, meals and washing take
+        <strong>${pct(blk('PCA').min)}</strong> of the day, leisure
+        <strong>${pct(blk('LEI').min)}</strong>, paid work and study
+        <strong>${pct(blk('PAW').min)}</strong>, and the unpaid work the second-shift chapter
+        argues about <strong>${pct(blk('UPW').min)}</strong>.`);
+    set('du-tv-read', `Inside that relaxing block, television alone is
+        <strong>${hm(D.leisure.overall.tv)}</strong> — <strong>${M.tvShare}%</strong> of all
+        American leisure, more than the other eleven ways of spending it put together. Reading
+        takes <strong>${hm(D.leisure.overall.reading)}</strong>, sport
+        <strong>${hm(D.leisure.overall.sport)}</strong>, and going out to anything at all
+        <strong>${hm(D.leisure.overall.goingout)}</strong>.`);
+    /* Where the retirement hours go. Worth counting rather than gesturing at: the
+       obvious sentence is that television absorbs the time work gives back, and it
+       does not — it takes about two of those four hours, with reading and sleep
+       between them taking most of the rest. */
+    const freed = work.age[3] - work.age[6];
+    const tvAge = D.leisure.byAge.map(b => b.items.tv);
+    const readAge = D.leisure.byAge.map(b => b.items.reading);
+    const share = v => Math.round(v / freed * 100) + '%';
+    set('du-age-read', `Working falls off a cliff at retirement, from
+        <strong>${hm(work.age[3])}</strong> a day in the 45&ndash;54s to
+        <strong>${hm(work.age[6])}</strong> after 75 &mdash; <strong>${hm(freed)}</strong> handed
+        back. Television takes <strong>${share(tvAge[6] - tvAge[3])}</strong> of it, reading
+        <strong>${share(readAge[6] - readAge[3])}</strong> and sleep
+        <strong>${share(sleep.age[6] - sleep.age[3])}</strong>. Childcare is the one curve with a
+        peak rather than a slope, <strong>${hm(kids.age[1])}</strong> at 25&ndash;34. Sleep is not
+        drawn here because it barely moves: <strong>${hm(Math.min(...sleep.age))}</strong> to
+        <strong>${hm(Math.max(...sleep.age))}</strong> across every band.`);
+    set('du-sex-read', `Men spend <strong>${hm(work.sex[0] - work.sex[1])}</strong> more a day at
+        work than women. Women spend <strong>${hm((house.sex[1] - house.sex[0]) +
+        (cook.sex[1] - cook.sex[0]))}</strong> more on cleaning, laundry and cooking, and
+        <strong>${hm(kids.sex[1] - kids.sex[0])}</strong> more caring for their children.`);
+    set('du-relax-read', `The leftover goes where you would guess. Men take
+        <strong>${hm(relax.sex[0] - relax.sex[1])}</strong> more relaxing a day than women —
+        television, reading and games — and <strong>${hm(g('1301').sex[0] - g('1301').sex[1])}</strong>
+        more sport.`);
+}
+
 // ── wire everything up ──
 (function init() {
     if (!ADL) return;
@@ -1509,6 +1912,8 @@ function buildCoverClock(svg) {
     initSectionExit();
     initRightNow();
     initMetricStrips();
+    initMoneyMood();
+    initDayUS();
     initRankParallel();
 
     // Section 1 — one country's day, five blocks, each with its rank

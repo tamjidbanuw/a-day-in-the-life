@@ -37,9 +37,9 @@
                 <p class="lead">How do you measure a day? Thousands of people keep detailed time diaries,
                     recording everything they do over 24 hours. Only 35 countries collect this kind of
                     data.</p>
-                <p class="body">This story follows the 12 with complete records. These countries represent
-                    nearly half the world’s population. They aren’t the whole world—but together they
-                    reveal how billions of people spend an ordinary day.</p>
+                <p class="body">This story follows all 35 of them. Together they hold
+                    <strong>52%</strong> of the world’s population. They aren’t the whole world—but they
+                    are everyone who writes the day down.</p>
 
                 <!-- the field leads the section: visual first, explanation after -->
                 <div class="df-stage"><canvas id="df-canvas"></canvas></div>
@@ -50,8 +50,8 @@
                 </div>
 
                 <p class="fig-cap"><b>Eight Billion Days</b>
-                    Dot field spelling WORLD. Red marks the 12 countries this story follows: 48% of the
-                    dots, matching their 48% share of world population. Positions are not geographic.</p>
+                    Dot field spelling WORLD. Red marks the 35 countries this story follows: 52% of the
+                    dots, matching their 52% share of world population. Positions are not geographic.</p>
             </div>
 
         </section>
@@ -101,27 +101,150 @@
         <!-- ═══ CHAPTER ONE · HOW WE LIVE ═══════════════════ -->
         <div class="chapter-mark reveal">
             <span class="chapter-eyebrow">Chapter One</span>
-            <h2 class="chapter-name">The Universal Clock</h2>
-            <p class="chapter-blurb">Paid work varies four times as much as sleep across these twelve.
-                And in three of them, more of the day goes to work that nobody pays for.</p>
+            <h2 class="chapter-name">Sleep Is the Only Constant</h2>
+            <p class="chapter-blurb">Paid work varies nearly four times as much as sleep across all
+                thirty-five. And in four of them, more of the day goes to work that nobody pays for.</p>
             <div class="chapter-rule"></div>
         </div>
+
+        <!-- ═══ 0 · THE CHAPTER AT A GLANCE ═════════════════ -->
+        <!-- States the chapter before the sections argue it: all 35 days as ribbons,
+             the same-clock card, and a sortable ranking, with one selection driving
+             all three. Built by js/glance.js.
+
+             EVERY id IN HERE IS gl- PREFIXED ON PURPOSE. #sec-day below owns
+             dc-bar / dc-rows / dc-foot / dc-who, and app.js's initDayCard() resolves
+             those with an unscoped document.getElementById. This section is EARLIER in
+             the document, so sharing those ids would hand app.js this card's elements
+             and leave #sec-day rendering nothing at all.
+
+             The ranking uses .gl-row rather than .rank-row for the same reason in CSS:
+             .rank-row is the static grid #work-rank and #rest-rank use, while these
+             rows are absolutely positioned so they can animate between sort orders. -->
+        <section class="section reveal" id="sec-glance">
+            <span class="sec-num">Chapter One &middot; at a glance</span>
+            <h2 class="sec-title">Everyone gets 24 hours.<br>Only the spending differs.</h2>
+            <hr class="rule">
+            <p class="lead">Thirty-five countries keep a time diary &mdash; a record of what thousands
+                of people actually did across a day. They are the only places on earth where an
+                ordinary day has been written down and counted.</p>
+            <p class="body">Every panel here is one day. <strong>Hover any country</strong> to preview
+                it, <strong>click to pin it</strong>, and the whole sheet follows &mdash; the card, the
+                ordering and the ribbons. The one finding worth carrying out: the biggest block of the
+                day is also the one nobody argues about. Sleep and self-care take
+                <strong id="gl-f-share"></strong> of the average day and stretch only
+                <strong id="gl-f-sleep"></strong> of their own average from the shortest country to the
+                longest. Paid work is a third the size and stretches
+                <strong id="gl-f-paid"></strong>.</p>
+            <span class="howto">Hover to preview &middot; click to pin &middot; Escape to release</span>
+
+            <div class="gl-who" id="gl-who"></div>
+            <p class="gl-pinnote" id="gl-pinnote"></p>
+
+            <div class="gl-grid">
+                <!-- ── the braid, full width, the one dark chart ground ─────────── -->
+                <div class="gl-full">
+                    <div class="pc-panel">
+                        <h3>Thirty-five days, five demands</h3>
+                        <p class="sub">Every country&rsquo;s 24 hours fanning out into what they are
+                            spent on &mdash; one ribbon per country per activity, 175 in all. Hover a
+                            column, or its flag; click to pin it. The bar across the top is all 35
+                            days pooled, so its five widths never move; the figure written on each
+                            band is the share belonging to whoever is named there.</p>
+                        <div id="gl-braid"></div>
+                        <div class="gl-key" id="gl-key-braid"></div>
+                        <p class="gl-note" id="gl-braid-note"></p>
+                        <p class="fig-cap"><b>One Country per Column</b>
+                            Each column is one country and each ribbon one activity; every width is
+                            minutes. All 35 columns are the same width because all 35 are spending the
+                            same 1,440 minutes &mdash; the difference is only in how the ribbons
+                            leaving them are divided.</p>
+                    </div>
+                </div>
+
+                <!-- ── the same clock, with the caveats beneath it ──────────────── -->
+                <div>
+                    <div class="dc-card">
+                        <div class="dc-top">
+                            <!-- The panel is titled, not the selection: the live country name is
+                                 already set in large type in .gl-who above, and the <select> shows
+                                 it a third time. -->
+                            <span class="dc-who">The same clock</span>
+                            <label class="dc-pick">
+                                <span class="vh">Choose a country</span>
+                                <select id="gl-dc-pick" aria-label="Choose a country"></select>
+                            </label>
+                        </div>
+                        <p class="dc-lab">The day, 1,440 minutes</p>
+                        <div class="dc-bar" id="gl-dc-bar" role="img"
+                             aria-label="How this country’s 24 hours divide across sleep, work and leisure"></div>
+                        <div class="dc-scale"><span>0h</span><span>6h</span><span>12h</span><span>18h</span><span>24h</span></div>
+                        <div class="dc-rows" id="gl-dc-rows"></div>
+                        <p class="dc-foot" id="gl-dc-foot"></p>
+                    </div>
+
+                    <!-- The caveats sit under the card whose numbers they qualify, rather than
+                         in a strip at the foot of the sheet where a reader meets them after
+                         they have already misread everything. -->
+                    <div class="callout" style="margin-top:18px">
+                        <p class="callout-head">Three things easy to get wrong</p>
+                        <div class="callout-row"><span class="callout-ic">&#10022;</span>
+                            <p><strong>Order is not time.</strong> Every block sits in a fixed order.
+                                The data records how much of the day went to something, never
+                                when.</p></div>
+                        <div class="callout-row"><span class="callout-ic">&#10022;</span>
+                            <p><strong>Every country counts once.</strong> The average is an average
+                                of 35 days, not of the people living them &mdash; China and Luxembourg
+                                carry equal weight.</p></div>
+                        <div class="callout-row"><span class="callout-ic">&#10022;</span>
+                            <p><strong>Nobody lives the average day.</strong> Each figure is a whole
+                                population&rsquo;s diaries averaged together. No one in the United
+                                States spends <span id="gl-f-us-sleep"></span> on sleep and self-care
+                                and <span id="gl-f-us-paid"></span> at paid work &mdash; that is the
+                                shape of the country, not of a person.</p></div>
+                    </div>
+                </div>
+
+                <!-- ── the ordering, the panel you can read precisely ───────────── -->
+                <div>
+                    <div class="day-card">
+                        <div class="card-head">The ordering</div>
+                        <p class="card-sub">The one panel you can read precisely. Hover a row and
+                            every other panel follows it.</p>
+                        <div class="gl-pills" id="gl-pills"></div>
+                        <div class="gl-rank" id="gl-rank"></div>
+                        <div class="gl-key" id="gl-key-rank"></div>
+                        <p class="fig-cap"><b>Ranked by Size, Not Merit</b>
+                            Stacked bars to 24 hours, ordered by the chosen measure. First on work is
+                            the longest working day, not the best one; more sleep is not better than
+                            less.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- ═══ 1 · THE DAY ═════════════════════════════════ -->
         <!-- Prose and card both driven by initDayCard() in js/app.js: every
              figure and rank is generated from the selected country, so the copy
              cannot drift from the chart beside it. -->
+        <!-- .txt and .viz, the same two children every other .notes section has.
+             It used to be .dc-grid wrapping .dc-txt and .dc-card, with the caption
+             as a third child of the section. That put the caption in its own grid
+             row, and because .dc-grid was display:contents there was no box left to
+             constrain the sticky notes column: its containing block became the whole
+             section, so on scroll it slid 142px past the card and parked the
+             instruction pill on top of the caption. -->
         <section class="section notes reveal" id="sec-day">
-            <div class="dc-grid">
-                <div class="dc-txt">
-                    <span class="sec-num">Same clock</span>
-                    <h2 class="sec-title" id="dc-title">Everyone gets 24 hours</h2>
-                    <hr class="rule">
-                    <p class="lead" id="dc-lead"></p>
-                    <p class="body" id="dc-body"></p>
-                    <span class="howto">Change the country. Every number and rank follows it.</span>
-                </div>
+            <div class="txt">
+                <span class="sec-num">Same clock</span>
+                <h2 class="sec-title" id="dc-title">Everyone gets 24 hours</h2>
+                <hr class="rule">
+                <p class="lead" id="dc-lead"></p>
+                <p class="body" id="dc-body"></p>
+                <span class="howto">Change the country. Every number and rank follows it.</span>
+            </div>
 
+            <div class="viz">
                 <div class="dc-card">
                     <div class="dc-top">
                         <span class="dc-who" id="dc-who"></span>
@@ -137,9 +260,9 @@
                     <div class="dc-rows" id="dc-rows"></div>
                     <p class="dc-foot" id="dc-foot"></p>
                 </div>
-            </div>
 
-            <p class="fig-cap" id="dc-cap"></p>
+                <p class="fig-cap" id="dc-cap"></p>
+            </div>
         </section>
 
         <!-- ═══ 2 · WORK ════════════════════════════════════ -->
@@ -167,8 +290,9 @@
                         <span><i class="rank-key" style="background:var(--unpaid)"></i>Unpaid work (chores &amp; care)</span>
                     </div>
                     <p class="fig-cap"><b>The Second Shift</b>
-                        Stacked bars, paid and unpaid work in minutes per day, 12 countries, ranked by
-                        total. Unpaid work covers cooking, cleaning, shopping and care.</p>
+                        Stacked bars, paid and unpaid work in minutes per day, all 35 countries that
+                        keep time diaries, ranked by total. Unpaid work covers cooking, cleaning,
+                        shopping and care.</p>
                 </div>
 
                 <div class="callout">
@@ -176,7 +300,8 @@
                     <div class="callout-row">
                         <span class="callout-ic">✦</span>
                         <p>Across every country here, unpaid labour adds
-                            <strong>2 to 4 hours</strong> to the day. Often as much as a second job.</p>
+                            <strong>2 to 4¼ hours</strong> to the day. Often as much as a
+                            second job.</p>
                     </div>
                     <div class="callout-row">
                         <span class="callout-ic">✦</span>
@@ -190,8 +315,8 @@
         <!-- ═══ FULL-BLEED STAT BAND ════════════════════════ -->
         <div class="band reveal"><div class="band-inner">
             <div class="stat"><b>10h05m</b><p><strong>Mexico</strong> works the longest day here. 4h16m of it is unpaid.</p></div>
-            <div class="stat"><b>2–4h</b><p>of <strong>unpaid labour</strong> added to the day in every country here.</p></div>
-            <div class="stat"><b>2h18m</b><p>The free-time gap between <strong>Germany</strong> and Mexico. The widest here.</p></div>
+            <div class="stat"><b>2–4¼h</b><p>of <strong>unpaid labour</strong> added to the day in every country here.</p></div>
+            <div class="stat"><b>2h31m</b><p>The free-time gap between <strong>Norway</strong> and Mexico. The widest here.</p></div>
         </div></div>
 
         <!-- ═══ 4 · REST ════════════════════════════════════ -->
@@ -203,8 +328,8 @@
                 <p class="lead">After the work is done, what’s left is rest: the hours for family,
                     friends, screens, sport and simply doing nothing.</p>
                 <p class="body">
-                    <strong>Germany</strong> keeps the most free time, <strong>5h41m</strong> a day.
-                    <strong>Italy</strong> is close behind at <strong>5h23m</strong>.
+                    <strong>Norway</strong> keeps the most free time, <strong>5h54m</strong> a day.
+                    <strong>Germany</strong> is close behind at <strong>5h41m</strong>.
                     <strong>Mexico</strong> is left with <strong>3h23m</strong>. The countries that
                     work longest rest least.
                 </p>
@@ -214,18 +339,18 @@
                     <div class="card-head">Hours of leisure per day</div>
                     <div class="rank" id="rest-rank" role="img" aria-label="Countries ranked by daily leisure hours"></div>
                     <p class="fig-cap"><b>Off the Clock</b>
-                        Bars, leisure in minutes per day, 12 countries. Leisure excludes sleep, personal
-                        care, paid work and unpaid work.</p>
+                        Bars, leisure in minutes per day, all 35 countries. Leisure excludes sleep,
+                        personal care, paid work and unpaid work.</p>
                 </div>
             </div>
         </section>
 
-        <!-- ═══ CHAPTER TWO · HOW WE THRIVE ═════════════════ -->
+        <!-- ═══ CHAPTER TWO · WHAT THE DAY BUYS ═════════════ -->
         <div class="chapter-mark reveal">
             <span class="chapter-eyebrow">Chapter Two</span>
-            <h2 class="chapter-name">Living Longer Doesn’t Always Mean Living Happier</h2>
-            <p class="chapter-blurb">Two ways to score a life: count the years, or just ask. The country
-                that lives longest here comes tenth of twelve on the asking.</p>
+            <h2 class="chapter-name">The Only Number Here That Asks</h2>
+            <p class="chapter-blurb">Every other measure in this story counts something. This one stops
+                people in the street and asks them, and it still lands within reach of what they earn.</p>
             <div class="chapter-rule"></div>
         </div>
 
@@ -234,7 +359,7 @@
              in js/app.js, so the reader learns the chart once and reads it twice. -->
         <section class="section notes reveal" id="sec-happy">
             <div class="txt">
-                <span class="sec-num">First measure</span>
+                <span class="sec-num">The one that asks</span>
                 <h2 class="sec-title">Happiness is a question,<br>not a reading</h2>
                 <hr class="rule">
                 <p class="lead">Happiness isn’t measured. It’s reported. Imagine a ladder where 10 is the
@@ -254,26 +379,29 @@
             </div>
         </section>
 
-        <!-- ═══ 5 · SECOND MEASURE: LIFE EXPECTANCY ═════════ -->
-        <section class="section notes reveal" id="sec-life">
+        <!-- ═══ 5 · WHAT THE SCORE TRACKS ═══════════════════ -->
+        <!-- Was a second dot plot, life expectancy, drawn by the same code as the
+             happiness strip above. Life expectancy is gone from the story, so the
+             chapter follows its one soft measure with the hardest thing that
+             predicts it. initMoneyMood() in js/app.js. -->
+        <section class="section notes reveal" id="sec-money">
             <div class="txt">
-                <span class="sec-num">Second measure</span>
-                <h2 class="sec-title">Life expectancy is counted - not felt.</h2>
+                <span class="sec-num">What it tracks</span>
+                <h2 class="sec-title">The softest number<br>has a hard predictor</h2>
                 <hr class="rule">
-                <p class="lead">Nobody is asked anything. It is counted from deaths already recorded: how
-                    many years a baby born today can expect if nothing changes.</p>
-                <p class="body">So one measure is an opinion and the other is arithmetic. They are not the
-                    same question, and a country can do well on one and badly on the other. Read the two
-                    scales together and most countries hold roughly the same position in both.</p>
+                <p class="lead">If happiness is only an opinion, it ought to float free of anything you
+                    can count. It doesn’t.</p>
+                <p class="body">Plot each country’s ladder score against what it earns per person and the
+                    marks fall along a line. Money is not the whole story — the countries above the line
+                    are happier than their income says they should be, and the ones below are the
+                    opposite — but it is most of it, and a soft number with a hard predictor is a more
+                    uncomfortable finding than a soft number on its own.</p>
             </div>
 
             <div class="viz">
-                <div class="mt-stage">
-                    <p class="mt-lab">Life expectancy at birth, years</p>
-                    <div class="mt-strip" id="mt-life"></div>
-                    <p class="mt-read" id="mt-life-read"></p>
-                </div>
-                <p class="fig-cap" id="mt-life-cap"></p>
+                <div class="sc-stage" id="mm-chart"></div>
+                <p class="sc-read" id="mm-read"></p>
+                <p class="fig-cap" id="mm-cap"></p>
             </div>
         </section>
 
@@ -283,9 +411,10 @@
                 <span class="sec-num">Nobody leads</span>
                 <h2 class="sec-title">No Country Wins Everything</h2>
                 <hr class="rule">
-                <p class="lead">Line up all twelve countries on all five measures and no single line stays
-                    on top. Mexico works the most. France sleeps the most. Germany rests the most. Japan
-                    lives longest. Australia is happiest.</p>
+                <p class="lead">Line up thirty-four countries on four measures and no single line stays
+                    on top. Mexico works the most. France sleeps the most. Norway rests the most. Finland
+                    is happiest. Four different countries, and each of them gives the lead away on the
+                    other three.</p>
             </div>
 
             <div class="viz">
@@ -294,22 +423,115 @@
                     <div class="pc-chart" id="pc-chart"></div>
                     <div class="pc-pick" id="pc-pick"></div>
                 </div>
-                <p class="fig-cap"><b>Five Measures, Five Winners</b>
-                    Slope chart of rank positions. Each column ranks all 12 countries on one measure, 1st at
-                    the top, 12th at the bottom, so a line crossing another means the two countries swap
-                    order. <b>Ranks are by size, not by merit</b>: 1st on Work is the longest working day,
-                    not the best one. Ties broken by the underlying value. Time use: OECD Time Use Database,
-                    both sexes. Life expectancy: Our World in Data. Happiness: World Happiness Report,
+                <p class="fig-cap"><b>Four Measures, Four Winners</b>
+                    Slope chart of rank positions. Each column ranks 34 countries on one measure, 1st at
+                    the top, 34th at the bottom, so a line crossing another means the two countries swap
+                    order. The four lines drawn at full strength are the four that come 1st somewhere;
+                    the rest are faint until you hover or pick one, because 34 lines at equal weight is a
+                    texture rather than a chart. <b>Ranks are by size, not by merit</b>: 1st on Work is
+                    the longest working day, not the best one. Ties broken by the underlying value.
+                    34 countries, not 35: Luxembourg keeps a time diary but has no happiness score.
+                    Time use: OECD Time Use Database, both sexes. Happiness: World Happiness Report,
                     0–10 ladder.</p>
             </div>
         </section>
 
-        <!-- ═══ CHAPTER THREE · YOUR CLOSEST MATCH ═══════════ -->
+        <!-- ═══ CHAPTER THREE · INSIDE ONE BAR ══════════════ -->
         <div class="chapter-mark reveal">
             <span class="chapter-eyebrow">Chapter Three</span>
+            <h2 class="chapter-name">One Country Writes Everything Down</h2>
+            <p class="chapter-blurb">Thirty-five countries report the day as five numbers. One of
+                them itemises all 1,440 minutes, and the itemisation is not flattering.</p>
+            <div class="chapter-rule"></div>
+        </div>
+
+        <!-- ═══ 7 · THE WHOLE DAY, ITEMISED (US ONLY) ══════ -->
+        <!-- The only section on the page that leaves the OECD file. Driven by
+             initDayUS() in js/app.js off data/day-us.js, which is built from the
+             431 activity codes in data/time_use_atus/. -->
+        <section class="section notes reveal" id="sec-leisure">
+            <div class="txt">
+                <span class="sec-num">Every minute</span>
+                <h2 class="sec-title">One country writes down<br>all 1,440 minutes</h2>
+                <hr class="rule">
+                <p class="lead" id="du-lead"></p>
+                <p class="body" id="du-body"></p>
+                <p class="body">Only the United States is shown here, and not because it is
+                    representative. It is the one country in this story whose diaries are published
+                    in enough detail to take the day apart. Everywhere else the day stays five
+                    numbers, because five numbers is all the data says.</p>
+            </div>
+
+            <div class="viz">
+                <div class="day-card">
+                    <div class="card-head">The American day, all 1,440 minutes</div>
+                    <div class="lu-day" id="du-bar" role="img"
+                         aria-label="Stacked bar of the American day split into five blocks"></div>
+                    <div class="lu-daykey" id="du-key"></div>
+                    <p class="fig-cap"><b>The Whole Day</b>
+                        Stacked bar to 24 hours, the five blocks the rest of this page uses. American
+                        Time Use Survey 2003&ndash;2015: 170,842 respondent diaries, weighted,
+                        weekdays and weekends pooled.</p>
+                </div>
+
+                <div class="day-card">
+                    <div class="card-head">Inside each block, 44 activities</div>
+                    <div class="lu-stage" id="du-list" role="img"
+                         aria-label="Bars, American minutes per day for 44 activities grouped into five blocks"></div>
+                    <p class="fig-cap"><b>Every Minute Accounted For</b>
+                        Bars, average minutes per day. The survey&rsquo;s 431 activity codes are
+                        rolled up to its own second tier of grouping, then filed under the same five
+                        blocks as the charts above; groups under two minutes a day are pooled into
+                        one row per block. Nothing is dropped, so the rows sum to 1,440 minutes.
+                        <b>Bars are scaled within their own block, not across the day.</b>
+                        Sleeping is 8h40 and commuting is 17 minutes, so one shared scale would draw
+                        most of these as a hairline. The block totals above carry the comparison
+                        between blocks. These totals are not the same as the OECD figures for the United
+                        States elsewhere on this page — ATUS counts travel as its own activity where
+                        the OECD folds it into whatever the travel was for. Read the shares within
+                        this section, not across sections.</p>
+                </div>
+
+                <div class="callout">
+                    <p class="callout-head">Inside the biggest block of free time</p>
+                    <div class="callout-row">
+                        <span class="callout-ic">✦</span>
+                        <p id="du-tv-read"></p>
+                    </div>
+                </div>
+
+                <div class="day-card">
+                    <div class="card-head">Four activities across a lifetime</div>
+                    <div class="lu-stage" id="du-age" role="img"
+                         aria-label="Lines, minutes per day of working, television, housework and childcare by age band"></div>
+                    <p class="sc-read" id="du-age-read"></p>
+                    <p class="fig-cap"><b>The Day Ages</b>
+                        Lines, minutes per day by age band, same survey and weighting. Age bands are
+                        the survey&rsquo;s own respondents grouped in tens, not a cohort followed
+                        through time: this is what different ages did in the same years, which is not
+                        the same as what one person does as they get older.</p>
+                </div>
+
+                <div class="callout">
+                    <p class="callout-head">The same day, split by sex</p>
+                    <div class="callout-row">
+                        <span class="callout-ic">✦</span>
+                        <p id="du-sex-read"></p>
+                    </div>
+                    <div class="callout-row">
+                        <span class="callout-ic">✦</span>
+                        <p id="du-relax-read"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ CHAPTER FOUR · YOUR CLOSEST MATCH ════════════ -->
+        <div class="chapter-mark reveal">
+            <span class="chapter-eyebrow">Chapter Four</span>
             <h2 class="chapter-name">Somebody Lives Like You</h2>
-            <p class="chapter-blurb">No two of these twelve live alike. Four questions is enough to find
-                which of them spends its day most like you do.</p>
+            <p class="chapter-blurb">No two of these thirty-five live alike. Four questions is enough to
+                find which of them spends its day most like you do.</p>
             <div class="chapter-rule"></div>
         </div>
 
@@ -318,8 +540,8 @@
                 <span class="sec-num">Find your match</span>
                 <h2 class="sec-title">Somewhere out there,<br>a country lives like you</h2>
                 <hr class="rule">
-                <p class="lead">All 12 countries are scored on four measures: <strong>time, health,
-                    community</strong> and <strong>connection</strong>.</p>
+                <p class="lead">All 35 countries are scored on four measures: <strong>free time,
+                    rest, income</strong> and <strong>openness</strong>.</p>
                 <div><span class="howto">Four questions. Drag each dial to your own life, then see your
                     closest match.</span></div>
             </div>
@@ -327,15 +549,16 @@
             <div class="viz">
                 <div id="dna"></div>
                 <p class="fig-cap"><b>Find Your Match</b>
-                    Nearest-neighbour match on four normalised scores. Your answers place you in the same
-                    0–100 space as the 12 countries; the closest by straight-line distance wins.
+                    Nearest-neighbour match on four ranked scores. Your answers place you in the same
+                    0–100 space as the 35 countries; the closest by straight-line distance wins.
                     Illustrative, not a ranking.</p>
                 <p class="source">
                     The four scores are an illustrative index built from the same sources used throughout:
-                    daily free-time share (OECD Time Use), life expectancy (Our World in Data), a community
-                    score combining social support, freedom and generosity (World Happiness Report), and
-                    international arrivals (World Bank). Each is normalised 0–100 across the twelve
-                    countries, and is meant for exploring rather than ranking.
+                    daily free-time share and daily sleep and self-care (OECD Time Use), GDP per person,
+                    and international arrivals (World Bank). Each country is placed by its rank within the
+                    thirty-five rather than by its raw value, because three of the four measures have one
+                    country sitting so far from the rest that a raw scale would flatten everyone else
+                    against the floor. Meant for exploring rather than ranking.
                 </p>
             </div>
         </section>
@@ -381,9 +604,9 @@
                 Mexico City to Rome, is what becomes of them.</p>
             <p class="body" style="margin:1.4rem auto 0; max-width:560px; text-align:center;">
                 Every person receives the same 1,440 minutes. What changes is how those minutes become
-                work, family, rest, opportunity, and connection. Somewhere in these twelve countries,
-                someone is living a day that looks remarkably like yours. The question is—which life
-                would you choose?
+                work, family, rest, opportunity, and connection. Somewhere in these thirty-five
+                countries, someone is living a day that looks remarkably like yours. The question
+                is—which life would you choose?
             </p>
         </section>
     </main>
@@ -391,14 +614,20 @@
     <footer class="site-footer">
         <p>A Day in the Life of the World · A VizCon 2026 entry</p>
         <p class="src">Sources. Daily time use: OECD Time Use Database (minutes per day, both sexes;
-            “Work” combines paid and unpaid work). Life expectancy: Our World in Data. Happiness:
-            World Happiness Report. Tourism: World Bank (international arrivals, 2019). Population:
-            UN via world_population.csv (2022).</p>
+            “Work” combines paid and unpaid work), all 35 countries it covers. Happiness: World
+            Happiness Report (34 countries; Luxembourg has no score). GDP per person and tourism:
+            World Bank (international arrivals, 2019). Population: UN via world_population.csv (2022).
+            American leisure detail and the hourly panel: American Time Use Survey microdata,
+            2003–2015.</p>
     </footer>
 
     <script src="data/adl-data.js"></script>
     <script src="data/atus-hours.js"></script>
+    <script src="data/day-us.js"></script>
     <script src="js/dotfield.js"></script>
     <script src="js/app.js"></script>
+    <!-- #sec-glance. Independent IIFE, scoped to its own section, so load order
+         against app.js does not matter — only that ADL is already defined. -->
+    <script src="js/glance.js"></script>
 </body>
 </html>

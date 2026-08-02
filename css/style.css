@@ -214,11 +214,25 @@ body {
 }
 
 /* ─── CHAPTER DIVIDER (groups sections into a story) ────── */
+/* The space above a chapter mark is the sum of two paddings, which is how it got
+   out of hand: this used to be a flat 6rem on top of the previous section's bottom
+   padding of up to 6rem, so the reader crossed nearly 200px of nothing to reach a
+   chapter title. Both sides of the seam are now pulled in — see the rule below that
+   trims whatever sits directly above one — leaving a break of about 90px. Still
+   clearly a break; no longer a void. */
 .chapter-mark {
     max-width: 760px;
     margin: 0 auto;
-    padding: 6rem 1.5rem 0.5rem;
+    padding: clamp(1.5rem, 3.5vw, 2.75rem) 1.5rem 0.5rem;
     text-align: center;
+}
+/* Whatever sits directly above a chapter mark stops early, because the mark brings
+   its own air. :has() is doing something load-bearing but not critical: where it is
+   unsupported the seam simply keeps the old, roomier spacing. */
+.section:has(+ .chapter-mark),
+.badges:has(+ .chapter-mark),
+.band:has(+ .chapter-mark) {
+    padding-bottom: clamp(1.5rem, 3vw, 2.5rem);
 }
 .chapter-eyebrow {
     display: inline-block;
@@ -268,20 +282,15 @@ body {
 /* The day card carries its own two-column grid, so inside a notes section it
    simply becomes the two columns: its text is the note and its card is the
    chart. Cheaper than restructuring markup that already says the right thing. */
-.section.notes .dc-grid {
-    display: contents;
-}
-.section.notes .dc-txt {
-    border-left: 2px solid var(--accent);
-    padding-left: 1rem;
-    position: sticky; top: 4.6rem;
-}
-.section.notes .dc-txt .sec-title { font-size: clamp(1.1rem, 1.9vw, 1.5rem); }
-.section.notes .dc-txt .lead { font-size: 0.93rem; }
-.section.notes .dc-txt .body { font-size: 0.86rem; }
-.section.notes .dc-txt .rule { display: none; }
-/* the caption is a third child and would land in a column of its own */
-.section.notes > .fig-cap { grid-column: 1 / -1; }
+/* .section.notes .dc-grid / .dc-txt lived here, along with
+   `.section.notes > .fig-cap { grid-column: 1 / -1 }`. Section 1 used to bring its
+   own two-column grid and flatten it with display:contents so its halves became the
+   notes columns. That worked for the columns and broke the sticky note: with the
+   .dc-grid box gone, the sticky column's containing block was the whole section
+   rather than a grid area, and the section included the row holding the caption — so
+   on scroll the note slid past the card and dropped the instruction pill on top of
+   the caption. Section 1 now uses the same .txt and .viz children as every other
+   .notes section, with its caption inside .viz, and needs no overrides at all. */
 
 /* ─── MARGIN NOTES ──────────────────────────────────────────
    The chart takes the width and the words become a narrow column of notes
@@ -325,12 +334,9 @@ body {
 }
 @media (max-width: 900px) {
     .section.notes { grid-template-columns: 1fr; }
-    .section.notes .txt,
-    .section.notes .dc-txt {
+    .section.notes .txt {
         position: static;
         border-left: 0; padding-left: 0;
-        /* .dc-txt caps itself at 460px for the two-column day card; as a stacked
-           note it should have the whole width like every other section's prose */
         max-width: none;
     }
     .section.notes .rule { display: block; }
@@ -424,22 +430,11 @@ body {
 }
 
 /* ─── SECTION 1: "THE DAY" CARD ─────────────────────────────
-   Prose on the left, the card on the right. Both are written by
-   initDayCard(), so the sentences and the bar always describe the same
-   country. Each block lists its rank inside the card, which is what lets this
-   one section carry what used to need a chart per measure. */
-.dc-grid {
-    display: grid;
-    grid-template-columns: 1fr 1.1fr;
-    gap: clamp(1.6rem, 4vw, 3rem);
-    align-items: center;
-}
-@media (max-width: 900px) {
-    .dc-grid { grid-template-columns: 1fr; }
-}
-.dc-txt { max-width: 460px; }
-.dc-txt .rule { margin-left: 0; }
-.dc-txt .lead, .dc-txt .body { max-width: none; }
+   The note and the card are written together by initDayCard(), so the sentences and
+   the bar always describe the same country. Each block lists its rank inside the
+   card, which is what lets this one section carry what used to need a chart per
+   measure. The two-column arrangement is .notes doing its usual job; the .dc-grid
+   and .dc-txt rules that used to sit here are gone with the wrapper. */
 
 .dc-card {
     background: var(--white);
@@ -712,6 +707,13 @@ body {
 .pc-axl { font-size: 11.5px; font-weight: 700; fill: var(--white); }
 .pc-axs { font-size: 9.5px; fill: rgb(var(--white-rgb) / 0.48); }
 .pc-nml { font-size: 10.5px; font-weight: 600; }
+/* the winner's name at its own first-place dot, haloed in the panel colour so it
+   survives landing on a line */
+.pc-win {
+    font-size: 11px; font-weight: 700; fill: var(--white);
+    stroke: var(--ink-deep); stroke-width: 3; paint-order: stroke;
+    pointer-events: none;
+}
 .pc-web { stroke: rgb(var(--white-rgb) / 0.2); stroke-width: 1; }
 .pc-lead { stroke: rgb(var(--white-rgb) / 0.28); stroke-width: 1; }
 .pc-line {
@@ -722,10 +724,95 @@ body {
    in JS, so the highlight only changes weight and opacity — never the hue. */
 .pc-line.on { opacity: 1; stroke-width: 4.5; }
 .pc-line.off { opacity: 0.07; }
+/* The resting state for the countries that do not come first anywhere. Thirty-four
+   lines at full strength is a texture, not a chart, so the ones the section is not
+   arguing about sit back until they are hovered or picked. Fainter than .off would
+   make them invisible; heavier and they drown the four that matter. */
+.pc-line.ghost { opacity: 0.14; stroke-width: 1.5; }
 .pc-hit { fill: none; stroke: transparent; stroke-width: 16; cursor: pointer; }
 /* dots are a highlight cue, not permanent furniture: hidden until a line is picked */
 .pc-dot { stroke: var(--ink-deep); stroke-width: 1.5; opacity: 0; transition: opacity 0.25s ease; }
 .pc-dot.on { opacity: 1; }
+/* ── Money and mood scatter, and the US leisure panels ──────────────
+   Both live on paper rather than on the dark panel, because they carry printed
+   country names and a fitted line: fine dark marks on light ground, the way the
+   rest of the page reads. */
+.sc-stage, .lu-stage { margin: 1.6rem 0 0; }
+.sc-stage svg, .lu-stage svg { width: 100%; height: auto; display: block; overflow: visible; }
+.sc-web  { stroke: var(--line); stroke-width: 1; }
+.sc-tick { font-size: 10.5px; fill: var(--ink-faint); }
+.sc-axl  { font-size: 11px; font-weight: 600; fill: var(--ink-soft); }
+.sc-fit  { stroke: var(--ink-soft); stroke-width: 1.25; stroke-dasharray: 5 4; }
+.sc-r    { font-size: 11.5px; font-weight: 700; fill: var(--ink); }
+.sc-dot {
+    fill: var(--support-pale); stroke: var(--paper); stroke-width: 1.4;
+    transition: fill 0.2s ease, r 0.2s ease; cursor: pointer;
+}
+.sc-dot.on { fill: var(--accent); }
+/* Paper-coloured halo under the printed names: at 34 marks a label will land on
+   somebody else's dot, and the only question is whose. */
+.sc-name {
+    font-size: 11px; font-weight: 600; fill: var(--ink);
+    stroke: var(--paper); stroke-width: 3; paint-order: stroke;
+    pointer-events: none;
+}
+.sc-name.on { fill: var(--accent-deep); }
+.sc-read {
+    margin: 0.9rem 0 0; min-height: 3.2rem;
+    font-size: 0.92rem; line-height: 1.5; color: var(--ink-soft);
+}
+.sc-read b { color: var(--ink); font-weight: 600; }
+.sc-read em { font-style: normal; color: var(--accent); font-variant-numeric: tabular-nums; }
+
+/* the itemised leisure bars */
+.lu-row {
+    display: grid; grid-template-columns: 13rem 1fr 3.4rem 2.2rem;
+    align-items: center; gap: 0.7rem; padding: 0.2rem 0;
+    font-size: 0.84rem; color: var(--ink-soft);
+}
+.lu-row.lead { color: var(--ink); font-weight: 600; }
+.lu-track { background: var(--track); border-radius: 2px; height: 0.85rem; overflow: hidden; }
+.lu-row.lead .lu-track { height: 1.15rem; }
+.lu-fill { display: block; height: 100%; border-radius: 2px; }
+.lu-val, .lu-pct { font-variant-numeric: tabular-nums; text-align: right; }
+.lu-pct { color: var(--ink-faint); }
+.lu-line { fill: none; stroke-width: 2.2; stroke-linejoin: round; }
+.lu-lab  { font-size: 11px; font-weight: 600; }
+.lu-name em { font-style: normal; color: var(--ink-faint); }
+
+/* the whole day as one bar, then the blocks it opens into */
+.lu-day {
+    display: flex; height: 2.2rem; border-radius: 3px; overflow: hidden;
+    background: var(--track); margin: 0.2rem 0 0.9rem;
+}
+.lu-day span { display: block; height: 100%; }
+.lu-daykey {
+    display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem;
+    font-size: 0.78rem; color: var(--ink-soft);
+}
+.lu-daykey i {
+    width: 9px; height: 9px; border-radius: 2px; display: inline-block;
+    margin-right: 6px; vertical-align: -1px;
+}
+.lu-daykey b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.lu-block + .lu-block { margin-top: 1.1rem; }
+.lu-bhead {
+    display: grid; grid-template-columns: 1fr auto auto; gap: 0.9rem;
+    align-items: baseline; padding-bottom: 0.3rem; margin-bottom: 0.35rem;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.82rem; font-weight: 600; color: var(--ink);
+}
+.lu-bhead i {
+    width: 9px; height: 9px; border-radius: 2px; display: inline-block;
+    margin-right: 6px; vertical-align: -1px;
+}
+.lu-btot { font-variant-numeric: tabular-nums; }
+.lu-bpct { color: var(--ink-faint); font-weight: 400; font-variant-numeric: tabular-nums; }
+@media (max-width: 620px) {
+    .lu-row { grid-template-columns: 7.5rem 1fr 3.1rem; font-size: 0.78rem; }
+    .lu-pct { display: none; }
+}
+
 .pc-pick { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 1rem; }
 .pc-pick button {
     font: inherit; font-size: 0.75rem; font-weight: 600; cursor: pointer;
@@ -1471,3 +1558,235 @@ html.bdg-locked, html.bdg-locked body { overflow: hidden; }
 }
 
 
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   CHAPTER ONE AT A GLANCE  ·  #sec-glance
+   ═══════════════════════════════════════════════════════════════════════════════
+   One sheet stating the chapter before the chapter argues it: a ribbon braid of
+   all 35 days, the same-clock day card, and a sortable ranking, all driven by one
+   selection. Built by js/glance.js.
+
+   WHAT THIS BLOCK DELIBERATELY DOES NOT REDEFINE
+   ----------------------------------------------
+   .sec-num .sec-title .lead .body .howto .day-card .card-head .callout and its
+   rows, .fig-cap, .dc-card and every .dc-* internal — all already above, all
+   reused verbatim. The section is meant to look like the rest of the story, so
+   the only new rules here are the ones the story has no equivalent for, plus a
+   handful of scoped tweaks.
+
+   WHY THE RANKING IS .gl-row AND NOT .rank-row
+   --------------------------------------------
+   .rank/.rank-row (L1389) is a static three-column grid used by #work-rank and
+   #rest-rank. This ranking absolutely positions its rows so they can animate
+   between sort orders. Same idea, incompatible mechanics, so it gets its own
+   name rather than an override that would reach into Chapter One's other charts.
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* Matches the 1340px of the .notes sections around it — at .section's default
+   1200 this block would sit visibly inset from its neighbours. Top padding is
+   trimmed because the chapter mark directly above already brings its own air. */
+#sec-glance {
+    max-width: 1340px;
+    padding-top: clamp(1.25rem, 2.5vw, 2rem);
+}
+/* The standfirst needs a measure. Elsewhere .lead sits in the 228px .txt column or
+   a centred 640px block, so it never needed one; across 1340px of full-bleed
+   section it ran to 1032px a line while .body stayed at its own 620px cap, which
+   read as two unrelated columns of type. */
+#sec-glance .sec-title { max-width: 22ch; }
+#sec-glance .lead { max-width: 60ch; }
+#sec-glance .rule { max-width: 60ch; }
+#sec-glance .card-sub {
+    padding: 0.7rem 1.3rem 0;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--ink-faint);
+}
+
+/* ── the live readout above the panels ─────────────────────────────────────── */
+.gl-who {
+    display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap;
+    margin: 1.8rem 0 0.5rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--line);
+}
+.gl-who b {
+    display: flex; align-items: center; gap: 0.4rem;
+    font-size: clamp(1.2rem, 2.2vw, 1.6rem); font-weight: 800; letter-spacing: -0.02em;
+}
+.gl-who span { font-size: 0.78rem; color: var(--ink-faint); }
+.gl-who em { font-style: normal; color: var(--accent); font-size: 0.78rem; font-weight: 600; }
+/* Reserves its own line height so pinning and releasing cannot shift the panels. */
+.gl-pinnote {
+    min-height: 1.2em; margin: 0 0 0.9rem;
+    font-size: 0.76rem; font-weight: 700; color: var(--accent-deep);
+}
+
+/* ── the two-column block ──────────────────────────────────────────────────── */
+.gl-grid { display: grid; gap: 18px; }
+@media (min-width: 1000px) {
+    .gl-grid { grid-template-columns: 1fr 1.1fr; }
+    .gl-full { grid-column: 1 / -1; }
+    /* The ranking is 35 fixed rows and runs ~210px past the day card and caveats
+       beside it, which left a ragged hole at the foot of the left column. Both
+       cells stretch to the row height and the left one shares the surplus two
+       parts to the clock, one to the caveats: the clock has five rows and a bar to
+       spend it on, the caveats only three paragraphs, so an even split leaves the
+       dark panel airy and the whole split leaves it cramped.
+       Slack only works if something inside can spend it — left alone each panel
+       just grows a margin under its last child. Hence the flex rows below. */
+    .gl-grid > *:not(.gl-full) { display: flex; flex-direction: column; }
+    .gl-grid > *:not(.gl-full) > .day-card { flex: 1 1 auto; }
+    .gl-grid > *:not(.gl-full) > .dc-card { flex: 2 1 auto; display: flex; flex-direction: column; }
+    .gl-grid > *:not(.gl-full) > .callout { flex: 1 1 auto; justify-content: space-between; }
+    #sec-glance .dc-card .dc-rows { flex: 1 1 auto; display: flex; flex-direction: column; }
+    #sec-glance .dc-card .dc-row { flex: 1 1 auto; }
+    /* The bar carries the card once the card is taller; at the shared 52px it read
+       as a strip under a lot of white. */
+    #sec-glance .dc-card .dc-bar { height: 64px; }
+}
+#sec-glance .dc-card { padding: clamp(1.3rem, 3vw, 1.7rem); }
+#sec-glance .dc-card .dc-top { margin-bottom: 1.4rem; }
+
+/* ── the dark braid panel ──────────────────────────────────────────────────── */
+/* .pc-panel is capped at 960px and centred for the slope chart; here it is the
+   full width of the sheet. */
+#sec-glance .pc-panel { max-width: none; margin: 0; }
+#sec-glance .pc-panel h3 {
+    margin: 0 0 0.1rem;
+    font-size: 0.78rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--white);
+}
+#sec-glance .pc-panel .sub {
+    margin: 0 0 1rem;
+    font-size: 0.75rem; line-height: 1.5; color: rgb(var(--white-rgb) / 0.5);
+}
+.gl-note {
+    margin: 0.8rem 0 0;
+    font-size: 0.78rem; line-height: 1.55; color: rgb(var(--white-rgb) / 0.6);
+}
+.gl-note b { color: rgb(var(--white-rgb) / 0.92); }
+/* The caption keeps its structure and loses the paper colours: --ink-faint on
+   #1A1A1A is 2.4:1 and the hairline rule above it would vanish outright. Scoped
+   to this section — the slope chart's caption is a sibling outside its panel, so
+   it is unaffected either way, but scoping keeps that guaranteed. */
+#sec-glance .pc-panel .fig-cap {
+    margin: 0.9rem 0 0;
+    border-top-color: rgb(var(--white-rgb) / 0.14);
+    color: rgb(var(--white-rgb) / 0.5);
+}
+#sec-glance .pc-panel .fig-cap b { color: rgb(var(--white-rgb) / 0.88); }
+
+/* ── legends ───────────────────────────────────────────────────────────────── */
+.gl-key {
+    display: flex; flex-wrap: wrap; gap: 0.3rem 1rem;
+    padding: 0.8rem 1.3rem 0;
+    font-size: 0.72rem; color: var(--ink-soft);
+}
+.gl-key i {
+    width: 9px; height: 9px; border-radius: 2px;
+    display: inline-block; margin-right: 0.3rem; vertical-align: -1px;
+}
+#sec-glance .pc-panel .gl-key { padding: 0.8rem 0 0; color: rgb(var(--white-rgb) / 0.7); }
+
+/* ── the braid itself ──────────────────────────────────────────────────────── */
+/* Scoped: a bare `svg` rule would reach the globe, the dot field and every other
+   chart on the page. */
+#sec-glance svg { display: block; width: 100%; height: auto; overflow: visible; }
+.gl-rib { transition: opacity 0.3s ease; }
+.gl-braid.probing .gl-rib { opacity: 0.07; }
+.gl-braid.probing .gl-rib.on { opacity: 0.95; }
+.gl-braid.probing .gl-rib.pinned { opacity: 0.42; }
+.gl-braid.probing .gl-rib.pinned.on { opacity: 0.95; }
+.br-hit { fill: transparent; cursor: pointer; }
+/* A pale wash, because ink on ink is nothing. */
+.br-hl {
+    fill: var(--accent-pale); pointer-events: none;
+    transition: x 0.25s ease, width 0.25s ease, opacity 0.25s ease;
+}
+/* One legible neutral for all four band names rather than each category's own
+   colour: measured on #1A1A1A the sleep grey #7A8189 is 4.42:1 and the paid-work
+   red #C0392B only 3.2:1, both under the 4.5 bar for small bold text. The
+   coloured band directly beneath each name carries the hue. */
+.br-band { font-size: 9.5px; font-weight: 700; fill: rgb(var(--white-rgb) / 0.75); }
+.br-val { font-size: 9.5px; font-weight: 700; fill: var(--white); text-anchor: middle; }
+/* True black, not --ink-deep. onDark() in glance.js decides by comparing white
+   against BLACK, so the fill has to be black or the decision and the render
+   disagree: on #7A8189, #1A1A1A gives 4.42:1 and fails, #000 gives 5.33:1. */
+.br-val.dark-text { fill: #000; }
+.br-name {
+    font-size: 9px; font-weight: 600; fill: var(--white);
+    opacity: 0; transition: opacity 0.2s ease;
+    /* Appended after the hit rect, so it paints on top of it, and SVG text takes
+       the pointer over its own glyphs — without this, pointing at a label lands on
+       the text and the column beneath never sees the event. */
+    pointer-events: none;
+}
+.br-name.on { opacity: 1; }
+.br-flag {
+    font-size: 12.5px; opacity: 0.9; pointer-events: none;
+    transition: opacity 0.2s ease, font-size 0.2s ease;
+}
+.gl-braid.probing .br-flag { opacity: 0.35; }
+.gl-braid.probing .br-flag.on { opacity: 1; font-size: 15px; }
+
+/* ── the sortable ranking ──────────────────────────────────────────────────── */
+.gl-pills { display: flex; flex-wrap: wrap; gap: 0.35rem; padding: 0.9rem 1.3rem 0; }
+.gl-pills button {
+    font: inherit; font-size: 0.76rem; font-weight: 600; cursor: pointer;
+    padding: 0.26rem 0.66rem; border-radius: 999px;
+    border: 1px solid var(--line); background: var(--white); color: var(--ink-soft);
+}
+.gl-pills button[aria-pressed="true"] {
+    background: var(--accent-wash); border-color: var(--accent-pale); color: var(--accent-deep);
+}
+.gl-pills button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.gl-rank { position: relative; padding: 0 1.3rem; }
+.gl-row {
+    position: absolute; left: 1.3rem; right: 1.3rem;
+    display: grid; grid-template-columns: 9.6rem 1fr 4rem;
+    align-items: center; gap: 0.9rem; cursor: pointer;
+    transition: transform 0.6s cubic-bezier(0.22,0.61,0.36,1), opacity 0.25s ease;
+}
+.gl-name {
+    display: flex; align-items: center; justify-content: flex-end; gap: 0.35rem;
+    font-size: 0.8rem; font-weight: 600; color: var(--ink);
+    white-space: nowrap; overflow: hidden;
+}
+.gl-track {
+    display: flex; height: 14px; border-radius: 999px;
+    background: var(--track); overflow: hidden;
+    transition: height 0.22s ease;
+}
+.gl-track i { height: 100%; display: block; }
+.gl-track i:first-child { border-radius: 999px 0 0 999px; }
+.gl-val {
+    font-size: 0.8rem; font-weight: 700; color: var(--ink);
+    font-variant-numeric: tabular-nums; text-align: right;
+}
+.gl-rank.probing .gl-row { opacity: 0.3; }
+.gl-rank.probing .gl-row.on { opacity: 1; }
+.gl-row.on { z-index: 6; }
+.gl-row.on .gl-name { color: var(--accent-deep); font-size: 0.92rem; }
+.gl-row.on .gl-track { height: 22px; }
+.gl-row.pinned .gl-track { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ── flags ─────────────────────────────────────────────────────────────────── */
+/* Fixed-width slot so the emoji and the two-letter fallback occupy the same space
+   and the name column cannot shift between platforms. */
+.gl-flag {
+    display: inline-block; width: 1.35em; flex: 0 0 auto;
+    text-align: center; font-size: 1.05em; line-height: 1;
+}
+.gl-flag-chip {
+    width: auto; min-width: 1.9em;
+    font-size: 0.62em; font-weight: 700;
+    border: 1px solid currentColor; border-radius: 2px; padding: 1px 2px; opacity: 0.75;
+}
+
+@media (max-width: 640px) {
+    .gl-row { grid-template-columns: 7.4rem 1fr 3.4rem; gap: 0.5rem; }
+    .gl-name { font-size: 0.74rem; }
+    .gl-row.on .gl-name { font-size: 0.8rem; }
+}
