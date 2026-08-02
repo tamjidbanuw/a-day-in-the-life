@@ -73,6 +73,7 @@ Cover, opener, ten sections across four chapters, close. Reading order top to bo
 | — | `.cover` | *A Day in the Life of the World* | 24-hour clock SVG, `--cover-h: 38vh`; scrolls away into the fixed `.title-bar` | — |
 | — | `#sec-people` | Meet the World / **8 Billion People** | Dot field spelling WORLD, accent = the 35 countries at exactly 52.5% of dots | 1.1 |
 | | | **CHAPTER ONE · Sleep Is the Only Constant** | | |
+| 0 | `#sec-glance` | Chapter One · at a glance / **Everyone gets 24 hours. Only the spending differs.** | One sheet: ribbon braid of all 35 days on the dark panel, then the same-clock card with the caveats beside a ranking sortable on five measures. One selection drives all three | 2.0 |
 | 1 | `#sec-day` | Same clock / **[country] spends its day like this** | Day card: picker, 24h bar, every block with its minutes **and its rank of 35**; prose generated per country | 2.1 |
 | 2 | `#sec-work` | The second shift / **Half your waking hours go to work** | Ranked bars, paid + unpaid, 35 countries; insight callout | 3.1 |
 | 3 | `.band` | — | Full-bleed stat band: 10h05m · 2–4¼h · 2h31m | — |
@@ -114,6 +115,47 @@ were already in the file.
   (the money-and-mood scatter). Still eight.
 - **Population share moved 47.9% → 52.5%**, because the twelve already held China, India and
   the United States. `SHARE` in `js/dotfield.js` and the opener caption both follow it.
+
+### `#sec-glance`: the chapter stated before it is argued
+
+Chapter One's three sections build to a finding across roughly five screens. This sheet
+puts the finding first, in one screen, and lets the reader interrogate it: a braid of all
+35 days, the day card, and a ranking sortable on five measures, with hover previewing,
+click pinning, and the picker as a third way in. Built by `js/glance.js`, its own IIFE.
+
+**Every id in it is `gl-` prefixed, and that is load-bearing rather than tidiness.**
+`#sec-day` owns `dc-bar`, `dc-rows`, `dc-foot` and `dc-who`, and `initDayCard()` resolves
+those with an unscoped `document.getElementById`. This section sits *earlier* in the
+document, so sharing those ids hands `app.js` the glance card's elements and leaves
+`#sec-day` rendering nothing — with no console error and no visual clue except an empty
+card far down the page. Every lookup in `glance.js` also goes through a helper scoped to
+the section rather than the document, so a future id collision elsewhere cannot reach in.
+
+**The ranking is `.gl-row`, not `.rank-row`, for the same reason in CSS.** `.rank-row` is
+the static three-column grid `#work-rank` and `#rest-rank` use; these rows are absolutely
+positioned so they can animate between sort orders. Same idea, incompatible mechanics, so
+it gets its own name instead of an override that would reach into the sections below it.
+
+**The braid carries a second colour ramp** because it is the one chart on `#1A1A1A`,
+where the palette greys collapse into the background and sleep — the largest block of the
+day — becomes the hardest to see. `RIB` in `glance.js` is the five hues stepped lighter,
+used nowhere else. Text on the bands picks white or black by computed WCAG luminance, and
+the band *names* take one neutral rather than their own category colours, which measure
+4.42:1 and 3.2:1 there — both under the 4.5 bar for small bold text.
+
+**One number per band, always attributed.** The band widths are the pooled share of all 35
+days and cannot follow the selection, because every ribbon's top edge is anchored inside
+them. An unattributed percentage there is read as belonging to whatever is pinned: with
+Japan selected the pooled 19% over paid work is Japan's 26%. So the label reads
+`all 35 · 19%` by default and `Japan 26%` when pinned.
+
+Two smaller things worth not rediscovering:
+- The flag row sits *below* the axis, so the hit area and the highlight both extend past
+  it; and the flags and rotated names are `pointer-events: none`, because they are painted
+  after the hit rect and SVG text takes the pointer over its own glyphs. Without both,
+  pointing straight at a flag does nothing.
+- Under `rotate(-90)` the local x-axis maps to global −y, so `text-anchor: end` throws
+  rotated labels *downward*. The country names run upward into the plot with `start`.
 
 ### Chapter Three: the one section that leaves the OECD file
 
@@ -175,7 +217,22 @@ hairline. The block totals in the panel above carry the cross-block comparison.
 - Every section carries `.reveal` for scroll-in fade, via IntersectionObserver.
 
 ### Known structural problems
-- **Chapter weight is still uneven**: One holds four units, Two three, Three one, Four one.
+- **`#sec-glance` duplicates the three sections beneath it.** It carries the same-clock day
+  card, which is `#sec-day` entire, and its ranking covers what `#sec-work` and `#sec-rest`
+  do — sortable on five measures rather than fixed on two. Nothing was removed when it went
+  in, so Chapter One currently states its finding twice. The obvious cut is `#sec-day`; the
+  harder question is whether `#sec-work` and `#sec-rest` still earn their screens, since
+  what they have that the glance sheet does not is *prose* — 195 words of argument in
+  sticky columns against the sheet's 118 of mostly instruction.
+- **One thing the glance ranking genuinely does worse.** `#sec-work` stacks two segments from
+  a common left edge, so unpaid work can be compared across all 35 by eye. In the glance
+  ranking unpaid is the third of five segments, so its left edge differs in every row and the
+  lengths are not comparable — sorting by Unpaid fixes the order and prints the value, but
+  the visual comparison is gone. Worth keeping in mind before cutting `#sec-work`.
+- **The braid is a texture until touched.** By its own caption. At rest 175 ribbons say "35
+  countries, five demands" and little more, and on a page people scroll many readers will
+  never hover. The charts below it are readable with no input at all.
+- **Chapter weight is still uneven**: One holds five units, Two three, Three one, Four one.
 - **Figure numbers are not printed** — captions are name-only. The `Fig` column in the table above
   is a reference for this document, nothing the reader sees. The old numbering ran 1.1–6.1 in
   plain order, tracking neither chapter nor section, and was never cited in the prose.
@@ -192,9 +249,36 @@ hairline. The block totals in the panel above carry the cross-block comparison.
   30, with each winner named at its own first-place dot; hovering or picking still isolates any
   of the 34. Worth revisiting if a better encoding turns up.
 
+### Two dispersion measures are in play — do not "reconcile" them
+
+The page states how much a block varies in two places, in two different measures, and both
+are correct. Anyone who spots the mismatch and unifies them will make one of them wrong.
+
+| Measure | Sleep | Paid work | Ratio | Used by |
+|---|---|---|---|---|
+| Coefficient of variation, sd/mean | **4.7%** | **16.8%** | **3.57×** | the Chapter One blurb, "varies nearly four times as much" |
+| Range over mean, (max−min)/mean | **21.9%** | **70.3%** | **3.21×** | `#sec-glance`'s standfirst, "stretch only 22% … stretches 70%" |
+
+Both come off the same 35 numbers: sleep runs 606–752 minutes on a mean of 665, paid work
+177–368 on a mean of 272. CV asks how much the typical country departs from the average;
+range over mean asks how far the two extremes sit apart. The blurb's "nearly four times" is
+right on CV and would be wrong on range; the glance figures are the opposite.
+
+`spread()` in `glance.js` computes range over mean, because the sentence it feeds says
+"from the shortest country to the longest" and that is the quantity that phrase names.
+
+**This is still a real editorial problem**, just not an arithmetic one: the two live about
+200px apart, so a reader who divides 70 by 22 gets 3.2 and cannot square it with "nearly
+four times" directly above. Either move the blurb to "more than three times" and let both
+be range-based, or move the glance standfirst onto CV. Not yet decided.
+
 ### Verified data notes (recomputed at 35 countries, not asserted)
-- Sleep and self-care varies **4.7%** between countries; paid work **16.8%**, so paid work moves
-  3.6× as much as the biggest block of the day. At twelve it was 5.4% against 22.3%, a ratio of 4.2.
+- Sleep and self-care has a **coefficient of variation of 4.7%** between countries; paid work
+  **16.8%**, so paid work moves 3.6× as much as the biggest block of the day. At twelve it was
+  5.4% against 22.3%, a ratio of 4.2. See the table above before comparing this with the 22%
+  and 70% the glance sheet prints — they are a different measure, not a contradiction.
+- End to end: sleep **606–752** minutes (range 21.9% of its own mean), paid work **177–368**
+  (70.3%), unpaid work **125–256** (66%), leisure **203–354** (52%).
 - More of the day goes to unpaid work than paid in **4 of 35**: Australia, Italy, Poland, Spain.
   It was 3 of 12, so the finding got rarer, not commoner — 11% rather than 25%.
 - Unpaid share of all work: Italy 55% → Japan 25%, and it correlates with GDP at **r = 0.05**
@@ -230,19 +314,22 @@ hairline. The block totals in the panel above carry the cross-block comparison.
   and **16m** more childcare; men take **34m** more relaxing and **11m** more sport. The OECD's
   35-country gender finding shows up inside one country's diaries.
 
-## The scroll (SUPERSEDED — see "Structure as built" above)
-- [x] **Dot-field opener** — dense animated field of dots spelling "PEOPLE"; fly-in,
-      perpetual drift, hover-bulge, feathered edges, bold blue word. Built in `dotfield.html`
-      as a standalone prototype — NOT yet wired into index.html cover.
-- [x] **0. Cover** — curved blue panel, "A Day in the Life of the World." (placeholder gradient; dot-field will likely replace/precede it)
-- [~] **1. The Day** — 3 bars (Sleep / Work / Leisure) for one country + picker. (done, single-country)
-- [x] **2. Two lives, side by side** — two countries' day bars + adaptive callout. ✓
-- [x] **3. Work** — ranking of all 12 countries, paid vs unpaid split bars. ✓
-- [x] **4. Rest & leisure** — leisure ranking (Italy highlighted). ✓
-- [x] **5. Thrive** — life expectancy vs happiness scatter. ✓
-- [x] **6. Connect** — tourism arrivals ranking (France highlighted). ✓
-- [x] **7. Closing** — "same 24 hours, a different life" text payoff. ✓
-      (Note: closing is text-only for now; could add the lifetime dot-field later.)
+## Prototypes kept in the repo
+
+Standalone sheets, none referenced by `index.html`. Each is a rejected or superseded answer
+to "what does Chapter One look like at a glance", and the reasoning in their comments is not
+recoverable from the shipped markup — several argue against approaches that look obvious
+until built. Delete freely if the repo should carry only shipped work.
+
+| File | What it was testing |
+|---|---|
+| `chapter-one-lab.html` | the counted-cell baseline |
+| `chapter-one-lab-map.html` | tile grid map. No geojson or lat-lon in the repo and a CDN fetch would break the offline-baked-data rule, so the 13×9 grid is hand-placed, with assertions that every country lands and no two share a cell |
+| `chapter-one-lab-fan.html` | angle = share, radius = spread. `Other` is 215% of its own mean, so it is drawn dashed and off-scale: capping it would mislead, dropping it would stop the pie totalling |
+| `chapter-one-lab-screen.html` | the screen-time report format |
+| `chapter-one-lab-poster.html` | the dark poster `#sec-glance` grew out of |
+| `chapter-one-lab-poster-light.html` | that poster on the story's own palette with the day card folded in — what `#sec-glance` was ported from |
+| `design-lab.html`, `gender-lab.html`, `thirtyfive-lab.html` | palette/arrangement trials, the OECD Sex column, and the first 35-country pass |
 
 ## Data (have it, cited in SOURCES.md)
 - Day bars: OECD Time Use, `data/time_use_oecd.csv` → `data/adl-data.js` (35 countries;
