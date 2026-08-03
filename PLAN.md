@@ -130,6 +130,31 @@ prefix stays: it is what makes the section safe to move, and every lookup in `gl
 goes through a helper scoped to the section rather than the document, so a future id
 clash elsewhere still cannot reach in.
 
+**The readout carries one computed fact per country.** `#gl-who` is three lines: flag and
+name, then the country's one distinguishing fact, then its hours. The middle line used to
+be the share of the day already committed (`81% already spoken for`) — the same sentence
+for all 35 with only the number changing. It is now whichever measure the country sits
+closest to an end of, out of all work, leisure, unpaid, paid, and sleep and self-care,
+read through the same accessors the ranking panel sorts on so the sentence cannot
+contradict the chart beneath it. First place reads `The most leisure in the dataset`,
+near-misses read `Among the longest working days`. Two knobs, both in `glance.js`:
+
+- **`FACT_BY` order breaks ties.** France is simultaneously 1st for sleep and 35th for all
+  work, so both are first place; work is listed first, which gives the chapter a Mexico
+  and France bookend — longest working day, shortest working day. Move `sleep` above
+  `work` and France reads `The most sleep and self-care in the dataset` instead.
+- **`RANK_LIMIT = 7`** is where "Among the longest" stops being true. Six countries sit in
+  the dead middle on all five measures — the United States is 15th, 22nd, 15th, 15th and
+  18th of 35 — and they fall through to the unpaid share of their own working day
+  (`41% of its work is unpaid`), which needs no rank and is always specific.
+
+Ordinals were tried first and dropped: `5th longest working day` is a table cell, not a
+sentence, and `14th least leisure` is worse than saying nothing. The four sentences per
+measure are written out rather than assembled, because English will not pluralise them
+uniformly — `working day` takes an s, while `leisure` and `unpaid work` are mass nouns
+that need `Among the highest for …`. Superlatives say **in the dataset**, never *of any
+country*: 35 countries keep diaries of this kind, so the claim is true of the set.
+
 **The ranking is `.gl-row`, not `.rank-row`, for the same reason in CSS.** `.rank-row` was
 the static three-column grid `#work-rank` and `#rest-rank` used, and these rows are
 absolutely positioned so they can animate between sort orders — same idea, incompatible

@@ -142,6 +142,88 @@
             .findIndex(function (x) { return x.name === c.name; }) + 1;
     }
 
+    /* ── the one thing worth saying about each country ────────────────────────
+       The middle line of the readout. Every fact is a rank position inside the 35,
+       read off the same accessors the ranking panel sorts on, so the sentence can
+       never contradict the chart under it.
+
+       Which fact gets used: whichever measure the country sits closest to an END of.
+       Mexico is 1st of 35 for all work, so it gets the working day; Norway is 1st for
+       leisure and only 22nd for work, so it gets leisure. Ties go to the earlier
+       entry below, which is why the list is ordered by editorial weight rather than
+       alphabetically. Countries near the middle of everything still get their least
+       average measure, phrased with an ordinal — honest, if quieter.
+
+       Computed once for all 35 rather than inside show(): rankOf sorts the array, and
+       doing five sorts on every hover to restate a fixed fact would be wasteful. */
+    /* Four sentences per measure rather than one label and a computed ordinal: an
+       outright winner reads "The most leisure in the dataset", a near-miss reads
+       "Among the most leisure". Ordinals were tried first and they undersell the
+       finding — "5th longest working day" is a table cell, not a sentence.
+
+       The wording is written out per case instead of assembled, because English will
+       not pluralise these uniformly: "working day" takes an s, while "unpaid work"
+       and "leisure" are mass nouns that need "Among the highest for ..." instead.
+
+       "in the dataset", never "of any country": only 35 countries keep diaries of this
+       kind, so the superlative is true of the set, not of the world.
+
+       "sleep and self-care", never just "sleep": PCA carries eating and washing too. */
+    var FACT_BY = [
+        { get: function (c) { return c.work; },
+          hi1: 'The longest working day in the dataset.',
+          hiN: 'Among the longest working days.',
+          lo1: 'The shortest working day in the dataset.',
+          loN: 'Among the shortest working days.' },
+        { get: function (c) { return c.leisure; },
+          hi1: 'The most leisure in the dataset.',
+          hiN: 'Among the highest for leisure.',
+          lo1: 'The least leisure in the dataset.',
+          loN: 'Among the lowest for leisure.' },
+        { get: function (c) { return c.unpaid; },
+          hi1: 'The most unpaid work in the dataset.',
+          hiN: 'Among the highest for unpaid work.',
+          lo1: 'The least unpaid work in the dataset.',
+          loN: 'Among the lowest for unpaid work.' },
+        { get: function (c) { return c.paid; },
+          hi1: 'The most paid work in the dataset.',
+          hiN: 'Among the highest for paid work.',
+          lo1: 'The least paid work in the dataset.',
+          loN: 'Among the lowest for paid work.' },
+        { get: function (c) { return c.sleep; },
+          hi1: 'The most sleep and self-care in the dataset.',
+          hiN: 'Among the highest for sleep and self-care.',
+          lo1: 'The least sleep and self-care in the dataset.',
+          loN: 'Among the lowest for sleep and self-care.' }
+    ];
+    /* "Among the longest" stretches to about the top fifth and no further: at 7 of 35
+       it is fair, at 12 it is a lie. Six countries sit in the dead middle on all five
+       measures — the United States is 15th, 22nd, 15th, 15th and 18th — and they fall
+       through to the unpaid share of their own working day. No rank, always specific,
+       and it ranges from a fifth of the work to over half across this set. */
+    var RANK_LIMIT = 7;
+    var FACT = (function () {
+        var out = {};
+        R.forEach(function (c) {
+            var best = null;
+            FACT_BY.forEach(function (f) {
+                var r = rankOf(c, f.get), fromEnd = N + 1 - r;
+                var top = r <= fromEnd, place = top ? r : fromEnd;
+                if (!best || place < best.place) {
+                    best = { place: place, f: f, top: top };
+                }
+            });
+            if (best.place > RANK_LIMIT) {
+                out[c.name] = Math.round(c.unpaid / c.work * 100) + '% of its work is unpaid.';
+            } else if (best.place === 1) {
+                out[c.name] = best.top ? best.f.hi1 : best.f.lo1;
+            } else {
+                out[c.name] = best.top ? best.f.hiN : best.f.loN;
+            }
+        });
+        return out;
+    })();
+
     $('gl-key-braid').innerHTML = CATS.map(function (k) {
         return '<span><i style="background:' + RIB[k.key] + '"></i>' + k.label + '</span>';
     }).join('');
@@ -404,8 +486,7 @@
     function show(c) {
         dayCard.draw(c);
         braid.setBands(c);
-        var pct = Math.round((c.work + c.sleep) / DAY * 100);
-        /* Three stacked lines: name, then the headline share, then the hours.
+        /* Three stacked lines: name, then the country's one fact, then the hours.
            BOTH states are built with the same three children on purpose. This block
            sits above the whole sheet, so a pinned state two lines taller than the
            average state would shove every panel down on hover and pull it back on
@@ -414,7 +495,7 @@
         who.innerHTML = '<b>' + (c.avg ? '' : flagHTML(c.name)) + c.name + '</b>' + (c.avg
             ? '<em>the average of all ' + N + '</em>' +
               '<span>hover or click a country to replace it</span>'
-            : '<em>' + pct + '% already spoken for.</em>' +
+            : '<em>' + (FACT[c.name] || '') + '</em>' +
               '<span>' + hm(c.work) + ' working. ' + hm(c.leisure) + ' leisure</span>');
         note.innerHTML = c.avg
             ? 'Ribbons carry the whole picture at once, which is the point of the shape and ' +
