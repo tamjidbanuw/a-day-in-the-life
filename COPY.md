@@ -19,11 +19,11 @@ hand the file back, and it goes into the right place in the page.
 
 | | blocks |
 |---|---|
-| **Part 1 — written in the page** | 127 |
+| **Part 1 — written in the page** | 101 |
 | Cover, chapter marks, section titles and prose | |
 | The Chapter One at-a-glance sheet | |
 | Captions, callouts, the stat band, the footer | |
-| **Part 2 — built while the page runs** | 56 |
+| **Part 2 — built while the page runs** | 52 |
 | The eight badge cards | |
 | The day card, the happiness strip, the money scatter | |
 | The American day section, the rank chart, the live clock | |
@@ -252,206 +252,80 @@ other chart updates instantly.
 Longer doesn’t always mean better.
 These rankings measure time, not quality of life.
 
-### 47. Section · eyebrow  `[sec-num]`
-
-One shared clock
-
-### 48. Section · TITLE  `[sec-title#dc-title]`
-
-Every country gets the same day
-
-### 49. Instruction pill  `[howto]`
-
-Select a country. Every chart follows.
-
-### 50. Screen-reader only  `[vh]`
-
-Choose a country
-
-### 51. Chart · label  `[dc-lab]`
-
-1,440 minutes
-One ordinary day
-
-### 52. Section · eyebrow  `[sec-num]`
-
-The second shift
-
-### 53. Section · TITLE  `[sec-title]`
-
-Work doesn’t end when the job does
-
-### 54. Section · lead  `[lead]`
-
-A working day is more than what happens between clocking in and
-clocking out. Cooking. Cleaning. Shopping. Looking after children or family.
-These hours rarely appear on a paycheck, yet they are part of every
-country’s day.
-
-### 55. Section · body  `[body]`
-
-When paid and unpaid work are combined, Mexico records the longest
-working day in this dataset at 10h05m. Canada
-follows close behind, although more of its work is paid. Italy
-works the fewest paid hours, yet still spends more time on unpaid work than paid
-employment. The workday doesn’t end when the office does.
-
-### 56. Chart · card head  `[card-head]`
-
-A day’s work
-Paid and unpaid together
-
-### 57. Chart · legend  `[rank-legend]`
-
-Paid work
-Unpaid work (care & household)
-
-### 58. Caption  `[fig-cap]`
-
-Every bar combines paid employment with the work that keeps homes
-and families running. Together they reveal the full working day.
-
-### 59. Callout · head  `[callout-head]`
-
-The invisible hours
-
-### 60. callout-ic  `[callout-ic]`
-
-✦
-
-### 61. Callout · body  `[callout-row]`
-
-Every country here spends between 2 and 4¼ hours each
-day on unpaid work. That’s often the equivalent of a second job.
-
-### 62. callout-ic  `[callout-ic]`
-
-✦
-
-### 63. Callout · body  `[callout-row]`
-
-Japan records the longest paid working day, yet among the
-shortest unpaid ones. Where work happens differs just as much as how much
-work gets done.
-
-### 64. Stat band  `[stat]`
-
-10h05mThe longest working day measured. Mexico.
-
-### 65. Stat band  `[stat]`
-
-Every country spends2–4¼ hourson unpaid work every day.
-
-### 66. Stat band  `[stat]`
-
-2h31mThe difference in daily leisure between Norway and Mexico.
-
-### 67. Section · eyebrow  `[sec-num]`
-
-Off the clock
-
-### 68. Section · TITLE  `[sec-title]`
-
-What remains after work
-
-### 69. Section · lead  `[lead]`
-
-Once work is finished, the remaining hours become something else.
-Time with family. Friends. Books. Sports. Television. Doing absolutely nothing.
-This is the part of the day people truly own.
-
-### 70. Section · body  `[body]`
-
-Norway enjoys the most leisure in this dataset, averaging
-5h54m each day. Germany follows closely.
-Mexico, after the longest working day, has just
-3h23m remaining. The countries that work the longest generally
-have the least free time left.
-
-### 71. Chart · card head  `[card-head]`
-
-Hours of leisure
-
-### 72. Caption  `[fig-cap]`
-
-Leisure includes the time left after sleep, personal care, paid
-work, and unpaid work. How people choose to spend those hours is another
-story.
-
-### 73. Chapter · eyebrow  `[chapter-eyebrow]`
+### 47. Chapter · eyebrow  `[chapter-eyebrow]`
 
 Chapter Two
 
-### 74. Chapter · NAME  `[chapter-name]`
+### 48. Chapter · NAME  `[chapter-name]`
 
 The Only Number That Asks
 
-### 75. Chapter · blurb  `[chapter-blurb]`
+### 49. Chapter · blurb  `[chapter-blurb]`
 
 Every chart so far measured what people did. This one asks what
 they feel. And somehow, that answer follows patterns we can measure.
 
-### 76. Section · eyebrow  `[sec-num]`
+### 50. Section · eyebrow  `[sec-num]`
 
 A simple question
 
-### 77. Section · TITLE  `[sec-title]`
+### 51. Section · TITLE  `[sec-title]`
 
 Happiness isn’t measured.
 It’s answered.
 
-### 78. Section · lead  `[lead]`
+### 52. Section · lead  `[lead]`
 
 Imagine a ladder. The top rung is the best life you can imagine. The
 bottom is the worst. Where would you place yourself today?
 
-### 79. Section · body  `[body]`
+### 53. Section · body  `[body]`
 
 Thousands of people in every country answer that single question. Their
 average becomes the country’s happiness score. Unlike every other measure in
 this story, happiness isn’t observed. It’s self-reported. That makes it
 the most human number on this page.
 
-### 80. Chart · label  `[mt-lab]`
+### 54. Chart · label  `[mt-lab]`
 
 Life satisfaction
 0 to 10
 
-### 81. Section · eyebrow  `[sec-num]`
+### 55. Section · eyebrow  `[sec-num]`
 
 A surprising pattern
 
-### 82. Section · TITLE  `[sec-title]`
+### 56. Section · TITLE  `[sec-title]`
 
 Feelings follow the money…
 more than you’d expect.
 
-### 83. Section · lead  `[lead]`
+### 57. Section · lead  `[lead]`
 
 If happiness were purely personal, countries would scatter randomly
 across the chart. They don’t.
 
-### 84. Section · body  `[body]`
+### 58. Section · body  `[body]`
 
 As income rises, happiness usually rises with it. The relationship
 isn’t perfect. Some countries are happier than their wealth predicts. Others
 are less happy despite their income. Money doesn’t explain everything. But it
 explains far more than many people expect.
 
-### 85. Section · eyebrow  `[sec-num]`
+### 59. Section · eyebrow  `[sec-num]`
 
 One discovery
 
-### 86. Section · TITLE  `[sec-title]`
+### 60. Section · TITLE  `[sec-title]`
 
 No Country Wins Everything
 
-### 87. Section · lead  `[lead]`
+### 61. Section · lead  `[lead]`
 
 We often imagine there must be one country that has figured life out.
 There isn’t.
 
-### 88. Section · body  `[body]`
+### 62. Section · body  `[body]`
 
 Across four measures — sleep, work, leisure, and happiness —
 every leader eventually gives up first place. Mexico works the
@@ -459,7 +333,7 @@ longest. France sleeps the most. Norway enjoys the
 most leisure. Finland reports the highest happiness. Four different
 countries, four different strengths. No single nation leads them all.
 
-### 89. Caption  `[fig-cap]`
+### 63. Caption  `[fig-cap]`
 
 Every line follows one country across four rankings. When lines
 cross, countries trade places. The lesson isn’t who finishes first — it
@@ -468,29 +342,29 @@ the longest working day, not the best one. 34 countries, not 35: Luxembourg keep
 time diary but has no happiness score. Time use: OECD Time Use Database, both sexes.
 Happiness: World Happiness Report, 0–10 ladder.
 
-### 90. Chapter · eyebrow  `[chapter-eyebrow]`
+### 64. Chapter · eyebrow  `[chapter-eyebrow]`
 
 Chapter Three
 
-### 91. Chapter · NAME  `[chapter-name]`
+### 65. Chapter · NAME  `[chapter-name]`
 
 One Country Writes Everything Down
 
-### 92. Chapter · blurb  `[chapter-blurb]`
+### 66. Chapter · blurb  `[chapter-blurb]`
 
 Until now, every country has been reduced to five numbers. One
 country lets us open the entire day — every minute, every activity, nothing left
 hidden.
 
-### 93. Section · eyebrow  `[sec-num]`
+### 67. Section · eyebrow  `[sec-num]`
 
 A closer look
 
-### 94. Section · TITLE  `[sec-title]`
+### 68. Section · TITLE  `[sec-title]`
 
 What happens inside 1,440 minutes?
 
-### 95. Section · body  `[body]`
+### 69. Section · body  `[body]`
 
 The United States isn’t shown because it’s typical.
 It’s shown because it’s unique. Among the countries in this story, it is
@@ -498,22 +372,22 @@ the only one that publishes time diaries in enough detail to rebuild an entire d
 For everyone else, the day ends as five numbers. Here, we can open every
 minute.
 
-### 96. Chart · card head  `[card-head]`
+### 70. Chart · card head  `[card-head]`
 
 An ordinary American day
 Every minute included
 
-### 97. Caption  `[fig-cap]`
+### 71. Caption  `[fig-cap]`
 
 This is one complete day reconstructed from more than 170,000 real
 time diaries. Nothing has been removed. Every minute belongs somewhere.
 
-### 98. Chart · card head  `[card-head]`
+### 72. Chart · card head  `[card-head]`
 
 From five activities…
 to forty-four
 
-### 99. Caption  `[fig-cap]`
+### 73. Caption  `[fig-cap]`
 
 The five broad categories you’ve seen throughout this story
 unfold into 44 everyday activities. Sleeping. Working. Driving. Cooking.
@@ -526,83 +400,83 @@ for the United States elsewhere on this page — ATUS counts travel as its
 own activity where the OECD folds it into whatever the travel was for. Read the
 shares within this section, not across sections.
 
-### 100. Callout · head  `[callout-head]`
+### 74. Callout · head  `[callout-head]`
 
 The biggest surprise
 
-### 101. callout-ic  `[callout-ic]`
+### 75. callout-ic  `[callout-ic]`
 
 ✦
 
-### 102. Editorial beat  `[beat]`
+### 76. Editorial beat  `[beat]`
 
 Nothing is missing.
 Every minute of the day has been
 accounted for.
 
-### 103. Chart · card head  `[card-head]`
+### 77. Chart · card head  `[card-head]`
 
 How a day changes across life
 
-### 104. Caption  `[fig-cap]`
+### 78. Caption  `[fig-cap]`
 
 A teenager’s day doesn’t look like a retiree’s.
 These curves don’t follow one person through life — they compare
 different generations living during the same years.
 
-### 105. Callout · head  `[callout-head]`
+### 79. Callout · head  `[callout-head]`
 
 The same 24 hours.
 Different priorities.
 
-### 106. callout-ic  `[callout-ic]`
+### 80. callout-ic  `[callout-ic]`
 
 ✦
 
-### 107. callout-ic  `[callout-ic]`
+### 81. callout-ic  `[callout-ic]`
 
 ✦
 
-### 108. Chapter · eyebrow  `[chapter-eyebrow]`
+### 82. Chapter · eyebrow  `[chapter-eyebrow]`
 
 Chapter Four
 
-### 109. Chapter · NAME  `[chapter-name]`
+### 83. Chapter · NAME  `[chapter-name]`
 
 Somebody Lives Like You
 
-### 110. Chapter · blurb  `[chapter-blurb]`
+### 84. Chapter · blurb  `[chapter-blurb]`
 
 No two countries spend their day exactly the same way. But
 somewhere in this dataset, one of them comes surprisingly close to yours.
 
-### 111. Section · eyebrow  `[sec-num]`
+### 85. Section · eyebrow  `[sec-num]`
 
 Find your match
 
-### 112. Section · TITLE  `[sec-title]`
+### 86. Section · TITLE  `[sec-title]`
 
 Somewhere out there,
 a country lives like you
 
-### 113. Section · lead  `[lead]`
+### 87. Section · lead  `[lead]`
 
 All 35 countries are scored on four measures: free time,
 rest, income and openness.
 
-### 114. Instruction pill  `[howto]`
+### 88. Instruction pill  `[howto]`
 
 Four questions. Drag each dial to your own life, then see your
 closest match.
 
-### 115. Caption  `[fig-cap]`
+### 89. Caption  `[fig-cap]`
 
 Find Your Match
 Nearest-neighbour match on four ranked scores. Your answers place you in the same
 0–100 space as the 35 countries; the closest by straight-line distance wins.
 Illustrative, not a ranking.
 
-### 116. Source note  `[source]`
+### 90. Source note  `[source]`
 
 The four scores are an illustrative index built from the same sources used throughout:
 daily free-time share and daily sleep and self-care (OECD Time Use), GDP per person,
@@ -611,28 +485,28 @@ thirty-five rather than by its raw value, because three of the four measures hav
 country sitting so far from the rest that a raw scale would flatten everyone else
 against the floor. Meant for exploring rather than ranking.
 
-### 117. Section · eyebrow  `[sec-num]`
+### 91. Section · eyebrow  `[sec-num]`
 
 Right now
 
-### 118. Section · TITLE  `[sec-title]`
+### 92. Section · TITLE  `[sec-title]`
 
 While you read this
 
-### 119. Section · lead  `[lead]`
+### 93. Section · lead  `[lead]`
 
 Everything above is an average of a day. This one is happening, and you are
 somewhere in the middle of it.
 
-### 120. Live clock · label  `[rn-label]`
+### 94. Live clock · label  `[rn-label]`
 
 Right now, where you are
 
-### 121. Live clock · label  `[rn-sub]`
+### 95. Live clock · label  `[rn-sub]`
 
 The whole day, midnight to midnight
 
-### 122. Caption  `[fig-cap]`
+### 96. Caption  `[fig-cap]`
 
 This Hour
 Stacked bar, share of the American population in each activity at your current local
@@ -641,28 +515,28 @@ hour. American Time Use Survey microdata 2003–2015, 3,347,093 activity records
 is the only diary data here that records times of day, so the clock is yours and the
 behaviour is American.
 
-### 123. Section · TITLE  `[sec-title]`
+### 97. Section · TITLE  `[sec-title]`
 
 Same hours.
 Different lives.
 
-### 124. Section · lead  `[lead]`
+### 98. Section · lead  `[lead]`
 
 Everyone is handed the same 1,440 minutes. What changes, from Osaka to
 Mexico City to Rome, is what becomes of them.
 
-### 125. Section · body  `[body]`
+### 99. Section · body  `[body]`
 
 Every person receives the same 1,440 minutes. What changes is how those minutes become
 work, family, rest, opportunity, and connection. Somewhere in these thirty-five
 countries, someone is living a day that looks remarkably like yours. The question
 is—which life would you choose?
 
-### 126. site-footer  `[site-footer]`
+### 100. site-footer  `[site-footer]`
 
 A Day in the Life of the World · A VizCon 2026 entry
 
-### 127. Footer · sources  `[src]`
+### 101. Footer · sources  `[src]`
 
 Sources. Daily time use: OECD Time Use Database (minutes per day, both sexes;
 “Work” combines paid and unpaid work), all 35 countries it covers. Happiness: World
@@ -844,22 +718,6 @@ At 8pm more than half of America is at leisure — the most it ever agrees on an
 ### Badge · fact  `[app.js:676]`
 
 At 3am, 96% of America is asleep. At noon, no single activity holds even 30% of them.
-
-### Day card · lead  `[app.js:118 → #dc-lead]`
-
-Of 1,440 minutes, Mexico gives 10h 05m to work, paid and unpaid together. That is 1st of 35.
-
-### Day card · body  `[app.js:121 → #dc-body]`
-
-10h 06m goes to sleep and self-care, and 3h 23m is what remains for leisure, 35th of 35. 42% of the work is unpaid: cooking, cleaning, shopping, care. No payslip records any of it.
-
-### Day card · footnote  `[app.js:129 → #dc-foot]`
-
-The longest working day measured anywhere. France works 3h 40m less.
-
-### Day card · caption  `[app.js:136 → #dc-cap]`
-
-Mexico’s Day Stacked bar to 24 hours. Ranks are within the 35 countries that keep time diaries, and are by size rather than merit: more sleep is not better than less. Sleep and self-care includes eating and washing; unpaid work covers cooking, cleaning, shopping and care. Blocks sit in a fixed order, not a timeline: this is how much, not when. OECD Time Use Database, both sexes, average minutes per day.
 
 ### Happiness strip · readout  `[app.js:1313 → #mt-happy-read]`
 

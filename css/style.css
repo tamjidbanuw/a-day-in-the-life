@@ -230,8 +230,7 @@ body {
    its own air. :has() is doing something load-bearing but not critical: where it is
    unsupported the seam simply keeps the old, roomier spacing. */
 .section:has(+ .chapter-mark),
-.badges:has(+ .chapter-mark),
-.band:has(+ .chapter-mark) {
+.badges:has(+ .chapter-mark) {
     padding-bottom: clamp(1.5rem, 3vw, 2.5rem);
 }
 .chapter-eyebrow {
@@ -353,30 +352,6 @@ body {
     .section.notes .viz > :first-child { margin-top: 2.2rem; }
 }
 
-/* ─── FULL-BLEED STAT BAND (light rhythm breaker) ───────── */
-.band {
-    background: var(--card);
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-}
-.band-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: clamp(2.5rem, 5vw, 4rem) clamp(1.5rem, 4vw, 3rem);
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 2rem 3rem;
-}
-.stat b {
-    display: block;
-    font-size: clamp(2.6rem, 5vw, 3.6rem);
-    font-weight: 800;
-    line-height: 1;
-    color: var(--accent);
-    font-variant-numeric: tabular-nums;
-}
-.stat p { margin-top: 0.5rem; color: var(--ink-soft); font-size: 0.98rem; line-height: 1.45; }
-.stat strong { color: var(--ink); font-weight: 600; }
 
 .sec-num {
     display: inline-block;
@@ -1385,35 +1360,6 @@ html.bdg-locked, html.bdg-locked body { overflow: hidden; }
 /* Shared bar grow-in, used by the insight bars and the DNA axes. */
 @keyframes bar-grow { from { width: 0 !important; } }
 
-/* ─── WORK RANKING ──────────────────────────────────────── */
-.rank { padding: 1.5rem 1.5rem 0.6rem; display: flex; flex-direction: column; gap: 0.75rem; }
-.rank-row { display: grid; grid-template-columns: 120px 1fr auto; align-items: center; gap: 0.9rem; }
-.rank-name { font-size: 0.9rem; font-weight: 600; color: var(--ink); text-align: right; }
-.rank-track {
-    display: flex; height: 20px; border-radius: 999px;
-    background: var(--track); overflow: hidden;
-}
-.rank-fill {
-    height: 100%;
-    transform-origin: left;
-    animation: rank-grow 0.9s cubic-bezier(0.4,0,0.2,1) both;
-}
-.rank-fill:first-child { border-radius: 999px 0 0 999px; }
-@keyframes rank-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-.rank-val {
-    font-size: 0.88rem; font-weight: 700; color: var(--ink);
-    font-variant-numeric: tabular-nums; min-width: 56px; text-align: right;
-}
-.rank-legend {
-    display: flex; gap: 1.6rem; flex-wrap: wrap;
-    padding: 0.6rem 1.5rem 0.2rem; font-size: 0.82rem; color: var(--ink-soft);
-}
-.rank-legend span { display: inline-flex; align-items: center; gap: 0.5rem; }
-.rank-key { width: 12px; height: 12px; border-radius: 3px; }
-@media (max-width: 560px) {
-    .rank-row { grid-template-columns: 84px 1fr auto; gap: 0.5rem; }
-    .rank-name { font-size: 0.8rem; }
-}
 
 
 
@@ -1846,42 +1792,6 @@ html.bdg-locked, html.bdg-locked body { overflow: hidden; }
     /* two authored lines, the longer of them 44 characters. At the shared 30ch it
        wrapped to three and stranded "look like?" on its own. */
     max-width: 48ch;
-}
-
-/* ── a stat whose phrase wraps its figure ─────────────────────────────────────
-   Most stats lead with the number. One now reads "Every country spends / 2–4¼
-   hours / on unpaid work every day", so it needs a line above the figure. Sized
-   and coloured like the text below it, not like the number, so the figure keeps
-   the emphasis. */
-.stat-pre {
-    display: block;
-    font-size: 0.98rem; line-height: 1.45; color: var(--ink-soft);
-    margin-bottom: 0.35rem;
-}
-/* That one figure carries its unit — "2–4¼ hours" — which is three times the
-   width of "2h31m" and wrapped onto a second line at the shared display size,
-   leaving the middle stat a head taller than the two beside it. */
-.stat.wide b { font-size: clamp(1.9rem, 3.6vw, 2.7rem); }
-
-/* The pre-line also pushed that stat's number a line below its neighbours', so the
-   three figures no longer shared a baseline and the band read as misaligned rather
-   than as one row of three. Subgrid lets all three stats share the band's rows —
-   pre-line, figure, sentence — so the figures line up whether a stat has a
-   pre-line or not. Where subgrid is unsupported this rule simply does not apply
-   and the stats keep their own flow, which is the current behaviour. */
-@supports (grid-template-rows: subgrid) {
-    .band-inner { grid-template-rows: auto auto auto; }
-    .band-inner > .stat {
-        display: grid;
-        grid-row: span 3;
-        grid-template-rows: subgrid;
-    }
-    /* Each child is pinned to its row. Subgrid on its own is not enough: with no
-       pre-line the figure auto-places into row 1 and the sentence into row 2, so a
-       stat that has one stays a whole row lower than the two that do not. */
-    .stat-pre { grid-row: 1; margin-bottom: 0; align-self: end; }
-    .band-inner > .stat > b { grid-row: 2; }
-    .band-inner > .stat > p { grid-row: 3; }
 }
 
 /* ── an editorial beat between charts ─────────────────────────────────────────

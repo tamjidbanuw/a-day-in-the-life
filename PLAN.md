@@ -73,11 +73,7 @@ Cover, opener, ten sections across four chapters, close. Reading order top to bo
 | — | `.cover` | *A Day in the Life of the World* | 24-hour clock SVG, `--cover-h: 38vh`; scrolls away into the fixed `.title-bar` | — |
 | — | `#sec-people` | Meet the World / **8 Billion People** | Dot field spelling WORLD, accent = the 35 countries at exactly 52.5% of dots | 1.1 |
 | | | **CHAPTER ONE · Sleep Is the Only Constant** | | |
-| 0 | `#sec-glance` | Chapter One · at a glance / **Everyone gets 24 hours. Only the spending differs.** | One sheet: ribbon braid of all 35 days on the dark panel, then the same-clock card with the caveats beside a ranking sortable on five measures. One selection drives all three | 2.0 |
-| 1 | `#sec-day` | Same clock / **[country] spends its day like this** | Day card: picker, 24h bar, every block with its minutes **and its rank of 35**; prose generated per country | 2.1 |
-| 2 | `#sec-work` | The second shift / **Half your waking hours go to work** | Ranked bars, paid + unpaid, 35 countries; insight callout | 3.1 |
-| 3 | `.band` | — | Full-bleed stat band: 10h05m · 2–4¼h · 2h31m | — |
-| 4 | `#sec-rest` | Off the clock / **The other half of the day** | Ranked leisure bars, 35 countries | 3.2 |
+| 1 | `#sec-glance` | Chapter One · At a Glance / **Everyone gets the same 24 hours. Only the spending changes.** | One sheet, and now the whole chapter: ribbon braid of all 35 days on the dark panel, then the same-clock card with the caveats beside a ranking sortable on five measures. One selection drives all three | 2.1 |
 | | | **CHAPTER TWO · The Only Number Here That Asks** | | |
 | 5 | `#sec-happy` | The one that asks / **Happiness is a question, not a reading** | Wide strip: 34 marks on the 0–10 ladder, average called out, vertical leaders with tiered labels | 4.1 |
 | 6 | `#sec-money` | What it tracks / **The softest number has a hard predictor** | Scatter, GDP per person (log) against the ladder, least-squares fit, r printed on the chart | 4.2 |
@@ -124,18 +120,21 @@ puts the finding first, in one screen, and lets the reader interrogate it: a bra
 35 days, the day card, and a ranking sortable on five measures, with hover previewing,
 click pinning, and the picker as a third way in. Built by `js/glance.js`, its own IIFE.
 
-**Every id in it is `gl-` prefixed, and that is load-bearing rather than tidiness.**
-`#sec-day` owns `dc-bar`, `dc-rows`, `dc-foot` and `dc-who`, and `initDayCard()` resolves
-those with an unscoped `document.getElementById`. This section sits *earlier* in the
-document, so sharing those ids hands `app.js` the glance card's elements and leaves
-`#sec-day` rendering nothing — with no console error and no visual clue except an empty
-card far down the page. Every lookup in `glance.js` also goes through a helper scoped to
-the section rather than the document, so a future id collision elsewhere cannot reach in.
+**Every id in it is `gl-` prefixed.** That was load-bearing while `#sec-day` existed:
+that section owned `dc-bar`, `dc-rows`, `dc-foot` and `dc-who`, `initDayCard()` resolved
+them with an unscoped `document.getElementById`, and this section sits *earlier* in the
+document — so sharing the ids would have handed `app.js` the glance card's elements and
+left `#sec-day` rendering nothing, with no console error and no clue but an empty card
+far down the page. `#sec-day` has since been cut, so nothing collides today, but the
+prefix stays: it is what makes the section safe to move, and every lookup in `glance.js`
+goes through a helper scoped to the section rather than the document, so a future id
+clash elsewhere still cannot reach in.
 
-**The ranking is `.gl-row`, not `.rank-row`, for the same reason in CSS.** `.rank-row` is
-the static three-column grid `#work-rank` and `#rest-rank` use; these rows are absolutely
-positioned so they can animate between sort orders. Same idea, incompatible mechanics, so
-it gets its own name instead of an override that would reach into the sections below it.
+**The ranking is `.gl-row`, not `.rank-row`, for the same reason in CSS.** `.rank-row` was
+the static three-column grid `#work-rank` and `#rest-rank` used, and these rows are
+absolutely positioned so they can animate between sort orders — same idea, incompatible
+mechanics. Those two charts are gone and `.rank-*` went with them, so the name is free
+again; `.gl-row` stays because renaming a working component buys nothing.
 
 **The braid carries a second colour ramp** because it is the one chart on `#1A1A1A`,
 where the palette greys collapse into the background and sleep — the largest block of the
@@ -189,6 +188,19 @@ here against the OECD's 21 minutes for the United States. Both captions say so.
 hairline. The block totals in the panel above carry the cross-block comparison.
 
 ### Removed along the way
+- **Chapter One's other four blocks** — `#sec-day`, `#sec-work`, the full-bleed stat band and
+  `#sec-rest` — cut as redundant once `#sec-glance` existed: the glance sheet's day card *is*
+  `#sec-day`, and its sortable ranking covers what the two rank charts did on fixed measures.
+  With them went `initDayCard()`, `renderWorkRank()`, `renderRank()`, `DC_CATS` and the
+  `possessive()` helper from `js/app.js`, the `.band` / `.stat` / `.rank` families from
+  `css/style.css`, and the four Part 2 entries in `COPY.md` for the prose `initDayCard()` used
+  to generate.
+  **The one thing that did not survive on its own: the `day` and `day5` badges.** Both were
+  earned only by changing the country in `#sec-day`'s picker, so deleting it would have left
+  two of the eight unreachable and the collection impossible to finish — with nothing on
+  screen to say so. They are wired to the glance sheet's picker now, in `initCountryBadges()`,
+  and both hints still read true: it is the first chart on the page, and five countries is
+  still five distinct values.
 - **Head to head** (`#sec-compare`), two-country diverging bars.
 - **The old "24" hero** in section 1 (`.day-hero`, `renderDayHero`, `DAY_SEGS`), replaced by the day card.
 - **The two-measures dot plot** (`#sec-metrics`) and the **life-vs-happiness scatter** (`#sec-thrive`,
@@ -218,22 +230,21 @@ hairline. The block totals in the panel above carry the cross-block comparison.
 - Every section carries `.reveal` for scroll-in fade, via IntersectionObserver.
 
 ### Known structural problems
-- **`#sec-glance` duplicates the three sections beneath it.** It carries the same-clock day
-  card, which is `#sec-day` entire, and its ranking covers what `#sec-work` and `#sec-rest`
-  do — sortable on five measures rather than fixed on two. Nothing was removed when it went
-  in, so Chapter One currently states its finding twice. The obvious cut is `#sec-day`; the
-  harder question is whether `#sec-work` and `#sec-rest` still earn their screens, since
-  what they have that the glance sheet does not is *prose* — 195 words of argument in
-  sticky columns against the sheet's 118 of mostly instruction.
-- **One thing the glance ranking genuinely does worse.** `#sec-work` stacks two segments from
-  a common left edge, so unpaid work can be compared across all 35 by eye. In the glance
-  ranking unpaid is the third of five segments, so its left edge differs in every row and the
-  lengths are not comparable — sorting by Unpaid fixes the order and prints the value, but
-  the visual comparison is gone. Worth keeping in mind before cutting `#sec-work`.
+- **Unpaid work can no longer be compared by eye.** This is the one real cost of cutting
+  `#sec-work`, and it is worth knowing rather than rediscovering. That chart stacked two
+  segments from a common left edge, so the unpaid band could be read across all 35 countries
+  at a glance. The surviving ranking stacks five, so unpaid is the third segment and its left
+  edge sits somewhere different in every row: sorting by Unpaid still orders them correctly
+  and prints each value, but the lengths are not visually comparable. If one chart were to
+  come back, that is the argument for it.
+- **Chapter One is now a single unit.** The chapter is the glance sheet and nothing else. It
+  is dense and interactive, but the 195 words of sticky-column argument that `#sec-work` and
+  `#sec-rest` carried are gone, and the sheet's own prose is mostly instruction. If the
+  chapter reads thin, the fix is prose in the sheet rather than the sections back.
 - **The braid is a texture until touched.** By its own caption. At rest 175 ribbons say "35
   countries, five demands" and little more, and on a page people scroll many readers will
-  never hover. The charts below it are readable with no input at all.
-- **Chapter weight is still uneven**: One holds five units, Two three, Three one, Four one.
+  never hover. It is now the first chart in the chapter, so this matters more than it did.
+- **Chapter weight is still uneven**: One holds one unit, Two three, Three one, Four one.
 - **Figure numbers are not printed** — captions are name-only. The `Fig` column in the table above
   is a reference for this document, nothing the reader sees. The old numbering ran 1.1–6.1 in
   plain order, tracking neither chapter nor section, and was never cited in the prose.

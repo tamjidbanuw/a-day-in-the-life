@@ -41,155 +41,29 @@ const fmtH  = (min) => { const h = Math.floor(min / 60), m = Math.round(min % 60
 const workMin = (min) => (min.PAW || 0) + (min.UPW || 0);
 const nice = (c) => c.replace(' (People’s Republic of)', '');
 
-/* "United States" is the only name here that already ends in s, and it takes a
-   bare apostrophe rather than another s. Written inline it read "United
-   States's Day", which the figure label used to hide behind a number. */
-const possessive = (name) => name + (/s$/i.test(name) ? '’' : '’s');
 
 /**
- * Section 1 — one country's day, in five blocks, with the rank of each block
- * inside all 35.
+ * The two badges that #sec-day used to carry.
  *
- * Every sentence on the left and every figure in the card is generated from the
- * selected country, so the prose cannot fall out of step with the chart the way
- * hand-written copy does. Ranks are by size, not merit: more sleep is not
- * better than less, so the caption says so rather than implying a league table.
+ * That section is gone — #sec-glance makes the same point, and its day card is the
+ * same component — but `day` and `day5` were earned only by changing the country in
+ * its picker. Left alone that would have stranded two of the eight badges, making the
+ * collection impossible to finish. They move to the glance sheet's picker, the only
+ * country picker left on the page, so both hints still read true: it is the first
+ * chart, and visiting five countries still means five distinct values.
+ *
+ * Wired here rather than in js/glance.js because Badges is defined in this file and
+ * glance.js is deliberately self-contained.
  */
-const DC_CATS = [
-    { key: 'PCA', label: 'Sleep & self-care', color: 'var(--care)' },
-    { key: 'PAW', label: 'Paid work',         color: 'var(--paid)' },
-    { key: 'UPW', label: 'Unpaid work',       color: 'var(--unpaid)' },
-    { key: 'LEI', label: 'Leisure',           color: 'var(--leisure)' },
-    { key: 'OTH', label: 'Other',             color: 'var(--other)' }
-];
-
-function initDayCard() {
-    const bar = document.getElementById('dc-bar');
-    const pick = document.querySelector('#sec-day [data-picker="A"]');
-    if (!bar || !pick || !window.ADL) return;
-
-    const hhmm = m => Math.floor(m / 60) + 'h' + String(Math.round(m % 60)).padStart(2, '0');
-    const hm = m => {
-        const h = Math.floor(m / 60), r = Math.round(m % 60);
-        return h ? `${h}h ${String(r).padStart(2, '0')}m` : `${r}m`;
-    };
-    const ord = n => n + (['th', 'st', 'nd', 'rd'][n % 10 > 3 || (n > 10 && n < 14) ? 0 : n % 10] || 'th');
-
-    // every country that keeps a diary: the set the rest of the story follows
-    const all = COUNTRIES
-        .map(name => [name, ADL.countries[name]])
-        .map(([name, d]) => ({
-            key: name, name: nice(name), m: d.minutes,
-            work: d.minutes.PAW + d.minutes.UPW,
-            upwShare: d.minutes.UPW / (d.minutes.PAW + d.minutes.UPW)
-        }));
-    if (!all.length) return;
-    const N = all.length;
-
-    const rank = (c, get) => [...all].sort((a, b) => get(b) - get(a))
-        .findIndex(x => x.key === c.key) + 1;
-    const top = get => [...all].sort((a, b) => get(b) - get(a))[0];
-    const bottom = get => [...all].sort((a, b) => get(a) - get(b))[0];
-
-    pick.innerHTML = [...all].sort((a, b) => a.name.localeCompare(b.name))
-        .map(c => `<option value="${c.key}"${c.key === 'Mexico' ? ' selected' : ''}>${c.name}</option>`).join('');
-
-    bar.innerHTML = DC_CATS.map(c =>
-        `<span data-cat="${c.key}" style="background:${c.color};width:0"></span>`).join('');
-    const spans = new Map(Array.from(bar.children).map(s => [s.dataset.cat, s]));
-
-    const el = id => document.getElementById(id);
-
-    function draw(key) {
-        const c = all.find(x => x.key === key) || all[0];
-        el('dc-who').textContent = c.name;
-
-        DC_CATS.forEach(cat =>
-            spans.get(cat.key).style.width = (((c.m[cat.key] || 0) / 1440) * 100) + '%');
-
-        el('dc-rows').innerHTML = DC_CATS.map(cat => `
-            <div class="dc-row"><i style="background:${cat.color}"></i>
-                <span>${cat.label}</span>
-                <span class="v">${hhmm(c.m[cat.key] || 0)}</span>
-                <span class="r">${ord(rank(c, x => x.m[cat.key] || 0))} of ${N}</span>
-            </div>`).join('');
-
-        const workRank = rank(c, x => x.work), leiRank = rank(c, x => x.m.LEI);
-        /* The heading is authored now — "Every country gets the same day" — so it is
-           deliberately NOT rewritten per country. It used to read "<name> spends its
-           day like this", which made the one section heading on the page that stated
-           no finding. The id stays because COPY.md anchors on it. */
-        el('dc-lead').innerHTML =
-            `Of 1,440 minutes, ${c.name} gives <strong>${hm(c.work)}</strong> to work, paid and unpaid
-             together. That is <strong>${ord(workRank)} of ${N}</strong>.`;
-        el('dc-body').innerHTML =
-            `<strong>${hm(c.m.PCA)}</strong> goes to sleep and self-care, and
-             <strong>${hm(c.m.LEI)}</strong> is what remains for leisure,
-             <strong>${ord(leiRank)} of ${N}</strong>.
-             <strong>${(100 * c.upwShare).toFixed(0)}%</strong> of the work is unpaid: cooking, cleaning,
-             shopping, care. No payslip records any of it.`;
-
-        const mw = top(x => x.work), lw = bottom(x => x.work);
-        el('dc-foot').innerHTML = c.key === mw.key
-            ? `<b>The longest working day measured anywhere.</b> ${lw.name} works ${hm(mw.work - lw.work)} less.`
-            : c.key === lw.key
-            ? `<b>The shortest working day measured anywhere.</b> ${mw.name} works ${hm(mw.work - lw.work)} more.`
-            : `<b>${mw.name}</b> works most here at ${hm(mw.work)}, <b>${lw.name}</b> least at
-               ${hm(lw.work)}. ${c.name} sits ${hm(Math.abs(c.work - mw.work))} off the top.`;
-
-        el('dc-cap').innerHTML =
-            `<b>${possessive(c.name)} Day</b>
-             Stacked bar to 24 hours. Ranks are within the ${N} countries that keep time diaries, and are
-             by size rather than merit: more sleep is not better than less. Sleep and self-care includes
-             eating and washing; unpaid work covers cooking, cleaning, shopping and care. Blocks sit in a
-             fixed order, not a timeline: this is how much, not when. OECD Time Use Database, both sexes,
-             average minutes per day.`;
-    }
-
-    // badges: one for changing it at all, one for genuinely browsing
+function initCountryBadges() {
+    const pick = document.getElementById('gl-dc-pick');
+    if (!pick) return;
     const seen = new Set([pick.value]);
     pick.addEventListener('change', () => {
-        draw(pick.value);
         Badges.earn('day');
         seen.add(pick.value);
         if (seen.size >= 5) Badges.earn('day5');
     });
-    draw(pick.value);
-}
-
-// ── Section 2: work ranking — all countries as paid+unpaid split bars ──
-function renderWorkRank(container) {
-    const rows = COUNTRIES.map(c => {
-        const m = ADL.countries[c].minutes;
-        return { c, paid: m.PAW || 0, unpaid: m.UPW || 0, total: (m.PAW || 0) + (m.UPW || 0) };
-    }).sort((a, b) => b.total - a.total);
-    const max = rows[0].total;
-
-    container.innerHTML = rows.map(r => `<div class="rank-row">
-        <span class="rank-name">${nice(r.c)}</span>
-        <div class="rank-track">
-            <span class="rank-fill" style="width:${(r.paid / max) * 100}%; background:var(--accent)" title="Paid: ${fmtH(r.paid)}"></span>
-            <span class="rank-fill" style="width:${(r.unpaid / max) * 100}%; background:var(--unpaid)" title="Unpaid: ${fmtH(r.unpaid)}"></span>
-        </div>
-        <span class="rank-val">${fmtH(r.total)}</span>
-    </div>`).join('');
-}
-
-// ── Generic single-metric ranking (Rest, Connect) ──
-// valueFn(country)->number; fmt(n)->label; color; highlight = country to accent
-function renderRank(container, valueFn, fmt, color, highlight) {
-    const rows = COUNTRIES.map(c => ({ c, v: valueFn(c) })).sort((a, b) => b.v - a.v);
-    const max = rows[0].v;
-    container.innerHTML = rows.map(r => {
-        const on = r.c === highlight;
-        return `<div class="rank-row">
-            <span class="rank-name">${nice(r.c)}</span>
-            <div class="rank-track">
-                <span class="rank-fill" style="width:${(r.v / max) * 100}%; background:${on ? 'var(--accent)' : color}"></span>
-            </div>
-            <span class="rank-val">${fmt(r.v)}</span>
-        </div>`;
-    }).join('');
 }
 
 /* ── Lifestyle DNA: quiz → fingerprint → nearest-country twin ──
@@ -1920,18 +1794,8 @@ function initDayUS() {
     initDayUS();
     initRankParallel();
 
-    // Section 1 — one country's day, five blocks, each with its rank
-    initDayCard();
-
-    // Section 2 — work ranking
-    const workRank = document.getElementById('work-rank');
-    if (workRank) renderWorkRank(workRank);
-
-    // Section 4 — rest (leisure ranking)
-    const restRank = document.getElementById('rest-rank');
-    if (restRank) renderRank(restRank,
-        c => ADL.countries[c].minutes.LEI,
-        m => fmtH(m), 'var(--support)', 'Italy');
+    // the two badges the deleted day-card section used to carry
+    initCountryBadges();
 
 
 
