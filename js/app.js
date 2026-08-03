@@ -1132,22 +1132,11 @@ function initMetricStrips() {
            H went 168 → 178 because the average label sits at AXIS+34 = 162 and had six
            units of air under it. */
         const pad = (hi - lo) * 0.01 || 1;
-        const W = 1040, H = 178, L = 12, R = 12, AXIS = 128;
+        const W = 1040, L = 12, R = 12;
         const X = v => L + ((v - (lo - pad)) / ((hi + pad) - (lo - pad))) * (W - L - R);
 
         const ranked = [...rows].sort((a, b) => cfg.get(b) - cfg.get(a));
         const top = ranked[0], bottom = ranked[ranked.length - 1];
-
-        let s = '';
-        cfg.ticks.forEach(t => {
-            if (t < lo - pad || t > hi + pad) return;
-            s += `<line class="mt-tick" x1="${X(t)}" y1="${AXIS - 30}" x2="${X(t)}" y2="${AXIS + 8}"/>`;
-            s += `<text class="mt-tickl" x="${X(t)}" y="${AXIS + 22}" text-anchor="middle">${cfg.tickFmt(t)}</text>`;
-        });
-        // the average, so a reader can see who is above and below it
-        s += `<line class="mt-mean" x1="${X(mean)}" y1="${AXIS - 34}" x2="${X(mean)}" y2="${AXIS + 8}"/>`;
-        s += `<text class="mt-meanl" x="${X(mean)}" y="${AXIS + 34}" text-anchor="middle">average ${cfg.fmt(mean)}</text>`;
-        s += `<line class="mt-axis" x1="${L}" y1="${AXIS}" x2="${W - R}" y2="${AXIS}"/>`;
 
         /* Labels sit directly above their own mark and the leader drops straight
            down, so nothing leans. Since a vertical leader cannot move sideways to
@@ -1171,6 +1160,30 @@ function initMetricStrips() {
                 return { ...o, anchor, tier };
             });
         const maxTier = Math.max(...placed.map(o => o.tier));
+
+        /* AXIS is derived from the label stack, not fixed. It was a hard-coded 128, and at
+           34 countries the names need eight tiers: the topmost baseline landed at
+           128 − 30 − 7×16 = −14, so the top row painted 18px ABOVE the svg and straight
+           over the ladder label sitting outside it. (The svg is overflow:visible, which is
+           why it escaped rather than being clipped.)
+           Topmost baseline is AXIS − 30 − maxTier×TIER, and it needs about 14 units to keep
+           its ascenders inside, hence 44. Below the axis the ticks reach AXIS+22 and the
+           average label AXIS+34, so H leaves 44. With eight tiers that gives AXIS 156,
+           H 200; a shorter stack now yields a shorter chart instead of dead space. */
+        const AXIS = 44 + maxTier * TIER;
+        const H = AXIS + 44;
+
+        let s = '';
+        cfg.ticks.forEach(t => {
+            if (t < lo - pad || t > hi + pad) return;
+            s += `<line class="mt-tick" x1="${X(t)}" y1="${AXIS - 30}" x2="${X(t)}" y2="${AXIS + 8}"/>`;
+            s += `<text class="mt-tickl" x="${X(t)}" y="${AXIS + 22}" text-anchor="middle">${cfg.tickFmt(t)}</text>`;
+        });
+        // the average, so a reader can see who is above and below it
+        s += `<line class="mt-mean" x1="${X(mean)}" y1="${AXIS - 34}" x2="${X(mean)}" y2="${AXIS + 8}"/>`;
+        s += `<text class="mt-meanl" x="${X(mean)}" y="${AXIS + 34}" text-anchor="middle">average ${cfg.fmt(mean)}</text>`;
+        s += `<line class="mt-axis" x1="${L}" y1="${AXIS}" x2="${W - R}" y2="${AXIS}"/>`;
+
         placed.forEach(o => {
             const ly = AXIS - 30 - (maxTier - o.tier) * TIER;
             s += `<line class="mt-lead" data-name="${o.name}" x1="${o.x}" y1="${AXIS - 11}"
