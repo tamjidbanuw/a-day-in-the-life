@@ -1123,8 +1123,16 @@ function initMetricStrips() {
         const vals = rows.map(cfg.get);
         const lo = Math.min(...vals), hi = Math.max(...vals);
         const mean = vals.reduce((a, b) => a + b, 0) / vals.length;
-        const pad = (hi - lo) * 0.06 || 1;
-        const W = 1040, H = 168, L = 28, R = 28, AXIS = 128;
+        /* The dots were using 84.5% of the viewBox and the differences between countries
+           were the whole point of the chart, so the plot was widened to take nearly all of
+           it: side margins 28 → 12, and the breathing room beyond the extremes from 6% of
+           the range to 1%. India now sits at x≈22 and Finland at x≈1018, a span of 996
+           units against 879 before — 13% more room, and with the card's own padding pulled
+           in a little it comes to about 16% on screen.
+           H went 168 → 178 because the average label sits at AXIS+34 = 162 and had six
+           units of air under it. */
+        const pad = (hi - lo) * 0.01 || 1;
+        const W = 1040, H = 178, L = 12, R = 12, AXIS = 128;
         const X = v => L + ((v - (lo - pad)) / ((hi + pad) - (lo - pad))) * (W - L - R);
 
         const ranked = [...rows].sort((a, b) => cfg.get(b) - cfg.get(a));
@@ -1170,10 +1178,14 @@ function initMetricStrips() {
             s += `<text class="mt-name" data-name="${o.name}" x="${o.x}" y="${ly}"
                   text-anchor="${o.anchor}">${o.name}</text>`;
         });
+        /* No hi/lo class at render time. The two extremes are marked after the strip has
+           faded in, so the reader watches Finland and then India separate themselves from a
+           field that starts out uniform. Doing it with a CSS animation on `fill` instead
+           would have been simpler and wrong: an animation with fill-mode holds its end value
+           at a higher priority than any normal declaration, so `.mt-dot.on` would stop
+           working and the chart would never highlight on hover again. */
         rows.forEach(c => {
-            const v = cfg.get(c);
-            const cls = c.name === top.name ? ' hi' : c.name === bottom.name ? ' lo' : '';
-            s += `<circle class="mt-dot${cls}" data-name="${c.name}" cx="${X(v)}" cy="${AXIS}" r="7"/>`;
+            s += `<circle class="mt-dot" data-name="${c.name}" cx="${X(cfg.get(c))}" cy="${AXIS}" r="7"/>`;
         });
 
         host.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img"
@@ -1216,6 +1228,50 @@ function initMetricStrips() {
         });
         idle();
         if (cap) cap.innerHTML = `<b>${cfg.capTitle}</b> ${cfg.capBody}`;
+
+        /* ── the reveal ────────────────────────────────────────────────────────
+           Four beats once the strip is on screen: the dots fade in as one
+           undifferentiated field, then the highest separates itself, then the
+           lowest, then the names. A reader who arrives at a finished chart has to
+           be told where to look; a reader who watches it assemble has already
+           looked. The fade and the name timings are CSS, keyed off .in — only the
+           two emphasis classes are set here, because they have to stay ordinary
+           class changes for hover to keep overriding them.
+
+           Reduced motion is honoured by doing all of it at once: the stylesheet
+           already zeroes the animations, so the classes go on immediately rather
+           than arriving in a sequence nobody asked to watch. */
+        const calm = window.matchMedia &&
+            window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const mark = () => {
+            const hit = n => el.querySelector(`.mt-dot[data-name="${n}"]`);
+            const a = hit(top.name), b = hit(bottom.name);
+            if (calm) { if (a) a.classList.add('hi'); if (b) b.classList.add('lo'); return; }
+            setTimeout(() => { if (a) a.classList.add('hi'); }, 620);
+            setTimeout(() => { if (b) b.classList.add('lo'); }, 900);
+        };
+        let started = false;
+        const start = () => {
+            if (started) return;
+            started = true;
+            host.classList.add('in');
+            mark();
+        };
+        if (calm || !('IntersectionObserver' in window)) {
+            start();
+        } else {
+            /* .staged is what hides the dots, so it goes on only now — with the observer
+               armed and a timer behind it. If neither ever fired the chart would sit
+               empty, so the timer is a floor rather than a nicety: worst case the
+               sequence plays before the reader gets here and they meet a finished chart,
+               which is exactly what they used to get. */
+            host.classList.add('staged');
+            const obs = new IntersectionObserver(es => es.forEach(e => {
+                if (e.isIntersecting) { start(); obs.disconnect(); }
+            }), { threshold: 0.25 });
+            obs.observe(host);
+            setTimeout(start, 4000);
+        }
     });
 }
 

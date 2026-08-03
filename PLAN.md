@@ -75,7 +75,7 @@ Cover, opener, ten sections across four chapters, close. Reading order top to bo
 | | | **CHAPTER ONE · Sleep Is the Only Constant** | | |
 | 1 | `#sec-glance` | *(no eyebrow or title — the chapter mark above is the heading)* | One sheet, and now the whole chapter: an instruction pill, the live readout, then a ribbon braid of all 35 days on the dark panel with the same-clock card and the caveats beside a ranking sortable on five measures. One selection drives all three | 2.1 |
 | | | **CHAPTER TWO · The Only Number Here That Asks** | | |
-| 5 | `#sec-happy` | A simple question / **Happiness isn't measured. It's answered.** | Wide strip: 34 marks on the 0–10 ladder, average called out, vertical leaders with tiered labels; readout stacks leader / trailer / average | 4.1 |
+| 5 | `#sec-happy` | A simple question / **Happiness isn't measured. It's answered.** | Wide strip: 34 marks on the ladder, average called out, vertical leaders with tiered labels; readout stacks leader / trailer / average; dots fade in, then Finland, then India, then the names | 4.1 |
 | 6 | `#sec-ranks` | Nobody leads / **No Country Wins Everything** | Rank slope chart, 34 countries × 4 measures; the four that come first are drawn, the other 30 ghosted until hovered | 4.2 |
 | | | **CHAPTER THREE · One Country Writes Everything Down** | | |
 | 8 | `#sec-leisure` | Every minute / **One country writes down all 1,440 minutes** | Three cards: the day as one stacked bar, 44 activities grouped under the five blocks, then four activities by age band; plus two callouts | 5.1 |
@@ -289,6 +289,42 @@ hairline. The block totals in the panel above carry the cross-block comparison.
   **This is worth remembering as a class of bug**: `display:contents` removes the box that
   `position:sticky` would have been constrained by, and the symptom only appears once the section is
   scrolled — measuring the page at scroll 0 finds nothing wrong.
+
+### The happiness strip assembles itself
+
+Three changes that belong together, all in `initMetricStrips()` and the `.mt-*` rules.
+
+**The label states the question, not the measure.** `LIFE SATISFACTION / 0 TO 10` named the
+scale without saying what either end meant; it now reads
+`0 = worst life imaginable · 10 = best life imaginable`, which is close to what respondents
+were actually asked. The numbers stay attached to the words rather than being printed at the
+ends of the axis, and that is not a stylistic preference: **this axis is cropped to the range
+of the 34 countries**, so its left end is India at 3.78 and its right end Finland at 7.82.
+Labelling those ends `0` and `10` would be a false statement about the chart.
+
+**The dots got 16% more room.** They were using 84.5% of the viewBox. Side margins went 28 → 12
+and the padding beyond the extremes went from 6% of the range to 1%, which takes the span from
+879 units to 996 (95.8%); `.mt-stage`'s horizontal padding came in from 2rem to 1.5rem for the
+rest. On a 1440 screen the dots now span 722px against 624px. `H` went 168 → 178 because the
+average label sits at `AXIS + 34` = 162 and had six units of air beneath it.
+
+**The reveal is four beats**: the dots fade in as one undifferentiated field, then the highest
+separates itself, then the lowest, then the names. A reader who arrives at a finished chart has
+to be told where to look.
+
+- **Only opacity is animated, and the colour is a class on a timer.** Animating `fill` was the
+  obvious way to make Finland light up and it would have broken the chart permanently: a CSS
+  animation holding its end value outranks every normal declaration, so `.mt-dot.on` would
+  never apply again and hover would stop highlighting. Verified the other way round — hovering
+  India while it carries `.lo` still yields the accent.
+- **The hidden state hangs off `.staged`, which JS adds**, not off `.mt-strip`. If the stylesheet
+  hid the dots on its own, any failure to add `.in` — a dead observer, an exception between
+  render and wiring — would leave a permanently empty chart. Default visible, animation opt-in.
+  There is also a 4s fallback timer behind the observer, so the worst case is that the sequence
+  plays before the reader arrives and they meet a finished chart, which is what they used to get.
+- **Reduced motion does all of it at once**: `.staged` is never added, both emphasis classes go
+  on immediately, and the stylesheet zeroes the animation and the fill transition. Verified with
+  `--force-prefers-reduced-motion`.
 
 ### Scroll mechanics
 - Cover is `--cover-h: 38vh`, so the opener is well up the screen on load. `min-height`, not

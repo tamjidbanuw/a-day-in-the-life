@@ -255,8 +255,7 @@ the country’s score.
 
 ### 49. Chart · label  `[mt-lab]`
 
-Life satisfaction
-0 to 10
+0 = worst life imaginable · 10 = best life imaginable
 
 ### 50. Figure · source note  `[source]`
 

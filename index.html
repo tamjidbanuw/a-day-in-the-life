@@ -293,7 +293,13 @@
 
             <div class="viz">
                 <div class="mt-stage">
-                    <p class="mt-lab">Life satisfaction<br>0 to 10</p>
+                    <!-- The ladder's two ends in words, which is the question people were
+                         actually asked. "Life satisfaction / 0 to 10" named the measure without
+                         saying what either end meant. The numbers stay attached to the words
+                         rather than being printed at the ends of the axis, because this axis is
+                         cropped to the range of these 34 countries — its left end is India at
+                         3.78, not 0, so labelling the ends "0" and "10" would be false. -->
+                    <p class="mt-lab">0 = worst life imaginable &middot; 10 = best life imaginable</p>
                     <div class="mt-strip" id="mt-happy"></div>
                     <p class="mt-read" id="mt-happy-read"></p>
                 </div>

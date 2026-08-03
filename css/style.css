@@ -650,13 +650,18 @@ body {
     background: var(--white);
     border: 1px solid var(--line);
     border-radius: 14px;
-    padding: clamp(1.1rem, 3vw, 1.6rem) clamp(1.1rem, 3vw, 2rem);
+    /* Vertical padding kept, horizontal pulled in from 2rem: inside this grid the card
+       is only ~800px and every pixel it holds back is width the 34 dots do not get.
+       Worth about 2.4% of the plot on its own. */
+    padding: clamp(1.1rem, 3vw, 1.6rem) clamp(1rem, 2.2vw, 1.5rem);
     box-shadow: 0 30px 60px -46px rgb(var(--ink-deep-rgb) / 0.30);
     text-align: left;
 }
 .mt-lab {
     font-size: 0.68rem; font-weight: 700; letter-spacing: 0.16em;
-    text-transform: uppercase; color: var(--ink-faint); margin-bottom: 0.4rem;
+    /* 0.4rem before. The label, the dots and the readout were sitting on top of one
+       another; the strip needs the separation more than the card needs the height. */
+    text-transform: uppercase; color: var(--ink-faint); margin-bottom: 0.9rem;
 }
 .mt-strip svg { width: 100%; height: auto; display: block; overflow: visible; }
 .mt-read {
@@ -679,12 +684,47 @@ body {
 .mt-meanl { font-size: 9px; fill: var(--ink-faint); }
 .mt-lead { stroke: var(--line); stroke-width: 1; transition: stroke 0.2s ease; }
 .mt-name { font-size: 10.5px; font-weight: 600; fill: var(--ink-soft); transition: fill 0.2s ease; }
-.mt-dot { fill: var(--support); transition: fill 0.2s ease, r 0.2s ease; }
+/* fill transitions rather than animates, so .hi / .lo / .on remain ordinary declarations
+   and hover can still override the two emphasis classes at any point */
+.mt-dot { fill: var(--support); transition: fill 0.45s ease, r 0.2s ease; }
 .mt-dot.hi { fill: var(--accent); }
 .mt-dot.lo { fill: var(--support-pale); }
 .mt-dot.on { fill: var(--accent); }
 .mt-name.on { fill: var(--ink); }
 .mt-lead.on { stroke: var(--accent); }
+
+/* ── the strip assembling itself ───────────────────────────────────────────────
+   The axis and its ticks are structure and are there from the start; the dots and
+   the names arrive. `.in` is put on the strip by its own observer in
+   initMetricStrips, not by the page-wide .reveal observer, so the sequence starts
+   when this chart is on screen rather than when its section is.
+
+   Only opacity is animated. Animating `fill` would have been the obvious way to
+   make Finland light up, and it would have permanently broken the hover
+   highlight: an animation holding its end value outranks every normal
+   declaration, so `.mt-dot.on` would never apply again. The colour change is a
+   class added on a timer instead, and it transitions via the rule above. */
+   The hidden state hangs off .staged, which initMetricStrips adds only once it has
+   drawn the chart AND armed something to un-hide it. Hiding on .mt-strip alone would
+   mean any failure to add .in — a dead observer, an exception between render and
+   wiring — left a permanently empty chart. This way the default is visible and the
+   animation is the opt-in. */
+.mt-strip.staged .mt-dot,
+.mt-strip.staged .mt-name,
+.mt-strip.staged .mt-lead { opacity: 0; }
+.mt-strip.staged.in .mt-dot { animation: mt-fade 0.45s ease both; }
+/* the names follow the two extremes, so nothing competes with them for attention */
+.mt-strip.staged.in .mt-name,
+.mt-strip.staged.in .mt-lead { animation: mt-fade 0.5s ease 1.05s both; }
+@keyframes mt-fade { from { opacity: 0; } to { opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+    /* everything present, nothing sequenced — initMetricStrips also drops its timers */
+    .mt-strip.staged .mt-dot,
+    .mt-strip.staged .mt-name,
+    .mt-strip.staged .mt-lead { opacity: 1; animation: none; }
+    .mt-dot { transition: none; }
+}
 
 /* ─── RANK SLOPE CHART ──────────────────────────────────────
    Twelve countries, five measures, plotted as rank rather than value. Rank is
