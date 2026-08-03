@@ -136,24 +136,44 @@ be the share of the day already committed (`81% already spoken for`) — the sam
 for all 35 with only the number changing. It is now whichever measure the country sits
 closest to an end of, out of all work, leisure, unpaid, paid, and sleep and self-care,
 read through the same accessors the ranking panel sorts on so the sentence cannot
-contradict the chart beneath it. First place reads `The most leisure in the dataset`,
-near-misses read `Among the longest working days`. Two knobs, both in `glance.js`:
+contradict the chart beneath it.
 
-- **`FACT_BY` order breaks ties.** France is simultaneously 1st for sleep and 35th for all
-  work, so both are first place; work is listed first, which gives the chapter a Mexico
-  and France bookend — longest working day, shortest working day. Move `sleep` above
-  `work` and France reads `The most sleep and self-care in the dataset` instead.
+**A country that leads a measure gets an identity, not a rank.** `Works longer than
+anyone else`, `Sleeps more than any other country here`, `Has the most leisure time` —
+verb-led, with the country as the implied subject. Only near-misses stay in the ranking
+register (`Among the longest working days`), which is the honest way to say near the end
+of the list but not at it. Five countries hold a first place on this data and so carry an
+identity: Mexico, France, Norway, Japan and Italy.
+
+Two knobs, both in `glance.js`:
+
+- **Ties go to the TOP end, then to `FACT_BY` order.** This is load-bearing rather than
+  cosmetic. Mexico holds four first places at once — 1st for all work, 1st for unpaid,
+  last for leisure, last for sleep — and France holds two, 1st for sleep and last for all
+  work. Ranking by nearest-to-an-end alone left France described by what it does least.
+  Preferring the top end gives Mexico `Works longer than anyone else` and France
+  `Sleeps more than any other country here`, which is what the copy asks for.
 - **`RANK_LIMIT = 7`** is where "Among the longest" stops being true. Six countries sit in
   the dead middle on all five measures — the United States is 15th, 22nd, 15th, 15th and
   18th of 35 — and they fall through to the unpaid share of their own working day
-  (`41% of its work is unpaid`), which needs no rank and is always specific.
+  (`Gives 41% of its working day to unpaid work`), which needs no rank and is always
+  specific.
 
 Ordinals were tried first and dropped: `5th longest working day` is a table cell, not a
 sentence, and `14th least leisure` is worse than saying nothing. The four sentences per
 measure are written out rather than assembled, because English will not pluralise them
-uniformly — `working day` takes an s, while `leisure` and `unpaid work` are mass nouns
-that need `Among the highest for …`. Superlatives say **in the dataset**, never *of any
-country*: 35 countries keep diaries of this kind, so the claim is true of the set.
+uniformly — `working day` takes an s, unpaid work wants `workload`, leisure wants `hours`.
+
+**Six of the ten superlatives are unreachable on this data**, because the countries that
+hold those extremes win a different measure first: nothing currently prints `Works the
+shortest day of all`, `Has the least leisure time of all`, `Carries the heaviest/lightest
+unpaid workload` or either `Sleeps less` line. They are kept because the country set has
+already been rewritten once in this project's life. Editing one of those strings will look
+like it does nothing — that is why.
+
+`Sleeps` is shorthand: the measure is sleep **and self-care**, which carries eating and
+washing. The legend under the braid names it in full, and the near-miss line says it
+outright.
 
 **The ranking is `.gl-row`, not `.rank-row`, for the same reason in CSS.** `.rank-row` was
 the static three-column grid `#work-rank` and `#rest-rank` used, and these rows are

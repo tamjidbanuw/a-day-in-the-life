@@ -169,32 +169,52 @@
        kind, so the superlative is true of the set, not of the world.
 
        "sleep and self-care", never just "sleep": PCA carries eating and washing too. */
+    /* Four sentences per measure. The two outright winners are written as verb-led
+       identities with the country as the implied subject — "Works longer than anyone
+       else", not "1st for all work" — because a country that leads a measure should
+       read as a character rather than a table cell. The two near-misses stay in the
+       "Among the ..." register, which is the honest way to say "near the end of this
+       list but not at it".
+
+       The wording is written out per case instead of assembled, because English will
+       not pluralise these uniformly: "working day" takes an s, unpaid work wants
+       "workload", and leisure wants "hours".
+
+       "Sleeps" is shorthand. The measure is sleep AND self-care, which carries eating
+       and washing, and the legend under the braid names it in full three lines below
+       this sentence. The near-miss line says so outright.
+
+       Six of the ten superlatives never print on today's data, because the country
+       holding that extreme wins an earlier measure: France is last for all work but
+       leads sleep, Mexico is last for both leisure and sleep but leads all work, Japan
+       is last for unpaid but leads paid. They are kept because this country set has
+       been rewritten once already. Editing one will look like it does nothing. */
     var FACT_BY = [
         { get: function (c) { return c.work; },
-          hi1: 'The longest working day in the dataset.',
+          hi1: 'Works longer than anyone else.',
           hiN: 'Among the longest working days.',
-          lo1: 'The shortest working day in the dataset.',
+          lo1: 'Works the shortest day of all.',
           loN: 'Among the shortest working days.' },
         { get: function (c) { return c.leisure; },
-          hi1: 'The most leisure in the dataset.',
-          hiN: 'Among the highest for leisure.',
-          lo1: 'The least leisure in the dataset.',
-          loN: 'Among the lowest for leisure.' },
+          hi1: 'Has the most leisure time.',
+          hiN: 'Among the longest leisure hours.',
+          lo1: 'Has the least leisure time of all.',
+          loN: 'Among the shortest leisure hours.' },
         { get: function (c) { return c.unpaid; },
-          hi1: 'The most unpaid work in the dataset.',
-          hiN: 'Among the highest for unpaid work.',
-          lo1: 'The least unpaid work in the dataset.',
-          loN: 'Among the lowest for unpaid work.' },
+          hi1: 'Carries the heaviest unpaid workload.',
+          hiN: 'Among the heaviest unpaid workloads.',
+          lo1: 'Carries the lightest unpaid workload.',
+          loN: 'Among the lightest unpaid workloads.' },
         { get: function (c) { return c.paid; },
-          hi1: 'The most paid work in the dataset.',
-          hiN: 'Among the highest for paid work.',
-          lo1: 'The least paid work in the dataset.',
-          loN: 'Among the lowest for paid work.' },
+          hi1: 'Spends the longest at paid work.',
+          hiN: 'Among the longest paid working days.',
+          lo1: 'Spends the least time at paid work.',
+          loN: 'Among the shortest paid working days.' },
         { get: function (c) { return c.sleep; },
-          hi1: 'The most sleep and self-care in the dataset.',
-          hiN: 'Among the highest for sleep and self-care.',
-          lo1: 'The least sleep and self-care in the dataset.',
-          loN: 'Among the lowest for sleep and self-care.' }
+          hi1: 'Sleeps more than any other country here.',
+          hiN: 'Among the longest sleep and self-care hours.',
+          lo1: 'Sleeps less than any other country here.',
+          loN: 'Among the shortest sleep and self-care hours.' }
     ];
     /* "Among the longest" stretches to about the top fifth and no further: at 7 of 35
        it is fair, at 12 it is a lie. Six countries sit in the dead middle on all five
@@ -209,12 +229,21 @@
             FACT_BY.forEach(function (f) {
                 var r = rankOf(c, f.get), fromEnd = N + 1 - r;
                 var top = r <= fromEnd, place = top ? r : fromEnd;
-                if (!best || place < best.place) {
+                /* Nearest an end wins; on a tie the TOP end wins; on a tie at the same
+                   end the earlier measure wins. Leading something is a sharper identity
+                   than lacking it, and the two countries that pin the extremes need this
+                   to come out right. Mexico is simultaneously 1st for all work, 1st for
+                   unpaid, last for leisure and last for sleep — four first places — and
+                   France is 1st for sleep and last for all work. Without the top-end
+                   preference France would be described by what it does least. */
+                if (!best || place < best.place ||
+                    (place === best.place && top && !best.top)) {
                     best = { place: place, f: f, top: top };
                 }
             });
             if (best.place > RANK_LIMIT) {
-                out[c.name] = Math.round(c.unpaid / c.work * 100) + '% of its work is unpaid.';
+                out[c.name] = 'Gives ' + Math.round(c.unpaid / c.work * 100) +
+                    '% of its working day to unpaid work.';
             } else if (best.place === 1) {
                 out[c.name] = best.top ? best.f.hi1 : best.f.lo1;
             } else {
