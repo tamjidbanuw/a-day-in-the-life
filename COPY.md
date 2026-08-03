@@ -149,7 +149,8 @@ Some trade leisure for unpaid care.
 
 ### 25. Chapter · the invitation  `[chapter-ask]`
 
-Explore the world’s days—and discover what changes… and what doesn’t.
+Explore the world’s days.
+Discover what changes… and what doesn’t.
 
 ### 26. Instruction pill  `[howto]`
 
