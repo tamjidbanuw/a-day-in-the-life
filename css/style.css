@@ -338,7 +338,23 @@ body {
    2.4rem the longest word, "Everything", occupies 188px of it. Bigger than this and
    the word touches the column wall. Below 900px the column becomes the page width and
    the same rule lets it run on one line, so no break is authored into the markup. */
-#sec-ranks .sec-title { font-size: clamp(1.6rem, 2.9vw, 2.4rem); line-height: 1.02; }
+/* 15% up again, from clamp(1.6rem, 2.9vw, 2.4rem). At the top of the clamp that does not
+   fit on its own: the column is 210px and "Everything" is a single unbreakable word needing
+   188px at 2.4rem, so 15% more asks for 217px and spills into the chart. The tracking is
+   pulled from the inherited -0.015em to -0.04em to pay for it, which buys about 11px on a
+   ten-letter word — enough, and at this size a tighter track reads as deliberate rather
+   than cramped. Verified: "Everything" lands at 206px of the 210 available.
+
+   That 4px is the whole margin, so treat this size as the ceiling. Measured in the fallback
+   fonts the stack would use if the Google-hosted IBM Plex Sans never arrives — the system
+   font, generic sans and Arial all come out at 211px, one pixel over. A 1px spill lands in
+   the 38px grid gutter before the chart and is invisible, which is why this is left alone,
+   but anything longer than "Everything" or larger than 2.76rem will not be. */
+#sec-ranks .sec-title {
+    font-size: clamp(1.84rem, 3.33vw, 2.76rem);
+    letter-spacing: -0.04em;
+    line-height: 1.02;
+}
 /* Four authored lines in a 210px column. Measured at 1440: "Four measures." 105px,
    "Four winners." 93px, "No country finishes first twice." 207px, and "Every strength comes
    with a trade-off." 260px — so the last one wraps above 900px and nothing here can prevent
@@ -367,8 +383,9 @@ body {
     }
     .section.notes .rule { display: block; }
     .section.notes .sec-title { font-size: clamp(1.5rem, 5vw, 2rem); }
-    /* The column is the full page here, so the payoff gets the room it wanted upstairs. */
-    #sec-ranks .sec-title { font-size: clamp(2rem, 6.5vw, 3rem); }
+    /* The column is the full page here, so the payoff gets the room it wanted upstairs.
+       15% up from clamp(2rem, 6.5vw, 3rem); nothing is measure-bound at this width. */
+    #sec-ranks .sec-title { font-size: clamp(2.3rem, 7.5vw, 3.45rem); }
     .section.notes .lead { font-size: 1rem; }
     .section.notes .body { font-size: 0.93rem; }
 }
