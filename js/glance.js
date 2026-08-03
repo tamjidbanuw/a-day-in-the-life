@@ -445,8 +445,10 @@
         } else {
             braid.hl.setAttribute('opacity', 0);
         }
-        pinnote.textContent = sel
-            ? 'Pinned: ' + sel + ' \u00b7 click it again, or press Escape, to release' : '';
+        // The country's own name is not repeated here: #gl-who directly above already
+        // swaps from "All 35 countries" to whatever is pinned, so naming it twice in
+        // two adjacent lines just stuttered.
+        pinnote.textContent = sel ? 'Pinned. Click another country to compare.' : '';
         if (dayCard.pick.value !== (sel || '')) dayCard.pick.value = sel || '';
         show(name ? R.filter(function (c) { return c.name === name; })[0] : AVG);
     }
