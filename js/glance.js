@@ -526,10 +526,13 @@
               '<span>hover or click a country to replace it</span>'
             : '<em>' + (FACT[c.name] || '') + '</em>' +
               '<span>' + hm(c.work) + ' working. ' + hm(c.leisure) + ' leisure</span>');
+        /* The at-rest note. It used to admit that the braid "is a texture until you
+           touch it" and restate the 1,440; it now points at the shape and says why it
+           is worth touching. The 1,440 lives on in the day card's own label, two
+           panels down, and this is the last place the braid panel stated it. */
         note.innerHTML = c.avg
-            ? 'Ribbons carry the whole picture at once, which is the point of the shape and ' +
-              'also its limit: it is a texture until you touch it. Every column is the same ' +
-              'width because every country is spending the same 1,440 minutes.'
+            ? 'Every ribbon is one country&rsquo;s day.<br>The shape may look familiar ' +
+              '&mdash; but no two countries divide their time the same way.'
             : '<b>' + c.name + '</b> gives <b>' + hm(c.m.PAW) + '</b> to paid work and <b>' +
               hm(c.m.UPW) + '</b> to work nobody pays for, sleeps <b>' + hm(c.m.PCA) +
               '</b>, and has <b>' + hm(c.m.LEI) + '</b> left.';

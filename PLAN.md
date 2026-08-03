@@ -300,9 +300,12 @@ hairline. The block totals in the panel above carry the cross-block comparison.
   is dense and interactive, but the 195 words of sticky-column argument that `#sec-work` and
   `#sec-rest` carried are gone, and the sheet's own prose is mostly instruction. If the
   chapter reads thin, the fix is prose in the sheet rather than the sections back.
-- **The braid is a texture until touched.** By its own caption. At rest 175 ribbons say "35
-  countries, five demands" and little more, and on a page people scroll many readers will
-  never hover. It is now the first chart in the chapter, so this matters more than it did.
+- **The braid is a texture until touched.** At rest 175 ribbons say "35 countries, five
+  demands" and little more, and on a page people scroll many readers will never hover. It
+  is now the first chart in the chapter, so this matters more than it did. The note under
+  it used to concede the point in those words; it now invites the hover instead ("no two
+  countries divide their time the same way"), which is better copy but does not change the
+  underlying problem.
 - **Chapter weight is still uneven**: One holds one unit, Two three, Three one, Four one.
 - **Figure numbers are not printed** — captions are name-only. The `Fig` column in the table above
   is a reference for this document, nothing the reader sees. The old numbering ran 1.1–6.1 in
