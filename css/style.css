@@ -1535,13 +1535,6 @@ html.bdg-locked, html.bdg-locked body { overflow: hidden; }
     max-width: 1340px;
     padding-top: clamp(1.25rem, 2.5vw, 2rem);
 }
-/* The standfirst needs a measure. Elsewhere .lead sits in the 228px .txt column or
-   a centred 640px block, so it never needed one; across 1340px of full-bleed
-   section it ran to 1032px a line while .body stayed at its own 620px cap, which
-   read as two unrelated columns of type. */
-#sec-glance .sec-title { max-width: 22ch; }
-#sec-glance .lead { max-width: 60ch; }
-#sec-glance .rule { max-width: 60ch; }
 #sec-glance .card-sub {
     padding: 0.7rem 1.3rem 0;
     font-size: 0.78rem;

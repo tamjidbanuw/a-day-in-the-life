@@ -73,7 +73,7 @@ Cover, opener, ten sections across four chapters, close. Reading order top to bo
 | — | `.cover` | *A Day in the Life of the World* | 24-hour clock SVG, `--cover-h: 38vh`; scrolls away into the fixed `.title-bar` | — |
 | — | `#sec-people` | Meet the World / **8 Billion People** | Dot field spelling WORLD, accent = the 35 countries at exactly 52.5% of dots | 1.1 |
 | | | **CHAPTER ONE · Sleep Is the Only Constant** | | |
-| 1 | `#sec-glance` | Chapter One · At a Glance / **Everyone gets the same 24 hours. Only the spending changes.** | One sheet, and now the whole chapter: ribbon braid of all 35 days on the dark panel, then the same-clock card with the caveats beside a ranking sortable on five measures. One selection drives all three | 2.1 |
+| 1 | `#sec-glance` | *(no eyebrow or title — the chapter mark above is the heading)* | One sheet, and now the whole chapter: an instruction pill, the live readout, then a ribbon braid of all 35 days on the dark panel with the same-clock card and the caveats beside a ranking sortable on five measures. One selection drives all three | 2.1 |
 | | | **CHAPTER TWO · The Only Number Here That Asks** | | |
 | 5 | `#sec-happy` | The one that asks / **Happiness is a question, not a reading** | Wide strip: 34 marks on the 0–10 ladder, average called out, vertical leaders with tiered labels | 4.1 |
 | 6 | `#sec-money` | What it tracks / **The softest number has a hard predictor** | Scatter, GDP per person (log) against the ladder, least-squares fit, r printed on the chart | 4.2 |
@@ -188,6 +188,13 @@ here against the OECD's 21 minutes for the United States. Both captions say so.
 hairline. The block totals in the panel above carry the cross-block comparison.
 
 ### Removed along the way
+- **`#sec-glance`'s standfirst** — its eyebrow, title, rule, lead and body. The chapter mark
+  directly above already names the chapter and states its finding, so a second heading and two
+  more paragraphs restated it. The instruction pill stays: nothing else tells a reader that the
+  panels answer a pointer. The computed 46% / 22% / 70% went with the body, so **the chapter now
+  argues qualitatively** — the braid's band figures and the day card carry the numbers, and no
+  sentence on the page states a spread. `glance.js` writes every figure slot through a helper
+  that skips absent elements, so restoring the copy is enough to bring them back.
 - **Chapter One's other four blocks** — `#sec-day`, `#sec-work`, the full-bleed stat band and
   `#sec-rest` — cut as redundant once `#sec-glance` existed: the glance sheet's day card *is*
   `#sec-day`, and its sortable ranking covers what the two rank charts did on fixed measures.
@@ -261,28 +268,27 @@ hairline. The block totals in the panel above carry the cross-block comparison.
   30, with each winner named at its own first-place dot; hovering or picking still isolates any
   of the 34. Worth revisiting if a better encoding turns up.
 
-### Two dispersion measures are in play — do not "reconcile" them
+### Two dispersion measures — pick one before quoting either
 
-The page states how much a block varies in two places, in two different measures, and both
-are correct. Anyone who spots the mismatch and unifies them will make one of them wrong.
+**Not a live problem any more: the page states neither figure.** The Chapter One blurb was
+rewritten to "one part of every day changes surprisingly little", and the glance standfirst
+that carried 22% and 70% has been cut. This stays because the moment any copy quotes a
+spread again, it is the trap.
 
-| Measure | Sleep | Paid work | Ratio | Used by |
-|---|---|---|---|---|
-| Coefficient of variation, sd/mean | **4.7%** | **16.8%** | **3.57×** | the Chapter One blurb, "varies nearly four times as much" |
-| Range over mean, (max−min)/mean | **21.9%** | **70.3%** | **3.21×** | `#sec-glance`'s standfirst, "stretch only 22% … stretches 70%" |
+| Measure | Sleep | Paid work | Ratio |
+|---|---|---|---|
+| Coefficient of variation, sd/mean | **4.7%** | **16.8%** | **3.57×** |
+| Range over mean, (max−min)/mean | **21.9%** | **70.3%** | **3.21×** |
 
 Both come off the same 35 numbers: sleep runs 606–752 minutes on a mean of 665, paid work
-177–368 on a mean of 272. CV asks how much the typical country departs from the average;
-range over mean asks how far the two extremes sit apart. The blurb's "nearly four times" is
-right on CV and would be wrong on range; the glance figures are the opposite.
+177–368 on a mean of 272. CV asks how far the typical country sits from the average; range
+over mean asks how far the two extremes sit apart. "Nearly four times as much" is right on
+CV and wrong on range; "22% against 70%" is the reverse. Both cannot be quoted in the same
+breath, and reconciling them by arithmetic will make one of them wrong.
 
-`spread()` in `glance.js` computes range over mean, because the sentence it feeds says
-"from the shortest country to the longest" and that is the quantity that phrase names.
-
-**This is still a real editorial problem**, just not an arithmetic one: the two live about
-200px apart, so a reader who divides 70 by 22 gets 3.2 and cannot square it with "nearly
-four times" directly above. Either move the blurb to "more than three times" and let both
-be range-based, or move the glance standfirst onto CV. Not yet decided.
+`spread()` in `glance.js` computes range over mean, because the sentence it used to feed said
+"from the shortest country to the longest" and that is the quantity that phrase names. It is
+still called, for the braid and the ranking, so those figures are one line of copy away.
 
 ### Verified data notes (recomputed at 35 countries, not asserted)
 - Sleep and self-care has a **coefficient of variation of 4.7%** between countries; paid work

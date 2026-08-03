@@ -149,18 +149,14 @@
              .rank-row is the static grid #work-rank and #rest-rank use, while these
              rows are absolutely positioned so they can animate between sort orders. -->
         <section class="section reveal" id="sec-glance">
-            <span class="sec-num">Chapter One &middot; At a Glance</span>
-            <h2 class="sec-title">Everyone gets the same 24 hours.<br>Only the spending changes.</h2>
-            <hr class="rule">
-            <p class="lead">Thirty-five countries have measured an ordinary day in extraordinary
-                detail. Every chart in this chapter comes from those time diaries.</p>
-            <p class="body">Each panel represents one country&rsquo;s average day. Hover over any
-                country to explore it, or click to keep it selected throughout the chapter. One pattern
-                appears immediately. Sleep and personal care make up
-                <strong id="gl-f-share"></strong> of the average day, varying by only
-                <strong id="gl-f-sleep"></strong> from the shortest to the longest. Paid work occupies
-                only about a third as much time &mdash; and varies far more, stretching
-                <strong id="gl-f-paid"></strong> across countries.</p>
+            <!-- No eyebrow, title, lead or body here. The chapter mark directly above
+                 already names the chapter and states its finding, so a second heading and
+                 two more paragraphs restated it. The instruction pill stays, because
+                 nothing else tells a reader the panels respond to a pointer.
+
+                 This is also where the computed 46% / 22% / 70% lived. Those three slots
+                 are gone with the paragraph; glance.js writes each only if its element
+                 exists, so restoring the copy is enough to bring them back. -->
             <span class="howto">Hover to explore &bull; Click to compare &bull; Press Esc to clear</span>
 
             <div class="gl-who" id="gl-who"></div>

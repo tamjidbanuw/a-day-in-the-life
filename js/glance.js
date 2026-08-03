@@ -204,20 +204,28 @@
        opening paragraph — and counted here rather than typed into the markup, on
        the same principle as #sec-day's generated prose: copy that sits beside a
        chart must not be able to drift from it. */
+    /* EVERY SLOT HERE IS OPTIONAL. The copy that held these figures has been rewritten
+       twice and each pass dropped some of them: the standfirst that carried the three
+       spreads is gone, and so is the caveat that named the American figures. Writing to
+       an element that is no longer in the markup throws on a null and takes the rest of
+       the section down with it, silently, because everything below this point stops. So
+       each is written only where its element exists, and the copy stays free to drop or
+       restore any of them without touching this file. */
     (function () {
+        function put(id, value) {
+            var el = $(id);
+            if (el) el.textContent = value;
+        }
         var sl = spread(function (c) { return c.sleep; });
         var pd = spread(function (c) { return c.paid; });
-        $('gl-f-share').textContent = Math.round(sl.mu / DAY * 100) + '%';
-        $('gl-f-sleep').textContent = sl.pct + '%';
-        $('gl-f-paid').textContent = pd.pct + '%';
-        /* The third caveat used to name the American figures to make "nobody lives the
-           average day" concrete. The copy no longer does, so these two slots may not
-           exist — each is written only if its element is actually in the markup, which
-           keeps the copy free to drop or restore them without touching this file. */
+        put('gl-f-share', Math.round(sl.mu / DAY * 100) + '%');
+        put('gl-f-sleep', sl.pct + '%');
+        put('gl-f-paid', pd.pct + '%');
         var us = R.filter(function (c) { return c.name === 'United States'; })[0];
-        var usSleep = $('gl-f-us-sleep'), usPaid = $('gl-f-us-paid');
-        if (us && usSleep) usSleep.textContent = hmS(us.m.PCA);
-        if (us && usPaid) usPaid.textContent = hmS(us.m.PAW);
+        if (us) {
+            put('gl-f-us-sleep', hmS(us.m.PCA));
+            put('gl-f-us-paid', hmS(us.m.PAW));
+        }
     })();
 
     // ══ THE BRAID ═════════════════════════════════════════════════════════════
