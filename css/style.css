@@ -339,6 +339,15 @@ body {
    the word touches the column wall. Below 900px the column becomes the page width and
    the same rule lets it run on one line, so no break is authored into the markup. */
 #sec-ranks .sec-title { font-size: clamp(1.6rem, 2.9vw, 2.4rem); line-height: 1.02; }
+/* Four authored lines in a 210px column. Measured at 1440: "Four measures." 105px,
+   "Four winners." 93px, "No country finishes first twice." 207px, and "Every strength comes
+   with a trade-off." 260px — so the last one wraps above 900px and nothing here can prevent
+   it. `text-wrap: balance` was tried and is a no-op: Chrome stops balancing past four lines
+   and this block renders five. Fitting it would need 0.75rem against the 0.93rem the other
+   leads use, which is a bigger cost than one soft wrap. "Every strength has a trade-off."
+   measures 206px and would fit, if the wording is ever up for negotiation.
+   Note also that "No country finishes first twice." clears by 3px, so this column has no
+   room left at all — any longer line added here will wrap. */
 .section.notes .lead { font-size: 0.93rem; }
 .section.notes .body { font-size: 0.86rem; }
 .section.notes .rule { display: none; }
@@ -1873,4 +1882,22 @@ html.bdg-locked, html.bdg-locked body { overflow: hidden; }
     line-height: 1.3; letter-spacing: -0.01em;
     color: var(--ink-deep);
     text-align: center; text-wrap: balance;
+}
+/* A beat that asks instead of stating. The accent is reserved for the page's questions,
+   which is the whole reason .beat is ink; this is the exception that proves the rule
+   rather than breaking it. Slightly larger, because it is a hook and has to carry the
+   reader past a section boundary into the next chart. */
+.beat.ask {
+    color: var(--accent);
+    font-size: clamp(1.3rem, 3vw, 1.85rem);
+    /* 42ch, not the base 34ch: the longer of the two authored lines is "Why doesn't
+       everyone live like Finland?" at 38 characters, and at 34ch it wrapped to a third
+       line at every width — an authored break plus an unwanted one. */
+    max-width: 42ch;
+}
+/* The beat that ends a chapter. Twice the air, because nothing follows it but a chapter
+   mark, and the pause is the point. */
+.beat.close {
+    margin: clamp(4rem, 8vw, 6.5rem) auto;
+    max-width: 30ch;
 }

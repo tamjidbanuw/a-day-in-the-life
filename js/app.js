@@ -1105,12 +1105,12 @@ function initMetricStrips() {
             host: 'mt-happy', read: 'mt-happy-read', cap: 'mt-happy-cap', badge: 'ladder',
             get: c => c.happy, fmt: v => v.toFixed(2), unit: '',
             ticks: [4, 5, 6, 7, 8], tickFmt: v => String(v),
-            /* One line on what the chart is for. The Cantril definition, the n=34 caveat and
-               the citation used to be appended here; they are now a .source note under the
-               figure in index.html, so this caption answers "what am I looking at" and
-               nothing else. */
-            capTitle: 'How the 34 countries rate their own lives',
-            capBody: 'Each mark is one country’s average answer on the 0–10 ladder.'
+            /* What a mark is, then which way is up. The Cantril definition, the n=34 caveat
+               and the citation used to be appended here; they are now a .source note under
+               the figure in index.html, so this caption answers "what am I looking at" and
+               nothing else. capTitle sets as its own line: .fig-cap b is display:block. */
+            capTitle: 'Every dot is one country.',
+            capBody: 'The farther right, the happier people rate their own lives.'
         }
     ];
 

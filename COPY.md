@@ -19,7 +19,7 @@ hand the file back, and it goes into the right place in the page.
 
 | | blocks |
 |---|---|
-| **Part 1 — written in the page** | 96 |
+| **Part 1 — written in the page** | 95 |
 | Cover, chapter marks, section titles and prose | |
 | The Chapter One at-a-glance sheet | |
 | Captions, callouts, the stat band, the footer | |
@@ -255,7 +255,7 @@ the country’s score.
 
 ### 49. Chart · label  `[mt-lab]`
 
-0 = worst life imaginable · 10 = best life imaginable
+Worst Life Imaginable ↔ Best Life Imaginable
 
 ### 50. Figure · source note  `[source]`
 
@@ -267,8 +267,8 @@ ladder score. The axis spans only the range of these countries, not the full
 
 ### 51. Transition · the hinge  `[beat]`
 
-Happiness gives us one answer.
-But no single measure tells us where life is best.
+If Finland is happiest…
+Why doesn’t everyone live like Finland?
 
 ### 52. Section · eyebrow  `[sec-num]`
 
@@ -280,55 +280,52 @@ No Country Wins Everything
 
 ### 54. Section · lead  `[lead]`
 
-Mexico works the most.
-France sleeps the most.
-Norway has the most leisure.
-Finland is happiest.
-
-### 55. Section · body  `[body]`
-
-Four measures. Four winners.
+Four measures.
+Four winners.
 No country finishes first twice.
+Every strength comes with a trade-off.
 
-### 56. Caption  `[fig-cap]`
+### 55. Caption  `[fig-cap]`
 
-Each line follows one country across four rankings. The crossings
-tell the story. Nobody stays on top.
+Every line follows one country across four rankings.
+The crossings tell the story.
+Nobody stays on top.
 
-### 57. Figure · source note  `[source]`
+### 56. Figure · source note  `[source]`
 
 Ranks are by size, not by merit: 1st on Work is the longest
 working day, not the best one. 34 countries, not 35 — Luxembourg keeps a time
 diary but has no happiness score. Time use: OECD Time Use Database, both sexes.
 Happiness: World Happiness Report, 0–10 ladder.
 
-### 58. Chapter close · the payoff  `[beat]`
+### 57. Chapter close · the payoff  `[beat]`
 
-There is no perfect country — only different ways of living well.
+There is no perfect country—
+only different ways of living well.
 
-### 59. Chapter · eyebrow  `[chapter-eyebrow]`
+### 58. Chapter · eyebrow  `[chapter-eyebrow]`
 
 Chapter Three
 
-### 60. Chapter · NAME  `[chapter-name]`
+### 59. Chapter · NAME  `[chapter-name]`
 
 One Country Writes Everything Down
 
-### 61. Chapter · blurb  `[chapter-blurb]`
+### 60. Chapter · blurb  `[chapter-blurb]`
 
 Until now, every country has been reduced to five numbers. One
 country lets us open the entire day — every minute, every activity, nothing left
 hidden.
 
-### 62. Section · eyebrow  `[sec-num]`
+### 61. Section · eyebrow  `[sec-num]`
 
 A closer look
 
-### 63. Section · TITLE  `[sec-title]`
+### 62. Section · TITLE  `[sec-title]`
 
 What happens inside 1,440 minutes?
 
-### 64. Section · body  `[body]`
+### 63. Section · body  `[body]`
 
 The United States isn’t shown because it’s typical.
 It’s shown because it’s unique. Among the countries in this story, it is
@@ -336,22 +333,22 @@ the only one that publishes time diaries in enough detail to rebuild an entire d
 For everyone else, the day ends as five numbers. Here, we can open every
 minute.
 
-### 65. Chart · card head  `[card-head]`
+### 64. Chart · card head  `[card-head]`
 
 An ordinary American day
 Every minute included
 
-### 66. Caption  `[fig-cap]`
+### 65. Caption  `[fig-cap]`
 
 This is one complete day reconstructed from more than 170,000 real
 time diaries. Nothing has been removed. Every minute belongs somewhere.
 
-### 67. Chart · card head  `[card-head]`
+### 66. Chart · card head  `[card-head]`
 
 From five activities…
 to forty-four
 
-### 68. Caption  `[fig-cap]`
+### 67. Caption  `[fig-cap]`
 
 The five broad categories you’ve seen throughout this story
 unfold into 44 everyday activities. Sleeping. Working. Driving. Cooking.
@@ -364,83 +361,83 @@ for the United States elsewhere on this page — ATUS counts travel as its
 own activity where the OECD folds it into whatever the travel was for. Read the
 shares within this section, not across sections.
 
-### 69. Callout · head  `[callout-head]`
+### 68. Callout · head  `[callout-head]`
 
 The biggest surprise
 
-### 70. callout-ic  `[callout-ic]`
+### 69. callout-ic  `[callout-ic]`
 
 ✦
 
-### 71. Editorial beat  `[beat]`
+### 70. Editorial beat  `[beat]`
 
 Nothing is missing.
 Every minute of the day has been
 accounted for.
 
-### 72. Chart · card head  `[card-head]`
+### 71. Chart · card head  `[card-head]`
 
 How a day changes across life
 
-### 73. Caption  `[fig-cap]`
+### 72. Caption  `[fig-cap]`
 
 A teenager’s day doesn’t look like a retiree’s.
 These curves don’t follow one person through life — they compare
 different generations living during the same years.
 
-### 74. Callout · head  `[callout-head]`
+### 73. Callout · head  `[callout-head]`
 
 The same 24 hours.
 Different priorities.
+
+### 74. callout-ic  `[callout-ic]`
+
+✦
 
 ### 75. callout-ic  `[callout-ic]`
 
 ✦
 
-### 76. callout-ic  `[callout-ic]`
-
-✦
-
-### 77. Chapter · eyebrow  `[chapter-eyebrow]`
+### 76. Chapter · eyebrow  `[chapter-eyebrow]`
 
 Chapter Four
 
-### 78. Chapter · NAME  `[chapter-name]`
+### 77. Chapter · NAME  `[chapter-name]`
 
 Somebody Lives Like You
 
-### 79. Chapter · blurb  `[chapter-blurb]`
+### 78. Chapter · blurb  `[chapter-blurb]`
 
 No two countries spend their day exactly the same way. But
 somewhere in this dataset, one of them comes surprisingly close to yours.
 
-### 80. Section · eyebrow  `[sec-num]`
+### 79. Section · eyebrow  `[sec-num]`
 
 Find your match
 
-### 81. Section · TITLE  `[sec-title]`
+### 80. Section · TITLE  `[sec-title]`
 
 Somewhere out there,
 a country lives like you
 
-### 82. Section · lead  `[lead]`
+### 81. Section · lead  `[lead]`
 
 All 35 countries are scored on four measures: free time,
 rest, income and openness.
 
-### 83. Instruction pill  `[howto]`
+### 82. Instruction pill  `[howto]`
 
 Four questions. Drag each dial to your own life, then see your
 closest match.
 
-### 84. Caption  `[fig-cap]`
+### 83. Caption  `[fig-cap]`
 
 Find Your Match
 Nearest-neighbour match on four ranked scores. Your answers place you in the same
 0–100 space as the 35 countries; the closest by straight-line distance wins.
 Illustrative, not a ranking.
 
-### 85. Source note  `[source]`
+### 84. Source note  `[source]`
 
 The four scores are an illustrative index built from the same sources used throughout:
 daily free-time share and daily sleep and self-care (OECD Time Use), GDP per person,
@@ -449,28 +446,28 @@ thirty-five rather than by its raw value, because three of the four measures hav
 country sitting so far from the rest that a raw scale would flatten everyone else
 against the floor. Meant for exploring rather than ranking.
 
-### 86. Section · eyebrow  `[sec-num]`
+### 85. Section · eyebrow  `[sec-num]`
 
 Right now
 
-### 87. Section · TITLE  `[sec-title]`
+### 86. Section · TITLE  `[sec-title]`
 
 While you read this
 
-### 88. Section · lead  `[lead]`
+### 87. Section · lead  `[lead]`
 
 Everything above is an average of a day. This one is happening, and you are
 somewhere in the middle of it.
 
-### 89. Live clock · label  `[rn-label]`
+### 88. Live clock · label  `[rn-label]`
 
 Right now, where you are
 
-### 90. Live clock · label  `[rn-sub]`
+### 89. Live clock · label  `[rn-sub]`
 
 The whole day, midnight to midnight
 
-### 91. Caption  `[fig-cap]`
+### 90. Caption  `[fig-cap]`
 
 This Hour
 Stacked bar, share of the American population in each activity at your current local
@@ -479,28 +476,28 @@ hour. American Time Use Survey microdata 2003–2015, 3,347,093 activity records
 is the only diary data here that records times of day, so the clock is yours and the
 behaviour is American.
 
-### 92. Section · TITLE  `[sec-title]`
+### 91. Section · TITLE  `[sec-title]`
 
 Same hours.
 Different lives.
 
-### 93. Section · lead  `[lead]`
+### 92. Section · lead  `[lead]`
 
 Everyone is handed the same 1,440 minutes. What changes, from Osaka to
 Mexico City to Rome, is what becomes of them.
 
-### 94. Section · body  `[body]`
+### 93. Section · body  `[body]`
 
 Every person receives the same 1,440 minutes. What changes is how those minutes become
 work, family, rest, opportunity, and connection. Somewhere in these thirty-five
 countries, someone is living a day that looks remarkably like yours. The question
 is—which life would you choose?
 
-### 95. site-footer  `[site-footer]`
+### 94. site-footer  `[site-footer]`
 
 A Day in the Life of the World · A VizCon 2026 entry
 
-### 96. Footer · sources  `[src]`
+### 95. Footer · sources  `[src]`
 
 Sources. Daily time use: OECD Time Use Database (minutes per day, both sexes;
 “Work” combines paid and unpaid work), all 35 countries it covers. Happiness: World
@@ -669,7 +666,7 @@ Finland leads at 7.82, India trails at 3.78. All 34 average 6.45.
 
 ### Happiness strip · caption  `[app.js:1238 → #mt-happy-cap]`
 
-How the 34 countries rate their own lives Each mark is one country’s average answer on the 0–10 ladder.
+Every dot is one country. The farther right, the happier people rate their own lives.
 
 ### Rank chart · readout  `[app.js:1575 → #pc-read]`
 

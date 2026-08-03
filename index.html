@@ -293,13 +293,12 @@
 
             <div class="viz">
                 <div class="mt-stage">
-                    <!-- The ladder's two ends in words, which is the question people were
-                         actually asked. "Life satisfaction / 0 to 10" named the measure without
-                         saying what either end meant. The numbers stay attached to the words
-                         rather than being printed at the ends of the axis, because this axis is
-                         cropped to the range of these 34 countries — its left end is India at
-                         3.78, not 0, so labelling the ends "0" and "10" would be false. -->
-                    <p class="mt-lab">0 = worst life imaginable &middot; 10 = best life imaginable</p>
+                    <!-- The ladder's two ends in words, which is what respondents were actually
+                         asked. Dropping the 0 and the 10 also settles a correctness problem the
+                         numbered version had: this axis is cropped to the range of these 34
+                         countries, so its ends are India at 3.78 and Finland at 7.82. Naming the
+                         directions rather than the endpoints is both plainer and true. -->
+                    <p class="mt-lab">Worst Life Imaginable &nbsp;&harr;&nbsp; Best Life Imaginable</p>
                     <div class="mt-strip" id="mt-happy"></div>
                     <p class="mt-read" id="mt-happy-read"></p>
                 </div>
@@ -325,10 +324,15 @@
              badge went with it, which is why the collection is seven rather than eight.
              GDP itself is still in the data and still drives the quiz's Income axis. -->
 
-        <!-- The hinge the scatter used to be. .beat rather than a new class: it states rather
-             than asks, which is the distinction .beat already draws against the accent asks. -->
-        <p class="beat reveal">Happiness gives us one answer.<br>
-            But no single measure tells us where life is best.</p>
+        <!-- The hinge the scatter used to be, and the hook into the rankings. It replaced
+             "Happiness gives us one answer. / But no single measure tells us where life is
+             best." — which answered itself. This one does not, on purpose: nothing follows it
+             but the chart.
+
+             .beat.ask, because .beat is ink by its own reasoning ("it states rather than
+             asks") and this asks. The modifier switches the colour and nothing else. -->
+        <p class="beat ask reveal">If Finland is happiest&hellip;<br>
+            Why doesn&rsquo;t everyone live like Finland?</p>
 
         <!-- ═══ 6 · NOBODY LEADS EVERYWHERE ═════════════════ -->
         <section class="section notes reveal" id="sec-ranks">
@@ -336,15 +340,15 @@
                 <span class="sec-num">One discovery</span>
                 <h2 class="sec-title">No Country Wins Everything</h2>
                 <hr class="rule">
-                <!-- The four winners as a list, one per line, so the reader can see there are four
-                     of them before reading why that matters. The old lead asked a rhetorical
-                     question and the body buried the names mid-paragraph. -->
-                <p class="lead"><strong>Mexico</strong> works the most.<br>
-                    <strong>France</strong> sleeps the most.<br>
-                    <strong>Norway</strong> has the most leisure.<br>
-                    <strong>Finland</strong> is happiest.</p>
-                <p class="body">Four measures. Four winners.<br>
-                    No country finishes first twice.</p>
+                <!-- Four lines and no paragraph. The four winners were named here a moment ago,
+                     but #pc-read inside the panel already prints "Work Mexico · Sleep France ·
+                     Leisure Norway · Happiness Finland" a few inches to the right, so the column
+                     was restating the chart's own readout. It states the rule instead and lets
+                     the chart supply the names. There is no .body: this is the whole column. -->
+                <p class="lead">Four measures.<br>
+                    Four winners.<br>
+                    No country finishes first twice.<br>
+                    Every strength comes with a trade-off.</p>
             </div>
 
             <div class="viz">
@@ -353,8 +357,9 @@
                     <div class="pc-chart" id="pc-chart"></div>
                     <div class="pc-pick" id="pc-pick"></div>
                 </div>
-                <p class="fig-cap">Each line follows one country across four rankings. The crossings
-                    tell the story. Nobody stays on top.</p>
+                <p class="fig-cap">Every line follows one country across four rankings.<br>
+                    The crossings tell the story.<br>
+                    Nobody stays on top.</p>
                 <!-- Same split as the happiness strip: the caption says what to look at, the source
                      note keeps the method. The rank-is-not-merit caveat moved down here rather than
                      out, because it is the one misreading this chart actively invites. -->
@@ -366,8 +371,10 @@
         </section>
 
         <!-- The chapter's payoff. Sits outside #sec-ranks so it reads as the chapter closing
-             rather than as another note about the chart. -->
-        <p class="beat reveal">There is no perfect country &mdash; only different ways of living well.</p>
+             rather than as another note about the chart. .beat.close doubles the air around it;
+             the break falls at the em dash, where the sentence turns. -->
+        <p class="beat close reveal">There is no perfect country&mdash;<br>
+            only different ways of living well.</p>
 
         <!-- ═══ CHAPTER THREE · INSIDE ONE BAR ══════════════ -->
         <div class="chapter-mark reveal">
