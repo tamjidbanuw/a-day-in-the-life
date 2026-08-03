@@ -153,12 +153,11 @@ Explore the world’s days—and discover what changes… and what doesn’t.
 
 ### 26. Instruction pill  `[howto]`
 
-Hover to explore • Click to compare • Press Esc to clear
+Choose a country. Follow its day.
 
 ### 27. Chart · TITLE  `[h3]`
 
-Thirty-five countries.
-One shared clock.
+Thirty-Five Ordinary Days
 
 ### 28. Chart · standfirst  `[sub]`
 
