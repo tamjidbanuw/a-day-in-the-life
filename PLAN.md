@@ -237,6 +237,13 @@ hairline. The block totals in the panel above carry the cross-block comparison.
 - Every section carries `.reveal` for scroll-in fade, via IntersectionObserver.
 
 ### Known structural problems
+- **Chapter One names no source.** Nothing inside `#sec-glance` says where its numbers come
+  from. The line that carried it — "OECD Time Use Database, both sexes, average minutes per
+  day" — sat in `#sec-day`'s day card caption and went when that section was cut; the braid's
+  own caption went later, and it never held a source anyway. The whole chapter is one OECD
+  extract and is now cited only in the footer's `Sources` line. The page is not uncited, but
+  the chapter is, and cited sources are 15% of the VizCon score. Cheapest fix: a source line
+  under the day card, where the three caveats already sit.
 - **Unpaid work can no longer be compared by eye.** This is the one real cost of cutting
   `#sec-work`, and it is worth knowing rather than rediscovering. That chart stacked two
   segments from a common left edge, so the unpaid band could be read across all 35 countries
