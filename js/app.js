@@ -1105,12 +1105,12 @@ function initMetricStrips() {
             host: 'mt-happy', read: 'mt-happy-read', cap: 'mt-happy-cap', badge: 'ladder',
             get: c => c.happy, fmt: v => v.toFixed(2), unit: '',
             ticks: [4, 5, 6, 7, 8], tickFmt: v => String(v),
-            capTitle: 'Happiness',
-            capBody: 'Dot plot, one mark per country, on the 0–10 Cantril ladder: respondents place ' +
-                'their own life between the worst possible (0) and the best possible (10), and the ' +
-                'score is the national average. World Happiness Report. 34 countries: Luxembourg ' +
-                'keeps a time diary but has no ladder score. The scale spans only the range of these ' +
-                'countries, not the full 0–10.'
+            /* One line on what the chart is for. The Cantril definition, the n=34 caveat and
+               the citation used to be appended here; they are now a .source note under the
+               figure in index.html, so this caption answers "what am I looking at" and
+               nothing else. */
+            capTitle: 'How the 34 countries rate their own lives',
+            capBody: 'Each mark is one country’s average answer on the 0–10 ladder.'
         }
     ];
 
@@ -1180,10 +1180,16 @@ function initMetricStrips() {
             aria-label="${rows.length} countries on one scale">${s}</svg>`;
         const el = host.querySelector('svg');
 
+        /* Three labelled lines rather than one sentence. As prose — "Finland leads at 7.82,
+           Bulgaria trails at 5.37. All 34 average 6.45." — the three numbers had to be dug
+           out of the grammar; stacked and labelled, the top, the bottom and the middle of the
+           scale read at a glance. .mt-read carries a min-height sized to hold all three, so
+           swapping to the one-line hover state does not move the caption underneath. */
         const idle = () => {
-            read.innerHTML = `<b>${top.name}</b> leads at <em>${cfg.fmt(cfg.get(top))}${cfg.unit}</em>,
-                <b>${bottom.name}</b> trails at <em>${cfg.fmt(cfg.get(bottom))}${cfg.unit}</em>.
-                All ${rows.length} average <em>${cfg.fmt(mean)}${cfg.unit}</em>.`;
+            read.innerHTML =
+                `<b>${top.name}</b> <em>${cfg.fmt(cfg.get(top))}${cfg.unit}</em><br>` +
+                `<b>${bottom.name}</b> <em>${cfg.fmt(cfg.get(bottom))}${cfg.unit}</em><br>` +
+                `Average across all ${rows.length} <em>${cfg.fmt(mean)}${cfg.unit}</em>`;
         };
         function show(name) {
             const c = rows.find(x => x.name === name);

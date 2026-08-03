@@ -264,8 +264,11 @@
         <div class="chapter-mark reveal">
             <span class="chapter-eyebrow">Chapter Two</span>
             <h2 class="chapter-name">The Only Number That Asks</h2>
-            <p class="chapter-blurb">Every chart so far measured what people did. This one asks what
-                they feel. And somehow, that answer follows patterns we can measure.</p>
+            <!-- "And somehow, that answer follows patterns we can measure" used to close this.
+                 It was pointing at the GDP scatter, which is gone, so the chapter no longer
+                 promises a pattern it does not go on to show. -->
+            <p class="chapter-blurb">Every chart so far measured what people do.<br>
+                This one asks how life feels.</p>
             <div class="chapter-rule"></div>
         </div>
 
@@ -277,12 +280,15 @@
                 <span class="sec-num">A simple question</span>
                 <h2 class="sec-title">Happiness isn&rsquo;t measured.<br>It&rsquo;s answered.</h2>
                 <hr class="rule">
-                <p class="lead">Imagine a ladder. The top rung is the best life you can imagine. The
-                    bottom is the worst. Where would you place yourself today?</p>
-                <p class="body">Thousands of people in every country answer that single question. Their
-                    average becomes the country&rsquo;s happiness score. Unlike every other measure in
-                    this story, happiness isn&rsquo;t observed. It&rsquo;s self-reported. That makes it
-                    the most human number on this page.</p>
+                <!-- Flowed, not hard-broken, and that is measured rather than preferred: this
+                     sticky column is 228px wide at desktop, while these sentences need 206, 268,
+                     165, 266, 328 and 295px. Four of the six would wrap anyway, so authored
+                     breaks would only add a second, ragged set of them. The rank section below
+                     keeps its breaks because its lines are short enough to hold. -->
+                <p class="lead">Imagine a ladder from 0 to 10. The top is the best life you can
+                    imagine. The bottom is the worst. Where would you place yourself today?</p>
+                <p class="body">Thousands of people answer the same question. Their average becomes
+                    the country&rsquo;s score.</p>
             </div>
 
             <div class="viz">
@@ -292,6 +298,15 @@
                     <p class="mt-read" id="mt-happy-read"></p>
                 </div>
                 <p class="fig-cap" id="mt-happy-cap"></p>
+                <!-- The caption above states what the chart shows in one line; the method and the
+                     citation live down here, out of the narrative but still on the page. The
+                     caption used to carry all of it, which put the Cantril definition and the
+                     Luxembourg caveat in the same breath as "what am I looking at". -->
+                <p class="source">The Cantril ladder: respondents place their own life between the
+                    worst possible (0) and the best possible (10), and the score is the national
+                    average. 34 countries, not 35 &mdash; Luxembourg keeps a time diary but has no
+                    ladder score. The axis spans only the range of these countries, not the full
+                    0&ndash;10. World Happiness Report.</p>
             </div>
         </section>
 
@@ -304,19 +319,26 @@
              badge went with it, which is why the collection is seven rather than eight.
              GDP itself is still in the data and still drives the quiz's Income axis. -->
 
+        <!-- The hinge the scatter used to be. .beat rather than a new class: it states rather
+             than asks, which is the distinction .beat already draws against the accent asks. -->
+        <p class="beat reveal">Happiness gives us one answer.<br>
+            But no single measure tells us where life is best.</p>
+
         <!-- ═══ 6 · NOBODY LEADS EVERYWHERE ═════════════════ -->
         <section class="section notes reveal" id="sec-ranks">
             <div class="txt">
                 <span class="sec-num">One discovery</span>
                 <h2 class="sec-title">No Country Wins Everything</h2>
                 <hr class="rule">
-                <p class="lead">We often imagine there must be one country that has figured life out.
-                    There isn&rsquo;t.</p>
-                <p class="body">Across four measures &mdash; sleep, work, leisure, and happiness &mdash;
-                    every leader eventually gives up first place. <strong>Mexico</strong> works the
-                    longest. <strong>France</strong> sleeps the most. <strong>Norway</strong> enjoys the
-                    most leisure. <strong>Finland</strong> reports the highest happiness. Four different
-                    countries, four different strengths. No single nation leads them all.</p>
+                <!-- The four winners as a list, one per line, so the reader can see there are four
+                     of them before reading why that matters. The old lead asked a rhetorical
+                     question and the body buried the names mid-paragraph. -->
+                <p class="lead"><strong>Mexico</strong> works the most.<br>
+                    <strong>France</strong> sleeps the most.<br>
+                    <strong>Norway</strong> has the most leisure.<br>
+                    <strong>Finland</strong> is happiest.</p>
+                <p class="body">Four measures. Four winners.<br>
+                    No country finishes first twice.</p>
             </div>
 
             <div class="viz">
@@ -325,14 +347,22 @@
                     <div class="pc-chart" id="pc-chart"></div>
                     <div class="pc-pick" id="pc-pick"></div>
                 </div>
-                <p class="fig-cap">Every line follows one country across four rankings. When lines
-                    cross, countries trade places. The lesson isn&rsquo;t who finishes first &mdash; it
-                    is that nobody stays there. <b>Ranks are by size, not by merit</b>: 1st on Work is
-                    the longest working day, not the best one. 34 countries, not 35: Luxembourg keeps a
-                    time diary but has no happiness score. Time use: OECD Time Use Database, both sexes.
+                <p class="fig-cap">Each line follows one country across four rankings. When lines
+                    cross, countries trade places. First means &ldquo;most,&rdquo; not necessarily
+                    &ldquo;best.&rdquo;</p>
+                <!-- Same split as the happiness strip: the caption says what to look at, the source
+                     note keeps the method. The rank-is-not-merit caveat moved down here rather than
+                     out, because it is the one misreading this chart actively invites. -->
+                <p class="source"><b>Ranks are by size, not by merit</b>: 1st on Work is the longest
+                    working day, not the best one. 34 countries, not 35 &mdash; Luxembourg keeps a time
+                    diary but has no happiness score. Time use: OECD Time Use Database, both sexes.
                     Happiness: World Happiness Report, 0&ndash;10 ladder.</p>
             </div>
         </section>
+
+        <!-- The chapter's payoff. Sits outside #sec-ranks so it reads as the chapter closing
+             rather than as another note about the chart. -->
+        <p class="beat reveal">There is no perfect country &mdash; only different ways of living well.</p>
 
         <!-- ═══ CHAPTER THREE · INSIDE ONE BAR ══════════════ -->
         <div class="chapter-mark reveal">

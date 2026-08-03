@@ -75,7 +75,7 @@ Cover, opener, ten sections across four chapters, close. Reading order top to bo
 | | | **CHAPTER ONE · Sleep Is the Only Constant** | | |
 | 1 | `#sec-glance` | *(no eyebrow or title — the chapter mark above is the heading)* | One sheet, and now the whole chapter: an instruction pill, the live readout, then a ribbon braid of all 35 days on the dark panel with the same-clock card and the caveats beside a ranking sortable on five measures. One selection drives all three | 2.1 |
 | | | **CHAPTER TWO · The Only Number Here That Asks** | | |
-| 5 | `#sec-happy` | The one that asks / **Happiness is a question, not a reading** | Wide strip: 34 marks on the 0–10 ladder, average called out, vertical leaders with tiered labels | 4.1 |
+| 5 | `#sec-happy` | A simple question / **Happiness isn't measured. It's answered.** | Wide strip: 34 marks on the 0–10 ladder, average called out, vertical leaders with tiered labels; readout stacks leader / trailer / average | 4.1 |
 | 6 | `#sec-ranks` | Nobody leads / **No Country Wins Everything** | Rank slope chart, 34 countries × 4 measures; the four that come first are drawn, the other 30 ghosted until hovered | 4.2 |
 | | | **CHAPTER THREE · One Country Writes Everything Down** | | |
 | 8 | `#sec-leisure` | Every minute / **One country writes down all 1,440 minutes** | Three cards: the day as one stacked bar, 44 activities grouped under the five blocks, then four activities by age band; plus two callouts | 5.1 |
@@ -325,7 +325,8 @@ hairline. The block totals in the panel above carry the cross-block comparison.
   underlying problem.
 - **Chapter weight is still uneven**: One holds one unit, Two two, Three one, Four one. Two lost
   a section with the money scatter, so it is now a strip and a slope chart — one measure asked,
-  then four measures ranked.
+  then four measures ranked, hinged by a `.beat` where the scatter used to be and closed by a
+  second one.
 - **Figure numbers are not printed** — captions are name-only. The `Fig` column in the table above
   is a reference for this document, nothing the reader sees. The old numbering ran 1.1–6.1 in
   plain order, tracking neither chapter nor section, and was never cited in the prose.

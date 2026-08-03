@@ -653,7 +653,12 @@ body {
 .mt-strip svg { width: 100%; height: auto; display: block; overflow: visible; }
 .mt-read {
     margin-top: 0.6rem; padding-top: 0.7rem; border-top: 1px solid var(--line);
-    font-size: 0.88rem; line-height: 1.5; color: var(--ink-soft); min-height: 3rem;
+    /* min-height holds the taller of the two states. At rest this is three stacked lines —
+       leader, trailer, average — and hovering a country replaces them with one sentence;
+       without the reservation the caption and source note below jump on every hover.
+       Measured, not derived: box-sizing is border-box here, so the three lines plus the
+       0.7rem padding and the rule render 76px. 4rem was tried and left a 12px jump. */
+    font-size: 0.88rem; line-height: 1.5; color: var(--ink-soft); min-height: 4.75rem;
 }
 .mt-read b { color: var(--ink); }
 .mt-read em { font-style: normal; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
@@ -1804,9 +1809,15 @@ html.bdg-locked, html.bdg-locked body { overflow: hidden; }
 }
 
 /* ── an editorial beat between charts ─────────────────────────────────────────
-   One sentence, no chart and no icon, with air around it: a deliberate pause in a
-   run of visualisations. Ink rather than accent, because it states something
-   rather than asking it — the accent is reserved for the transition questions. */
+   One or two sentences, no chart and no icon, with air around it: a deliberate pause
+   in a run of visualisations. Ink rather than accent, because it states something
+   rather than asking it.
+
+   Three of them now. Chapter Two uses two — a hinge between the happiness strip and
+   the rankings, standing where the GDP scatter used to, and a closing payoff after
+   the rankings. Chapter Three uses one, before the age chart. They sit as siblings of
+   the sections rather than inside them, which is what makes them read as the page
+   speaking rather than a note about the chart above. */
 .beat {
     margin: clamp(2.25rem, 5vw, 3.5rem) auto;
     max-width: 34ch;
