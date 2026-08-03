@@ -88,7 +88,9 @@
         <aside class="badges" id="badges" aria-label="Your discoveries">
             <div class="badges-head">
                 <span class="badges-title">Your discoveries</span>
-                <span class="badges-count" id="badge-count">0 of 8 discovered</span>
+                <!-- Placeholder only: Badges.paint() overwrites this from BADGES.length,
+                     so the number here just has to be right before the script runs. -->
+                <span class="badges-count" id="badge-count">0 of 7 discovered</span>
                 <!-- the rules of the game, folded behind an i: worth reading once,
                      not worth a standing paragraph in a panel this size -->
                 <button class="badges-info" id="badges-info" type="button"
@@ -111,7 +113,7 @@
                 </button>
             </div>
             <div class="badges-body" id="badges-body">
-                <p class="badges-note" id="badges-note" hidden>Hidden throughout this story are eight
+                <p class="badges-note" id="badges-note" hidden>Hidden throughout this story are seven
                     discoveries. Explore the charts, hover over countries, answer questions, and follow
                     the data. Every discovery reveals an insight that appears nowhere else. One of them
                     isn’t hidden in a chart at all.</p>
@@ -293,30 +295,14 @@
             </div>
         </section>
 
-        <!-- ═══ 5 · WHAT THE SCORE TRACKS ═══════════════════ -->
-        <!-- Was a second dot plot, life expectancy, drawn by the same code as the
-             happiness strip above. Life expectancy is gone from the story, so the
-             chapter follows its one soft measure with the hardest thing that
-             predicts it. initMoneyMood() in js/app.js. -->
-        <section class="section notes reveal" id="sec-money">
-            <div class="txt">
-                <span class="sec-num">A surprising pattern</span>
-                <h2 class="sec-title">Feelings follow the money&hellip;<br>more than you&rsquo;d expect.</h2>
-                <hr class="rule">
-                <p class="lead">If happiness were purely personal, countries would scatter randomly
-                    across the chart. They don&rsquo;t.</p>
-                <p class="body">As income rises, happiness usually rises with it. The relationship
-                    isn&rsquo;t perfect. Some countries are happier than their wealth predicts. Others
-                    are less happy despite their income. Money doesn&rsquo;t explain everything. But it
-                    explains far more than many people expect.</p>
-            </div>
+        <!-- The GDP-against-happiness scatter stood here, "Feelings follow the money…
+             more than you'd expect", with r = +0.91 over 34 countries. Removed with the
+             income argument: Chapter Two now goes from the happiness strip straight to
+             the rankings, and asks what a day buys without pricing it.
 
-            <div class="viz">
-                <div class="sc-stage" id="mm-chart"></div>
-                <p class="sc-read" id="mm-read"></p>
-                <p class="fig-cap" id="mm-cap"></p>
-            </div>
-        </section>
+             initMoneyMood(), the .sc-dot/.sc-fit/.sc-name styles and the "Off the Line"
+             badge went with it, which is why the collection is seven rather than eight.
+             GDP itself is still in the data and still drives the quiz's Income axis. -->
 
         <!-- ═══ 6 · NOBODY LEADS EVERYWHERE ═════════════════ -->
         <section class="section notes reveal" id="sec-ranks">

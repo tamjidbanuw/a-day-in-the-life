@@ -44,7 +44,7 @@ Rules to keep:
 - SVG and canvas presentation attributes reject `var()`, so anything drawn asks for the
   value through `token()` rather than keeping a copy. `initRightNow()` builds its `HEX`
   map that way, and `js/dotfield.js` reads `--accent` and `--neutral` the same way.
-- Fig 4.2 gives each country a colour from a **grey → red ramp ordered by total work**,
+- The rank slope chart (Fig 4.2) gives each country a colour from a **grey → red ramp ordered by total work**,
   so colour means "how much of the day is spoken for". Never a rainbow. At 34 countries
   the ramp alone cannot separate the four highlighted lines, which is why each winner's
   name is printed at its own first-place dot.
@@ -76,8 +76,7 @@ Cover, opener, ten sections across four chapters, close. Reading order top to bo
 | 1 | `#sec-glance` | *(no eyebrow or title — the chapter mark above is the heading)* | One sheet, and now the whole chapter: an instruction pill, the live readout, then a ribbon braid of all 35 days on the dark panel with the same-clock card and the caveats beside a ranking sortable on five measures. One selection drives all three | 2.1 |
 | | | **CHAPTER TWO · The Only Number Here That Asks** | | |
 | 5 | `#sec-happy` | The one that asks / **Happiness is a question, not a reading** | Wide strip: 34 marks on the 0–10 ladder, average called out, vertical leaders with tiered labels | 4.1 |
-| 6 | `#sec-money` | What it tracks / **The softest number has a hard predictor** | Scatter, GDP per person (log) against the ladder, least-squares fit, r printed on the chart | 4.2 |
-| 7 | `#sec-ranks` | Nobody leads / **No Country Wins Everything** | Rank slope chart, 34 countries × 4 measures; the four that come first are drawn, the other 30 ghosted until hovered | 4.3 |
+| 6 | `#sec-ranks` | Nobody leads / **No Country Wins Everything** | Rank slope chart, 34 countries × 4 measures; the four that come first are drawn, the other 30 ghosted until hovered | 4.2 |
 | | | **CHAPTER THREE · One Country Writes Everything Down** | | |
 | 8 | `#sec-leisure` | Every minute / **One country writes down all 1,440 minutes** | Three cards: the day as one stacked bar, 44 activities grouped under the five blocks, then four activities by age band; plus two callouts | 5.1 |
 | | | **CHAPTER FOUR · Somebody Lives Like You** | | |
@@ -99,17 +98,27 @@ publishes all 35 if the measure is ever wanted back.
   and say `n=34` in their own caption rather than making every other chart pay for it.
 - **Life expectancy is gone as a measure.** `#sec-life` and its dot plot went with it, and
   the rank chart dropped from five measures to four.
-- **Chapter Two changed question.** It used to hold two scores of a life, one counted and one
-  asked, and note that they agreed. Now it follows the asked one with the hardest thing that
-  predicts it: GDP per person, present for all 35 and never previously used, at r = +0.91.
+- **Chapter Two changed question twice.** It used to hold two scores of a life, one counted
+  and one asked, and note that they agreed. Losing life expectancy left it following the asked
+  score with the hardest thing that predicts it — GDP per person, at r = +0.91 — and that
+  scatter (`#sec-money`) has since been cut too. The chapter is now the happiness strip and
+  the rankings: it asks what a day buys without pricing it. The correlation is still recorded
+  under *Verified data notes* below, because it is a real finding about this data even though
+  the page no longer makes the argument.
 - **The quiz was rebuilt.** Its axes were time, health, community and connectedness, scored
   in a `dna` object baked into `data/adl-data.js` for twelve countries only. Two of those axes
   could not be rebuilt for the other 23 — health *was* life expectancy, and community came
   from World Happiness Report sub-scores the file does not carry outside the twelve. The axes
   are now free time, rest, income and openness, and the scores are computed at load as
   percentiles across all 35. `dna` and `community_raw` are left in the data file, unused.
-- **A badge was swapped, not lost.** *Amateur Actuary* (life expectancy) became *Off the Line*
-  (the money-and-mood scatter). Still eight.
+- **A badge was swapped, then lost.** *Amateur Actuary* (life expectancy) became *Off the Line*
+  (the money-and-mood scatter), which kept the count at eight. Cutting that scatter took the
+  badge with it: **the collection is seven.** It was not retargeted at a surviving chart,
+  because a badge needs a trigger, its own glyph and five strings of copy including a data
+  claim, and inventing those was more than the edit called for. Every count on the page reads
+  `BADGES.length`, so only two authored strings had to change — the pre-script placeholder in
+  `#badge-count` and `#badges-note`'s "seven discoveries". If an eighth is ever wanted,
+  Chapter Three is the place to put it: `#sec-leisure` holds three charts and has no badge.
 - **Population share moved 47.9% → 52.5%**, because the twelve already held China, India and
   the United States. `SHARE` in `js/dotfield.js` and the opener caption both follow it.
 
@@ -249,10 +258,18 @@ hairline. The block totals in the panel above carry the cross-block comparison.
   to generate.
   **The one thing that did not survive on its own: the `day` and `day5` badges.** Both were
   earned only by changing the country in `#sec-day`'s picker, so deleting it would have left
-  two of the eight unreachable and the collection impossible to finish — with nothing on
+  two of them unreachable and the collection impossible to finish — with nothing on
   screen to say so. They are wired to the glance sheet's picker now, in `initCountryBadges()`,
   and both hints still read true: it is the first chart on the page, and five countries is
   still five distinct values.
+- **The money-and-mood scatter** (`#sec-money`, `initMoneyMood`): GDP per person on a log axis
+  against the ladder, with a least-squares fit and r = +0.91 printed on the chart. Cut with the
+  income argument, so Chapter Two goes from the happiness strip straight to the rankings. With
+  it went the `.sc-stage` / `.sc-axl` / `.sc-fit` / `.sc-r` / `.sc-dot` / `.sc-name` styles, the
+  `scatter` badge glyph, `gdp` from `countryRows()`, two Part 2 entries in `COPY.md` for the
+  readout and caption, and the *Off the Line* badge — see the badge note above. `.sc-web`,
+  `.sc-tick` and `.sc-read` stayed: the leisure charts use them. **GDP itself is still live**,
+  feeding the quiz's Income axis straight from `data/adl-data.js`.
 - **Head to head** (`#sec-compare`), two-country diverging bars.
 - **The old "24" hero** in section 1 (`.day-hero`, `renderDayHero`, `DAY_SEGS`), replaced by the day card.
 - **The two-measures dot plot** (`#sec-metrics`) and the **life-vs-happiness scatter** (`#sec-thrive`,
@@ -306,7 +323,9 @@ hairline. The block totals in the panel above carry the cross-block comparison.
   it used to concede the point in those words; it now invites the hover instead ("no two
   countries divide their time the same way"), which is better copy but does not change the
   underlying problem.
-- **Chapter weight is still uneven**: One holds one unit, Two three, Three one, Four one.
+- **Chapter weight is still uneven**: One holds one unit, Two two, Three one, Four one. Two lost
+  a section with the money scatter, so it is now a strip and a slope chart — one measure asked,
+  then four measures ranked.
 - **Figure numbers are not printed** — captions are name-only. The `Fig` column in the table above
   is a reference for this document, nothing the reader sees. The old numbering ran 1.1–6.1 in
   plain order, tracking neither chapter nor section, and was never cited in the prose.
@@ -356,11 +375,14 @@ still called, for the braid and the ranking, so those figures are one line of co
   It was 3 of 12, so the finding got rarer, not commoner — 11% rather than 25%.
 - Unpaid share of all work: Italy 55% → Japan 25%, and it correlates with GDP at **r = 0.05**
   across all 35. Wealth predicts nothing about it.
-- Happiness vs **log** GDP: **r = +0.91**, n = 34 — the strongest relationship in the story, and
+- Happiness vs **log** GDP: **r = +0.91**, n = 34 — the strongest relationship in this data, and
   stronger than the life-expectancy-vs-happiness r = 0.83 the old Chapter Two rested on at n = 12.
-  Raw GDP gives 0.79; the log is not cosmetic.
-- Happiness vs leisure **r = 0.48**; vs sleep and self-care **−0.41**. Money tracks happiness far
-  better than free time does.
+  Raw GDP gives 0.79; the log is not cosmetic. **No longer shown**: this was `#sec-money`, cut
+  with the income argument. Kept here because it is measured, and because anyone reasoning about
+  what the page leaves out should know the size of what was dropped.
+- Happiness vs leisure **r = 0.48**; vs sleep and self-care **−0.41**. Money tracked happiness far
+  better than free time does — also unshown now, and the reason the chapter no longer claims
+  anything about why one country rates its life above another.
 - Total work vs leisure: **r = −0.74**. Real, but with exceptions — Norway rests most while
   ranking 22nd of 35 on work.
 - "Half your waking hours go to work" **understates it**: work is 54–73% of the day minus sleep

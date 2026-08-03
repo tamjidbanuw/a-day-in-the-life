@@ -485,16 +485,8 @@ const BADGE_ART = {
         <path class="b-ln b-c" d="M13 11h14M13 18h14M13 25h14M13 32h14"/>
         <circle cx="20" cy="14.5" r="3.6" class="b-cpf"/>
         <circle cx="20" cy="14.5" r="3.6" class="b-ln b-n o-35"/>`,
-    /* Was an hourglass, for the life-expectancy badge. That badge is gone with the
-       measure, and this is the scatter that took its place in Chapter Two: an axis
-       and a rising cloud, one mark sitting off the trend. */
-    scatter: `<circle cx="20" cy="20" r="14" class="b-cpf o-25"/>
-        <path class="b-ln b-n" d="M11 10v20h19"/>
-        <circle cx="16" cy="26" r="2.1" class="b-sf"/>
-        <circle cx="21" cy="22" r="2.1" class="b-sf"/>
-        <circle cx="26" cy="18" r="2.1" class="b-cpf"/>
-        <circle cx="30" cy="14" r="2.6" class="b-cf"/>
-        <circle cx="17" cy="15" r="2.6" class="b-cf"/>`,
+    /* The `scatter` glyph stood here, an axis and a rising cloud with one mark off the
+       trend, for the money-and-mood badge. Both went with the GDP section. */
     trail: `<circle cx="20" cy="20" r="14" class="b-spf o-22"/>
         <path class="b-ln b-n" d="M6 28c4 0 5-6 9-6s5-8 9-8 4 3 8 3"/>
         <circle cx="6" cy="28" r="2.4" class="b-sf"/>
@@ -535,10 +527,10 @@ const BADGES = [
       kicker: 'Happiness', label: 'Ladder Climber', stat: '4.04 apart',
       hint: 'Poke a country on the happiness scale',
       fact: 'Finland rates its own life 7.82 out of 10 and India rates its own 3.78. Same ten-point scale, four points apart.' },
-    { id: 'money', art: 'scatter', ring: 'ink',
-      kicker: 'Money and mood', label: 'Off the Line', stat: '$456 apart',
-      hint: 'Poke a country on the money and mood chart',
-      fact: 'Türkiye and Mexico earn within $456 a year of each other. Mexico rates its life 1.39 points higher.' },
+    /* "Off the Line" stood here — Türkiye and Mexico earning within $456 of each other
+       on the money-and-mood scatter. The chart is gone, so the badge went rather than
+       sit in the tray unearnable. Seven now, and every count on the page reads
+       BADGES.length rather than a literal. */
     { id: 'ranks', art: 'trail', ring: 'ink',
       kicker: 'Rankings', label: 'Line Stalker', stat: 'Four winners',
       hint: 'Follow one country through all four measures',
@@ -1083,7 +1075,9 @@ function countryRows(list) {
             sleep: d.minutes.PCA,
             leisure: d.minutes.LEI,
             happy: d.happiness,
-            gdp: d.gdp,
+            /* No gdp here any more: the money-and-mood scatter was its only reader.
+               DNA_SCORES still takes d.gdp straight from the data for the quiz's
+               Income axis, so the field itself is very much alive. */
             tourism: d.tourism
         };
     });
@@ -1093,10 +1087,9 @@ function countryRows(list) {
  * Metric strip — one measure, every country with a score, on a single line.
  *
  * There were two of these, happiness and life expectancy, drawn by the same code
- * so a reader learned the form once and read it twice. Life expectancy is gone,
- * and rather than replace it with a second strip the chapter now follows the one
- * strip with a scatter, because the question changed: it is no longer "how do two
- * scores of a life compare" but "what does a country's happiness track".
+ * so a reader learned the form once and read it twice. Life expectancy went first,
+ * replaced by a GDP scatter; that scatter has now gone too. This strip is what is
+ * left of the chapter's opening measure, and it hands straight to the rankings.
  *
  * Labels are pushed apart along the axis with a leader back to the true mark, so
  * crowding never costs accuracy. At 34 marks instead of 12 the crowding is the
@@ -1487,129 +1480,10 @@ function buildCoverClock(svg) {
         <circle class="cc-hub" cx="${cx}" cy="${cy}" r="4"/>`;
 }
 
-/**
- * Money and mood — GDP per capita against the happiness ladder, 34 countries.
- *
- * This is the chart that replaces life expectancy in Chapter Two. The chapter used
- * to hold two scores of a life side by side, one counted and one asked, and note
- * that they mostly agreed. With the counted one gone the question had to change,
- * and the file already carried the answer: GDP per capita, present for all 35
- * countries and never once used.
- *
- * Log scale on money, and that is not a cosmetic choice. A dollar does less the
- * more of them you have, so on a linear axis the relationship bends and reads as
- * weaker than it is. Straightened out, the correlation is stronger than the one
- * the chapter used to be built on — which is the honest finding, and also the
- * uncomfortable one, so the copy says both.
- */
-function initMoneyMood() {
-    const host = document.getElementById('mm-chart');
-    if (!host || !window.ADL) return;
-    const read = document.getElementById('mm-read');
-    const cap = document.getElementById('mm-cap');
-
-    const rows = countryRows(HAPPY_COUNTRIES).filter(c => c.gdp);
-    if (rows.length < 3) return;
-
-    const lg = Math.log10;
-    const W = 940, H = 520, L = 62, R = 26, T = 26, B = 58;
-    const xs = rows.map(c => lg(c.gdp)), ys = rows.map(c => c.happy);
-    const x0 = Math.min(...xs) - 0.06, x1 = Math.max(...xs) + 0.06;
-    const y0 = Math.floor(Math.min(...ys)) - 0.4, y1 = Math.ceil(Math.max(...ys)) + 0.2;
-    const X = v => L + (lg(v) - x0) / (x1 - x0) * (W - L - R);
-    const Y = v => T + (H - T - B) - (v - y0) / (y1 - y0) * (H - T - B);
-
-    /* Least squares on log money, plus Pearson r, both computed here so the
-       number in the prose is the number on the chart. */
-    const n = rows.length;
-    const mx = xs.reduce((a, b) => a + b, 0) / n, my = ys.reduce((a, b) => a + b, 0) / n;
-    let sxy = 0, sxx = 0, syy = 0;
-    for (let i = 0; i < n; i++) {
-        sxy += (xs[i] - mx) * (ys[i] - my);
-        sxx += (xs[i] - mx) * (xs[i] - mx);
-        syy += (ys[i] - my) * (ys[i] - my);
-    }
-    const slope = sxy / sxx, r = sxy / Math.sqrt(sxx * syy);
-    const fit = lx => my + slope * (lx - mx);
-
-    let s = '';
-    [1000, 2000, 5000, 10000, 20000, 50000, 100000].forEach(v => {
-        if (lg(v) < x0 || lg(v) > x1) return;
-        s += `<line class="sc-web" x1="${X(v)}" y1="${T}" x2="${X(v)}" y2="${H - B}"/>`;
-        s += `<text class="sc-tick" x="${X(v)}" y="${H - B + 18}" text-anchor="middle">$${v >= 1000 ? (v / 1000) + 'k' : v}</text>`;
-    });
-    for (let v = Math.ceil(y0); v <= y1; v++) {
-        s += `<line class="sc-web" x1="${L}" y1="${Y(v)}" x2="${W - R}" y2="${Y(v)}"/>`;
-        s += `<text class="sc-tick" x="${L - 10}" y="${Y(v) + 4}" text-anchor="end">${v}</text>`;
-    }
-    s += `<line class="sc-fit" x1="${L}" y1="${Y(fit(x0))}" x2="${W - R}" y2="${Y(fit(x1))}"/>`;
-    s += `<text class="sc-r" x="${W - R}" y="${Y(fit(x1)) - 12}" text-anchor="end">r = +${r.toFixed(2)} · ${n} countries</text>`;
-    s += `<text class="sc-axl" x="${L + (W - L - R) / 2}" y="${H - 10}" text-anchor="middle">GDP per person, log scale</text>`;
-    s += `<text class="sc-axl" x="16" y="${T + (H - T - B) / 2}" text-anchor="middle"
-           transform="rotate(-90 16 ${T + (H - T - B) / 2})">Happiness, 0 to 10</text>`;
-    rows.forEach(c => {
-        s += `<circle class="sc-dot" data-name="${c.name}" cx="${X(c.gdp)}" cy="${Y(c.happy)}" r="6"/>`;
-    });
-    /* Four names printed rather than left to hover: the two ends of the money axis
-       and the two countries that sit furthest off the line, because those four are
-       the whole argument and a reader should not have to go looking for them. */
-    const resid = rows.map(c => ({ c, e: c.happy - fit(lg(c.gdp)) }))
-        .sort((a, b) => a.e - b.e);
-    const named = new Set([
-        rows.reduce((a, b) => (b.gdp < a.gdp ? b : a)).name,
-        rows.reduce((a, b) => (b.gdp > a.gdp ? b : a)).name,
-        resid[0].c.name, resid[resid.length - 1].c.name
-    ]);
-    rows.filter(c => named.has(c.name)).forEach(c => {
-        s += `<text class="sc-name" data-name="${c.name}" x="${X(c.gdp)}" y="${Y(c.happy) - 13}"
-               text-anchor="middle">${c.name}</text>`;
-    });
-
-    host.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img"
-        aria-label="GDP per person against happiness score for ${n} countries">${s}</svg>`;
-    const el = host.querySelector('svg');
-
-    const money = v => v >= 1000 ? '$' + Math.round(v / 1000) + 'k' : '$' + v;
-    const idle = () => {
-        const above = resid[resid.length - 1].c, below = resid[0].c;
-        read.innerHTML = `Money explains <b>${Math.round(r * r * 100)}%</b> of the spread in
-            happiness across these ${n} countries.
-            <b>${above.name}</b> is the happiest for what it earns,
-            <b>${below.name}</b> the least. Touch a country.`;
-    };
-    function show(name) {
-        const c = rows.find(x => x.name === name);
-        if (!c) return;
-        const e = c.happy - fit(lg(c.gdp));
-        read.innerHTML = `<b>${c.name}</b>: ${money(c.gdp)} a person, happiness
-            <em>${c.happy.toFixed(2)}</em> —
-            ${Math.abs(e) < 0.05 ? 'exactly where its income predicts' :
-              e > 0 ? `<em>${e.toFixed(2)}</em> happier than its income predicts` :
-                      `<em>${(-e).toFixed(2)}</em> less happy than its income predicts`}.`;
-        el.querySelectorAll('[data-name]').forEach(nd =>
-            nd.classList.toggle('on', nd.dataset.name === name));
-    }
-    const inspect = e => {
-        const t = e.target.closest('[data-name]');
-        if (!t) return;
-        show(t.dataset.name);
-        Badges.earn('money');
-    };
-    el.addEventListener('mouseover', inspect);
-    el.addEventListener('click', inspect);
-    el.addEventListener('mouseleave', () => {
-        el.querySelectorAll('[data-name]').forEach(nd => nd.classList.remove('on'));
-        idle();
-    });
-    idle();
-    if (cap) cap.innerHTML = `<b>Money and Mood</b>
-        Scatter, one mark per country, GDP per person on a log scale against the 0–10 happiness
-        ladder. The dashed line is the least-squares fit; r is Pearson's correlation on the logged
-        income. ${n} countries: Luxembourg keeps a time diary but has no ladder score. Log scale
-        because a dollar buys less happiness the more of them you already have — on a linear axis
-        the same relationship bends and looks weaker than it is. Correlation is not cause, in either
-        direction. GDP per capita and World Happiness Report ladder score.`;
-}
+/* initMoneyMood() stood here: GDP per capita on a log axis against the happiness
+   ladder, a least-squares fit and Pearson r over the 34 countries with a score.
+   Removed with the income argument in Chapter Two. Its readout and caption were
+   generated in here, which is why COPY.md Part 2 lost two blocks. */
 
 /**
  * The whole American day, itemised — the one place this story can open every bar.
@@ -1790,7 +1664,6 @@ function initDayUS() {
     initSectionExit();
     initRightNow();
     initMetricStrips();
-    initMoneyMood();
     initDayUS();
     initRankParallel();
 
