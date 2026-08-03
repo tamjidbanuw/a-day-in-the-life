@@ -290,11 +290,14 @@
                 var mw = R.slice().sort(function (a, b) { return b.work - a.work; })[0];
                 var lw = R.slice().sort(function (a, b) { return a.work - b.work; })[0];
                 var foot = $('gl-dc-foot');
+                /* Nothing at rest. This used to read "The average of all 35. Mexico works
+                   the longest day at 10h 05m, France the shortest at 6h 25m. Pick a
+                   country, or click one anywhere on this sheet." — a third instruction to
+                   pick something, and it gave away both extremes before the reader had
+                   touched anything. .dc-foot:empty drops its own rule and padding so the
+                   card does not carry a hairline over blank space. */
                 if (c.avg) {
-                    foot.innerHTML = '<b>The average of all ' + N + '.</b> ' + mw.name +
-                        ' works the longest day at ' + hmS(mw.work) + ', ' + lw.name +
-                        ' the shortest at ' + hmS(lw.work) +
-                        '. Pick a country, or click one anywhere on this sheet.';
+                    foot.innerHTML = '';
                 } else if (c.name === mw.name) {
                     foot.innerHTML = '<b>The longest working day measured anywhere.</b> ' +
                         lw.name + ' works ' + hmS(mw.work - lw.work) + ' less.';

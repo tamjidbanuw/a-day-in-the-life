@@ -214,12 +214,12 @@ Compare countries
 
 ### 40. Chart · card standfirst  `[card-sub]`
 
-Select a category to compare every country.
+Choose what to compare.
 
 ### 41. Caption  `[fig-cap]`
 
 Longer doesn’t always mean better.
-These rankings measure time, not quality of life.
+These rankings measure time — not quality of life.
 
 ### 42. Chapter · eyebrow  `[chapter-eyebrow]`
 
