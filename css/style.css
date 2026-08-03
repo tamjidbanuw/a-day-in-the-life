@@ -1578,10 +1578,16 @@ html.bdg-locked, html.bdg-locked body { overflow: hidden; }
 }
 .gl-who b {
     display: flex; align-items: center; gap: 0.4rem;
-    font-size: clamp(1.2rem, 2.2vw, 1.6rem); font-weight: 800; letter-spacing: -0.02em;
+    /* 30% up on all three clamp stops, from 1.2/2.2vw/1.6. The flag needs no separate
+       bump: .gl-flag is sized in em, so it grows with the name and keeps its slot. */
+    font-size: clamp(1.56rem, 2.86vw, 2.08rem); font-weight: 800; letter-spacing: -0.02em;
 }
-.gl-who span { font-size: 0.78rem; color: var(--ink-faint); }
-.gl-who em { font-style: normal; color: var(--accent); font-size: 0.78rem; font-weight: 600; }
+/* Direct children only. As `.gl-who span` this also matched the flag, which is a
+   <span> nested inside the <b> — and at class+type it outranked `.gl-flag`'s own
+   class selector, pinning the flag to 0.78rem however large the name was set. The
+   child combinator leaves the flag to .gl-flag's 1.05em so it tracks the name. */
+.gl-who > span { font-size: 0.78rem; color: var(--ink-faint); }
+.gl-who > em { font-style: normal; color: var(--accent); font-size: 0.78rem; font-weight: 600; }
 /* Reserves its own line height so pinning and releasing cannot shift the panels. */
 .gl-pinnote {
     min-height: 1.2em; margin: 0 0 0.9rem;
