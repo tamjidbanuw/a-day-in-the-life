@@ -251,12 +251,11 @@ body {
     margin: 1rem auto 0; max-width: 470px;
     color: var(--ink-soft); font-size: 1.05rem; line-height: 1.5;
 }
-/* The invitation that closes a chapter mark. Deliberately NOT styled as an .intro-ask
-   or .section-ask: one of those already sits about 90px above this, closing the opener,
-   and two lines of 1.7rem accent that close-together read as one stuttering headline.
-   So this is a bolder, slightly larger echo of the blurb in ink — near the copy it
-   belongs to, quieter than the question above it. Switch `color` to var(--accent) and
-   the size up if the balance ever wants the other way round. */
+/* The invitation that closes a chapter mark, and now the only ask in this seam: the
+   1.7rem accent handoff that used to sit above it has been cut. Still ink rather than
+   accent, because the eyebrow directly above is already accent and colouring this too
+   would sandwich the black title between two red lines. A bolder, slightly larger
+   echo of the blurb. Switch `color` to var(--accent) if it ever wants more voice. */
 .chapter-ask {
     margin: 1.1rem auto 0; max-width: 44ch;
     font-size: clamp(1.05rem, 2.2vw, 1.22rem); font-weight: 700;
@@ -910,6 +909,17 @@ body {
         border-radius: 14px;
         box-shadow: 0 30px 60px -34px rgb(var(--ink-deep-rgb) / 0.45);
         transition: box-shadow 0.4s ease, border-color 0.4s ease;
+    }
+    /* Because the tray is fixed at this width it is out of the flow, so the seam rule
+       up top (`.badges:has(+ .chapter-mark)`) trims padding that occupies no space.
+       What the reader actually sees above the Chapter One mark here is the section two
+       steps back, and its own bottom padding is untouched — the aside sitting between
+       them in the DOM stops `.section:has(+ .chapter-mark)` from ever matching. Left
+       alone that stacked 84px of nothing onto the mark's 42px. This used to be masked
+       by the transition line that sat in the gap; that line is gone, so trim the
+       section directly. */
+    .section:has(+ .badges + .chapter-mark) {
+        padding-bottom: clamp(1.5rem, 3vw, 2.5rem);
     }
     .badges-head {
         gap: 0.25rem; margin-bottom: 0;
@@ -1780,24 +1790,16 @@ html.bdg-locked, html.bdg-locked body { overflow: hidden; }
     margin: 1.5rem auto 0; max-width: 40ch;
     font-size: clamp(1rem, 2vw, 1.12rem); font-weight: 600; color: var(--ink);
 }
-.intro-ask,
-.section-ask {
+/* This rule used to be shared with .section-ask, the handoff line that sat between
+   the badge tray and the Chapter One mark. That line is gone — the chapter mark now
+   closes with its own invitation — so the selector and its 48ch override went with
+   it rather than being left behind as dead weight. */
+.intro-ask {
     margin: 0.85rem auto 0; max-width: 30ch; text-wrap: balance;
-    /* the measure is set per element below: these two now carry different line
-       lengths, and one measure forced the longer of them into a third line */
     font-size: clamp(1.25rem, 3vw, 1.7rem); font-weight: 700;
     line-height: 1.2; letter-spacing: -0.015em;
     color: var(--accent);
     text-align: center;
-}
-/* The handoff into Chapter One. It is a sibling of the sections rather than part of
-   one, so it carries its own rhythm: enough air above to separate it from the dot
-   field, little below because the chapter mark brings its own. */
-.section-ask {
-    padding: clamp(1.5rem, 4vw, 3rem) 1.5rem 0;
-    /* two authored lines, the longer of them 44 characters. At the shared 30ch it
-       wrapped to three and stranded "look like?" on its own. */
-    max-width: 48ch;
 }
 
 /* ── an editorial beat between charts ─────────────────────────────────────────

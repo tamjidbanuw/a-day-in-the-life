@@ -120,10 +120,12 @@
             </div>
         </aside>
 
-        <!-- Hands the opener over to Chapter One. In COPY.md this line was written at
-             the foot of the badges note, but #badges-note is `hidden` behind the info
-             button, so a transition sentence would never have been seen there. -->
-        <p class="section-ask reveal">Before we compare countries&hellip;<br>What does an ordinary day actually look like?</p>
+        <!-- No transition line here. "Before we compare countries… / What does an
+             ordinary day actually look like?" used to sit between the badges and the
+             chapter mark, but the mark now closes with its own invitation, and two
+             large asks that close together read as one stuttering headline. With this
+             gone, `.badges:has(+ .chapter-mark)` in the stylesheet starts matching and
+             trims the tray's bottom padding, so the seam tightens on its own. -->
 
         <!-- ═══ CHAPTER ONE · HOW WE LIVE ═══════════════════ -->
         <div class="chapter-mark reveal">
@@ -138,7 +140,7 @@
                 Some work longer.<br>
                 Some rest more.<br>
                 Some trade leisure for unpaid care.</p>
-            <p class="chapter-ask">Explore the world&rsquo;s days&mdash;and see what changes&hellip;
+            <p class="chapter-ask">Explore the world&rsquo;s days&mdash;and discover what changes&hellip;
                 and what doesn&rsquo;t.</p>
             <div class="chapter-rule"></div>
         </div>
