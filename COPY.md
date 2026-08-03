@@ -231,8 +231,8 @@ The Only Number That Asks
 
 ### 44. Chapter · blurb  `[chapter-blurb]`
 
-Every chart so far measured what people do.
-This one asks how life feels.
+Every chart so far measured how people spend their days.
+This one asks how they feel about them.
 
 ### 45. Section · eyebrow  `[sec-num]`
 
@@ -293,9 +293,8 @@ No country finishes first twice.
 
 ### 56. Caption  `[fig-cap]`
 
-Each line follows one country across four rankings. When lines
-cross, countries trade places. First means “most,” not necessarily
-“best.”
+Each line follows one country across four rankings. The crossings
+tell the story. Nobody stays on top.
 
 ### 57. Figure · source note  `[source]`
 

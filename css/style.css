@@ -333,6 +333,12 @@ body {
 .section.notes { padding-inline: clamp(1rem, 2.2vw, 1.8rem); }
 /* the column is a quarter of the width it was, so the type comes down with it */
 .section.notes .sec-title { font-size: clamp(1.1rem, 1.9vw, 1.5rem); }
+/* Except the chapter's payoff, which is set as a display headline. The measure here is
+   only 210px, so this stacks to three lines by design rather than by accident — at
+   2.4rem the longest word, "Everything", occupies 188px of it. Bigger than this and
+   the word touches the column wall. Below 900px the column becomes the page width and
+   the same rule lets it run on one line, so no break is authored into the markup. */
+#sec-ranks .sec-title { font-size: clamp(1.6rem, 2.9vw, 2.4rem); line-height: 1.02; }
 .section.notes .lead { font-size: 0.93rem; }
 .section.notes .body { font-size: 0.86rem; }
 .section.notes .rule { display: none; }
@@ -352,6 +358,8 @@ body {
     }
     .section.notes .rule { display: block; }
     .section.notes .sec-title { font-size: clamp(1.5rem, 5vw, 2rem); }
+    /* The column is the full page here, so the payoff gets the room it wanted upstairs. */
+    #sec-ranks .sec-title { font-size: clamp(2rem, 6.5vw, 3rem); }
     .section.notes .lead { font-size: 1rem; }
     .section.notes .body { font-size: 0.93rem; }
 }
