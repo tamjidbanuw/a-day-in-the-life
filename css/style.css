@@ -1566,8 +1566,12 @@ html.bdg-locked, html.bdg-locked body { overflow: hidden; }
 }
 
 /* ── the live readout above the panels ─────────────────────────────────────── */
+/* A three-line stack: name, headline share, hours. It was a baseline-aligned wrapping
+   row; the readout is now authored as separate lines, so the axis turns. Both the
+   pinned and the average state emit the same three children, which keeps this block a
+   fixed height and stops the sheet below it shifting as the pointer crosses the braid. */
 .gl-who {
-    display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap;
+    display: flex; flex-direction: column; align-items: flex-start; gap: 0.1rem;
     margin: 1.8rem 0 0.5rem;
     padding-bottom: 0.8rem;
     border-bottom: 1px solid var(--line);

@@ -405,11 +405,17 @@
         dayCard.draw(c);
         braid.setBands(c);
         var pct = Math.round((c.work + c.sleep) / DAY * 100);
+        /* Three stacked lines: name, then the headline share, then the hours.
+           BOTH states are built with the same three children on purpose. This block
+           sits above the whole sheet, so a pinned state two lines taller than the
+           average state would shove every panel down on hover and pull it back on
+           leave. The average branch therefore splits at the middot it already had
+           rather than staying a single line. */
         who.innerHTML = '<b>' + (c.avg ? '' : flagHTML(c.name)) + c.name + '</b>' + (c.avg
-            ? '<span>the average of all ' + N +
-              ' \u00b7 hover or click a country to replace it</span>'
-            : '<em>' + hm(c.work) + ' of work</em><span>&middot; ' + hm(c.leisure) +
-              ' of leisure &middot; ' + pct + '% already spoken for</span>');
+            ? '<em>the average of all ' + N + '</em>' +
+              '<span>hover or click a country to replace it</span>'
+            : '<em>' + pct + '% already spoken for.</em>' +
+              '<span>' + hm(c.work) + ' working. ' + hm(c.leisure) + ' leisure</span>');
         note.innerHTML = c.avg
             ? 'Ribbons carry the whole picture at once, which is the point of the shape and ' +
               'also its limit: it is a texture until you touch it. Every column is the same ' +
