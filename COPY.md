@@ -162,9 +162,7 @@ Thirty-Five Ordinary Days
 
 ### 28. Chart · standfirst  `[sub]`
 
-Each column is one country’s 1,440 minutes, divided among
-five major activities. Hover over a country or an activity to compare how
-differently the world’s days are spent.
+Each column shows one country’s day. Hover over any country or activity to compare.
 
 ### 29. Caption  `[fig-cap]`
 
