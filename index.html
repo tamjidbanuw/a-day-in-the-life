@@ -221,26 +221,31 @@
                     <!-- The caveats sit under the card whose numbers they qualify, rather than
                          in a strip at the foot of the sheet where a reader meets them after
                          they have already misread everything. -->
+                    <!-- Each row now opens with its point in one short sentence and explains
+                         it after, rather than making the reader parse a full sentence to find
+                         the caveat. <strong> is the existing emphasis inside .callout-row, so
+                         no new class was needed. -->
                     <div class="callout" style="margin-top:18px">
-                        <p class="callout-head">Three things worth remembering</p>
+                        <p class="callout-head">Before you compare</p>
                         <div class="callout-row"><span class="callout-ic">&#10022;</span>
-                            <p>The order of the blocks is not a timeline. It shows how much time
-                                people spend &mdash; not when they spend it.</p></div>
+                            <p><strong>Time isn&rsquo;t a timeline.</strong> The charts show how much
+                                time people spend &mdash; not when they spend it.</p></div>
                         <div class="callout-row"><span class="callout-ic">&#10022;</span>
-                            <p>Every country counts equally. China and Luxembourg each contribute
-                                one average day.</p></div>
+                            <p><strong>Every country counts once.</strong> China and Luxembourg each
+                                contribute one average day. Population doesn&rsquo;t affect the
+                                comparison.</p></div>
                         <div class="callout-row"><span class="callout-ic">&#10022;</span>
-                            <p>No individual lives this exact schedule. These are national averages
-                                built from thousands of real diaries.</p></div>
+                            <p><strong>No one lives the average.</strong> Every value combines
+                                thousands of real diaries. The &ldquo;average day&rdquo; belongs to a
+                                country &mdash; not a person.</p></div>
                     </div>
                 </div>
 
                 <!-- ── the ordering, the panel you can read precisely ───────────── -->
                 <div>
                     <div class="day-card">
-                        <div class="card-head">Rank the day</div>
-                        <p class="card-sub">Compare countries activity by activity and see how every
-                            other chart updates instantly.</p>
+                        <div class="card-head">Compare countries</div>
+                        <p class="card-sub">Select a category to compare every country.</p>
                         <div class="gl-pills" id="gl-pills"></div>
                         <div class="gl-rank" id="gl-rank"></div>
                         <div class="gl-key" id="gl-key-rank"></div>

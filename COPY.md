@@ -179,7 +179,7 @@ One ordinary day
 
 ### 32. Callout · head  `[callout-head]`
 
-Three things worth remembering
+Before you compare
 
 ### 33. callout-ic  `[callout-ic]`
 
@@ -187,8 +187,8 @@ Three things worth remembering
 
 ### 34. Callout · body  `[callout-row]`
 
-The order of the blocks is not a timeline. It shows how much time
-people spend — not when they spend it.
+Time isn’t a timeline. The charts show how much time people spend — not
+when they spend it.
 
 ### 35. callout-ic  `[callout-ic]`
 
@@ -196,8 +196,8 @@ people spend — not when they spend it.
 
 ### 36. Callout · body  `[callout-row]`
 
-Every country counts equally. China and Luxembourg each contribute
-one average day.
+Every country counts once. China and Luxembourg each contribute one
+average day. Population doesn’t affect the comparison.
 
 ### 37. callout-ic  `[callout-ic]`
 
@@ -205,17 +205,16 @@ one average day.
 
 ### 38. Callout · body  `[callout-row]`
 
-No individual lives this exact schedule. These are national averages
-built from thousands of real diaries.
+No one lives the average. Every value combines thousands of real
+diaries. The “average day” belongs to a country — not a person.
 
 ### 39. Chart · card head  `[card-head]`
 
-Rank the day
+Compare countries
 
 ### 40. Chart · card standfirst  `[card-sub]`
 
-Compare countries activity by activity and see how every
-other chart updates instantly.
+Select a category to compare every country.
 
 ### 41. Caption  `[fig-cap]`
 
