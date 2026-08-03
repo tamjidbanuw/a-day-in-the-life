@@ -251,6 +251,19 @@ body {
     margin: 1rem auto 0; max-width: 470px;
     color: var(--ink-soft); font-size: 1.05rem; line-height: 1.5;
 }
+/* The invitation that closes a chapter mark. Deliberately NOT styled as an .intro-ask
+   or .section-ask: one of those already sits about 90px above this, closing the opener,
+   and two lines of 1.7rem accent that close-together read as one stuttering headline.
+   So this is a bolder, slightly larger echo of the blurb in ink — near the copy it
+   belongs to, quieter than the question above it. Switch `color` to var(--accent) and
+   the size up if the balance ever wants the other way round. */
+.chapter-ask {
+    margin: 1.1rem auto 0; max-width: 44ch;
+    font-size: clamp(1.05rem, 2.2vw, 1.22rem); font-weight: 700;
+    line-height: 1.4; letter-spacing: -0.01em;
+    color: var(--ink-deep);
+    text-wrap: balance;
+}
 .chapter-rule {
     width: 64px; height: 4px; border-radius: 999px;
     margin: 1.5rem auto 0;
