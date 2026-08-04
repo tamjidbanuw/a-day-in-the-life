@@ -33,12 +33,17 @@
              Every line is separately anchored in COPY.md so the wording round-trips. -->
         <section class="section center reveal" id="sec-intro">
             <p class="intro-open">Imagine pressing pause on Earth.<br>Eight billion people.<br>One ordinary day.</p>
+            <!-- The five fade in one after another rather than arriving with the
+                 section. They are five things happening at the same moment, and
+                 five lines appearing at once reads as a list being displayed;
+                 staggered, it reads as lives being noticed one by one. Staggered
+                 in CSS off .in on the section, so nothing here needs a hook. -->
             <ul class="intro-lives">
-                <li class="intro-life">A child takes their very first steps.</li>
-                <li class="intro-life">A nurse finishes a long night shift.</li>
+                <li class="intro-life">A child takes their first steps.</li>
+                <li class="intro-life">A nurse finishes a night shift.</li>
                 <li class="intro-life">A family gathers for dinner.</li>
                 <li class="intro-life">A farmer begins work before sunrise.</li>
-                <li class="intro-life">A student falls asleep after a long day.</li>
+                <li class="intro-life">A student falls asleep.</li>
             </ul>
             <p class="intro-count">Every one of them is given exactly 1,440 minutes.</p>
             <p class="intro-ask">What becomes of those minutes?</p>
@@ -51,16 +56,25 @@
                  not clash with the .reveal transition on the section itself. -->
             <div class="sec-exit">
                 <!-- No .sec-num here any more: the eyebrow used to read "Meet the World"
-                     and that is now the title itself. -->
+                     and that is now the title itself. The rule above it marks the start
+                     of an act: everything before this is the premise, and the story
+                     begins here. Same gradient as a .chapter-rule, smaller. -->
+                <div class="act-rule" aria-hidden="true"></div>
                 <h2 class="sec-title">Meet the World</h2>
                 <hr class="rule">
                 <p class="lead">How do you measure a day? Most countries count people, money, and
-                    borders. Only 35 countries have asked thousands of ordinary people to record every
+                    borders. Only 35 countries have asked people to record every
                     minute of an ordinary day.</p>
+                <!-- One sentence carries the whole project, and it is this one: every
+                     comparison on the page after it depends on time being the thing
+                     everybody gets the same amount of. Bolded so a reader who scans
+                     this paragraph and nothing else still leaves with the premise. The
+                     rest of the paragraph is scope — who is in the sample and why —
+                     and scope does not need to be the loudest thing here. -->
                 <p class="body">We often compare countries by their wealth, population, or geography.
-                    But there is one thing every person receives equally: time. Across these 35
-                    countries, thousands of people kept detailed time diaries, recording how they spent
-                    every minute of a normal day. Together, these countries represent more than half of
+                    <strong>But there is one thing every person receives equally: time.</strong> Across these 35
+                    countries, thousands of people kept time diaries, recording every minute of an
+                    ordinary day. Together, these countries represent more than half of
                     humanity. This story follows them — not because they are the whole world, but
                     because they reveal how an ordinary day is lived across it.</p>
 
@@ -145,12 +159,21 @@
             </button>
         </aside>
 
-        <!-- No transition line here. "Before we compare countries… / What does an
-             ordinary day actually look like?" used to sit between the badges and the
-             chapter mark, but the mark now closes with its own invitation, and two
-             large asks that close together read as one stuttering headline. With this
-             gone, `.badges:has(+ .chapter-mark)` in the stylesheet starts matching and
-             trims the tray's bottom padding, so the seam tightens on its own. -->
+        <!-- One beat between the field and Chapter One. The opener ends on a caption
+             about population and the chapter mark opens on how countries spend a day,
+             so the reader crossed that seam without being told what the dots were for.
+             This says it: the field was never about population, it was about who we are
+             going to follow.
+
+             Deliberately the small .beat, not .beat.ask — the chapter mark two lines
+             below closes with its own invitation, and two accent questions that close
+             together read as one stuttering headline. That is why the earlier line here
+             was cut; this one states rather than asks, so it does not collide.
+
+             Note this stops `.badges:has(+ .chapter-mark)` from matching, so the tray
+             keeps its full bottom padding — the beat's own margin now carries the seam. -->
+        <p class="beat reveal">Every dot is a different life.<br><span class="beat-soft">Now
+            let&rsquo;s follow one ordinary day.</span></p>
 
         <!-- ═══ CHAPTER ONE · HOW WE LIVE ═══════════════════ -->
         <div class="chapter-mark reveal">
@@ -196,7 +219,7 @@
                  This is also where the computed 46% / 22% / 70% lived. Those three slots
                  are gone with the paragraph; glance.js writes each only if its element
                  exists, so restoring the copy is enough to bring them back. -->
-            <span class="howto">Choose a country. Follow its day.</span>
+            <span class="howto">Choose a country. See how its day unfolds.</span>
 
             <div class="gl-who" id="gl-who"></div>
             <p class="gl-pinnote" id="gl-pinnote"></p>

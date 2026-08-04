@@ -1,7 +1,16 @@
 /**
  * Dot-field opener — a dense field of dots that spells "WORLD".
- * Fly-in intro, perpetual drift, hover ripple, feathered edges.
+ * Two-stage fade-in, perpetual drift, hover ripple, feathered edges.
  * Runs only if #df-canvas exists on the page.
+ *
+ * The entrance is sequenced rather than simultaneous, and it is the argument the
+ * section is making: the grey field is the world, and the accent dots are the
+ * countries this story can actually follow. Showing the world first and then
+ * lighting up the sample says that; showing both at once just draws a word.
+ *
+ * Nothing flies and nothing zooms — every dot fades up where it belongs. The
+ * old intro threw all of them in from random positions across the canvas, which
+ * read as an effect happening to the reader rather than a fact being stated.
  */
 (function () {
     const canvas = document.getElementById('df-canvas');
@@ -17,6 +26,22 @@
     // moved it by four and a half points, because the twelve already contained
     // China, India and the United States.
     const SHARE = 0.525;
+
+    /* ── the entrance, in milliseconds ──
+       Grey sweeps in over GREY_STAGGER (the delay spread across the canvas width)
+       with each dot taking GREY_IN to reach full alpha. The accent dots start
+       ACCENT_HOLD after the last grey one has finished, so there is a real beat
+       between "the world" and "these countries" — without it the two stages
+       overlap and the sequence reads as one muddled fade. */
+    const GREY_IN      = 520;
+    const GREY_STAGGER = 620;
+    const ACCENT_HOLD  = 220;
+    const ACCENT_IN    = 760;   // slower than the grey: it is the point being made
+
+    /* A reader who asked not to be animated gets the settled field immediately.
+       Checked once at build time rather than per frame. */
+    const reduced = window.matchMedia &&
+        matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     /* The two dot colours, as "r,g,b" for the canvas. Taken from the tokens: as
        literals they stayed the old copper and the old grey through a palette
@@ -125,12 +150,21 @@
         const grey = spare.slice(0, wantGrey);
 
         const push = (d, on) => dots.push({
-            hx: d.hx, hy: d.hy, x: Math.random() * W, y: Math.random() * H, vx: 0, vy: 0,
+            /* Starts where it ends. There is no fly-in any more, so x/y are the home
+               position and the entrance is carried entirely by fadeIn below. */
+            hx: d.hx, hy: d.hy, x: d.hx, y: d.hy, vx: 0, vy: 0,
             r: (on ? 3.9 : 2.8) * devicePixelRatio,
             color: on ? INK.on : INK.off,
             hi: on,
             alpha: on ? 1 : (0.55 + d.edge * 0.45),
-            delay: (d.hx / W) * 500 + Math.random() * 200,
+            /* Two stages. The grey field fades up first, left to right across the
+               canvas so it arrives as a sweep rather than a flash; the accent dots
+               wait until that is essentially done and then come up together, because
+               they are one fact — these countries — not a second sweep. */
+            delay: on
+                ? GREY_IN + GREY_STAGGER + ACCENT_HOLD + Math.random() * 120
+                : (d.hx / W) * GREY_STAGGER + Math.random() * 140,
+            fade: on ? ACCENT_IN : GREY_IN,
             phx: Math.random() * Math.PI * 2, phy: Math.random() * Math.PI * 2,
             spx: 0.6 + Math.random() * 0.8, spy: 0.6 + Math.random() * 0.8,
             amp: (2.2 + Math.random() * 2.2) * devicePixelRatio
@@ -183,7 +217,10 @@
         }
 
         dots.forEach(d => {
-            const p = Math.max(0, Math.min(1, (t - d.delay) / 900));
+            /* How far into its own fade this dot is. Was the fly-in's progress
+               along a path; now it only governs opacity. */
+            const p = reduced ? 1
+                : Math.max(0, Math.min(1, (t - d.delay) / d.fade));
             const e = 1 - Math.pow(1 - p, 3);
 
             const ts2 = t / 1000;
@@ -212,22 +249,66 @@
             d.vx = (d.vx + ax) * 0.59;
             d.vy = (d.vy + ay) * 0.59;
 
-            if (p < 1) {
-                d.x = d.x + (d.hx - d.x) * e;
-                d.y = d.y + (d.hy - d.y) * e;
-            } else {
-                d.x += d.vx; d.y += d.vy;
-            }
+            /* Drift and ripple from the first frame: the dot is already home, so
+               there is no arrival to hold it still for. A dot mid-fade that also
+               drifts reads as settled rather than as still being placed. */
+            d.x += d.vx; d.y += d.vy;
+
+            /* Nothing is drawn until its delay is up, so an unfaded dot leaves no
+               mark at all rather than a faint one. */
+            if (p <= 0) return;
 
             ctx.beginPath();
             ctx.arc(d.x, d.y, d.r, 0, 7);   // no grow — dots keep their size
-            ctx.fillStyle = `rgba(${d.color},${d.alpha})`;
+            ctx.fillStyle = `rgba(${d.color},${d.alpha * e})`;
             ctx.fill();
         });
         raf = requestAnimationFrame(frame);
     }
 
-    function play() { cancelAnimationFrame(raf); t0 = null; build(); raf = requestAnimationFrame(frame); }
-    window.addEventListener('resize', play);
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(play); else play();
+    /* `intro` is what makes the entrance happen exactly once. A resize has to rebuild
+       the field — the mask, the grid and the grey/accent split all depend on the
+       canvas size — but replaying the two-stage fade every time the window changes
+       width would blank the word and re-announce it at someone who has already read
+       it. After the first run the rebuild lands fully opaque. */
+    let intro = true;
+    function play() {
+        cancelAnimationFrame(raf);
+        t0 = null;
+        build();
+        /* delay of -1, not 0: with a 1ms fade the progress term is (t - delay)/fade,
+           and t is 0 on the first frame after a restart — so a delay of 0 would give
+           p = 0 and skip drawing for exactly one frame, a visible blink on resize. */
+        if (!intro) dots.forEach(d => { d.delay = -1; d.fade = 1; });
+        intro = false;
+        raf = requestAnimationFrame(frame);
+    }
+    window.addEventListener('resize', () => { if (!intro) play(); });
+
+    /* The entrance waits for the reader, not for the page.
+       The field sits below the fold, and playing on load meant the whole
+       grey-then-red sequence could finish while the reader was still on the cover
+       — they would scroll down to a field that had already assembled itself and
+       see none of the argument it was making. So it holds until the canvas is
+       actually on screen, which is the same rule every .reveal on the page follows.
+
+       Fonts still gate it: wordMask() measures "WORLD" in the page's own typeface,
+       and running before the webfont lands would build the mask from the fallback
+       and bake the wrong letterforms into the grid. */
+    const start = () => {
+        if (!intro) return;
+        const go = () => (document.fonts && document.fonts.ready
+            ? document.fonts.ready.then(play) : play());
+        /* No IntersectionObserver — an old browser gets the field immediately
+           rather than never. */
+        if (!('IntersectionObserver' in window)) { go(); return; }
+        /* 0.25, a little more than the 0.12 the section reveals at: the section
+           fades in first and the word then assembles inside it, rather than both
+           arriving on the same frame. */
+        const obs = new IntersectionObserver(entries => {
+            if (entries.some(e => e.isIntersecting)) { obs.disconnect(); go(); }
+        }, { threshold: 0.25 });
+        obs.observe(canvas);
+    };
+    start();
 })();

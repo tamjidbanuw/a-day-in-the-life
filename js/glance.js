@@ -534,8 +534,8 @@
            is worth touching. The 1,440 lives on in the day card's own label, two
            panels down, and this is the last place the braid panel stated it. */
         note.innerHTML = c.avg
-            ? 'Every ribbon is one country&rsquo;s day.<br>The shape may look familiar ' +
-              '&mdash; but no two countries divide their time the same way.'
+            ? 'Every ribbon is one country&rsquo;s day.<br>' +
+              'No two days are divided the same way.'
             : '<b>' + c.name + '</b> gives <b>' + hm(c.m.PAW) + '</b> to paid work and <b>' +
               hm(c.m.UPW) + '</b> to work nobody pays for, sleeps <b>' + hm(c.m.PCA) +
               '</b>, and has <b>' + hm(c.m.LEI) + '</b> left.';
