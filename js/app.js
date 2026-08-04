@@ -43,27 +43,57 @@ const nice = (c) => c.replace(' (People’s Republic of)', '');
 
 
 /**
- * The two badges that #sec-day used to carry.
+ * The badge that #sec-day used to carry.
  *
  * That section is gone — #sec-glance makes the same point, and its day card is the
- * same component — but `day` and `day5` were earned only by changing the country in
- * its picker. Left alone that would have stranded two of the eight badges, making the
- * collection impossible to finish. They move to the glance sheet's picker, the only
- * country picker left on the page, so both hints still read true: it is the first
- * chart, and visiting five countries still means five distinct values.
+ * same component — but `day` was earned only by changing the country in its picker.
+ * Left alone that would have stranded a badge, making the collection impossible to
+ * finish. It moved to the glance sheet's picker, the only country picker left on the
+ * page, so the hint still reads true: it is the first chart.
+ *
+ * The picker alone was too narrow a door. Chapter One's sheet offers three ways to
+ * change the country — the braid's columns, the ranking's rows and the picker — and
+ * the two obvious ones awarded nothing, so a reader who explored the chapter properly
+ * by clicking the chart could finish it having earned nothing while a reader who used
+ * the dropdown was rewarded. Any click on any of the sheet's visuals earns it now.
+ *
+ * Delegated from the section rather than bound per element, because glance.js builds
+ * every one of those visuals after this runs and rebuilds the ranking's rows on each
+ * sort. A live listener on the section cannot go stale; thirty-five per-row bindings
+ * would. Nothing in glance.js calls stopPropagation, so the clicks all arrive.
+ *
+ * Scoped to VISUALS, not the whole section: the caveat callout and the "Choose a
+ * country" pill are prose, and a badge for reading them says nothing about having
+ * explored anything. Badges.earn() is idempotent, so the extra paths cost nothing
+ * after the first.
+ *
+ * A second badge, `day5`, used to live here too — earned for visiting five distinct
+ * countries, which is why this function once kept a Set of the values it had seen.
+ * That badge is gone, and the bookkeeping went with it.
  *
  * Wired here rather than in js/glance.js because Badges is defined in this file and
  * glance.js is deliberately self-contained.
  */
 function initCountryBadges() {
-    const pick = document.getElementById('gl-dc-pick');
-    if (!pick) return;
-    const seen = new Set([pick.value]);
-    pick.addEventListener('change', () => {
-        Badges.earn('day');
-        seen.add(pick.value);
-        if (seen.size >= 5) Badges.earn('day5');
+    const sheet = document.getElementById('sec-glance');
+    if (!sheet) return;
+    /* The braid, the day card and the ranking panel — the three things a reader
+       would call a chart. .dc-card and .day-card are the panels, so their scales,
+       legends and figures count as part of the visual they belong to. */
+    const VISUALS = '#gl-braid, .dc-card, .day-card';
+    const hit = e => { if (e.target.closest(VISUALS)) Badges.earn('day'); };
+    sheet.addEventListener('click', hit);
+    /* The ranking's rows are operated with Enter and Space as well as the pointer
+       (glance.js gives them tabIndex and its own keydown), and neither key fires a
+       click on a plain div. Without this the keyboard route to the chart is the one
+       route that earns nothing. */
+    sheet.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') hit(e);
     });
+    /* Still watched directly: a <select> changed by keyboard alone never produces a
+       click inside .dc-card. */
+    const pick = document.getElementById('gl-dc-pick');
+    if (pick) pick.addEventListener('change', () => Badges.earn('day'));
 }
 
 /* ── Lifestyle DNA: quiz → fingerprint → nearest-country twin ──
@@ -95,11 +125,69 @@ const DNA_QUESTIONS = [
       lo: 'Work-driven',  hi: 'Free-time first' },
     { key: 'rest',    q: 'How much of your day belongs to sleeping and eating?',
       lo: 'As little as I can get away with', hi: 'I protect it' },
-    { key: 'money',   q: 'How much does earning shape the life you want?',
+    { key: 'money',   q: 'How important is income in the life you want?',
       lo: 'Barely',       hi: 'It decides most things' },
-    { key: 'connect', q: 'How outward-looking and travel-hungry are you?',
-      lo: 'Homebody',     hi: 'Endlessly curious' },
+    /* "How outward-looking and travel-hungry are you?" asked two things at once and
+       neither in plain words. The axis is arrivals, so the question a reader can
+       actually answer is the simple one, and the two ends carry the meaning. */
+    { key: 'connect', q: 'How curious are you about the world?',
+      lo: 'Homebody',     hi: 'World explorer' },
 ];
+
+/* ── the result card ──
+   Two of these read the reader's own answers rather than the data, which is the point:
+   the card is about them, and the page claims nothing about them it was not told. */
+
+/* Each axis, as a thing a person values, at both ends of its slider. Kept to two or
+   three words each: they are set as a list, and a list of clauses is a paragraph
+   wearing bullets. */
+const DNA_VALUES = {
+    time:    { hi: 'free time',       lo: 'getting things done' },
+    rest:    { hi: 'rest',            lo: 'early starts' },
+    money:   { hi: 'earning power',   lo: 'time over money' },
+    connect: { hi: 'the wider world', lo: 'home' },
+};
+function dnaValues(answers) {
+    /* Only the sliders actually pushed away from the middle. One left at 50 said
+       nothing, and printing "you value rest" for it would be the card inventing an
+       opinion the reader never gave it. Strongest feeling first. */
+    const picks = DNA_AXES
+        .map(ax => ({ k: ax.key, v: answers[ax.key] ?? 50 }))
+        .filter(p => p.v >= 60 || p.v <= 40)
+        .sort((a, b) => Math.abs(b.v - 50) - Math.abs(a.v - 50))
+        .map(p => DNA_VALUES[p.k][p.v >= 60 ? 'hi' : 'lo']);
+    /* Every dial left in the middle. Rare, but reachable in two clicks — and "you
+       value nothing in particular" is not a result, so the balance is the finding. */
+    return picks.length ? picks : ['balance over any one thing'];
+}
+
+/* The same four axes as plain nouns, for the one sentence about the country. */
+const DNA_TRADE = {
+    time: 'free time', rest: 'rest', money: 'earning power', connect: 'openness to the world',
+};
+function dnaTrade(country, answers) {
+    const s = DNA_SCORES[country];
+    const order = DNA_AXES.map(ax => ax.key).sort((a, b) => s[b] - s[a]);
+    const hi = order[0], lo = order[3];
+    /* A trade needs something given up. Latvia's four axes span 18 to 32 out of 100
+       and Lithuania's 15 to 35: "you trade rest for earning power" over fourteen
+       points is the card inventing a personality for a country that does not have
+       one. Three of the thirty-five take this branch. */
+    if (s[hi] - s[lo] < 30) {
+        return `Like ${nice(country)}, you spread the day evenly &mdash; no one part of
+            it takes over.`;
+    }
+    /* "Like Japan, you trade rest for openness" is a sentence about the reader, so it
+       has to be one the reader would recognise. The match is over four axes at once and
+       the nearest country can lead on an axis they pushed the other way: in 3% of answer
+       combinations the sentence would have told someone who set curiosity to zero that
+       they value the wider world. Where they contradict it, the sentence stays true by
+       being about the country instead — same finding, no words put in their mouth. */
+    const what = `${DNA_TRADE[lo]} for ${DNA_TRADE[hi]}`;
+    return (answers[hi] ?? 50) <= 40 || (answers[lo] ?? 50) >= 60
+        ? `${nice(country)} trades ${what} &mdash; the closest fit to the balance you chose.`
+        : `Like ${nice(country)}, you trade ${what}.`;
+}
 
 /**
  * Percentile scores per country on the four axes, built once at load.
@@ -204,17 +292,26 @@ function renderDna(root) {
         Badges.earn('quiz');
         const you = {};
         DNA_AXES.forEach(ax => you[ax.key] = answers[ax.key] ?? 50);
-        const twin = COUNTRIES
+        const best = COUNTRIES
             .map(c => ({ c, d: dnaDist(you, DNA_SCORES[c]) }))
-            .sort((a, b) => a.d - b.d)[0].c;
+            .sort((a, b) => a.d - b.d)[0];
+        const twin = best.c;
+        /* Distance in a 0–100 space on four axes, so the farthest two corners are
+           200 apart; halving it turns the distance into a percentage. Across a grid
+           of reader answers this lands between 59% and 97%, which is the range a
+           match figure has to sit in to be worth printing — never a suspicious 100,
+           never a disheartening 12. */
+        const pct = Math.round(100 - best.d / 2);
+        const vals = dnaValues(answers);
         const stage = show(`
             <div class="dna-result">
-                <p class="dna-result-kicker">Your closest match is</p>
+                <p class="dna-result-kicker">Your closest match</p>
                 <p class="dna-result-name">${nice(twin)}</p>
+                <p class="dna-result-pct"><b>${pct}%</b> match</p>
+                <p class="dna-result-vals">You value</p>
+                <ul class="dna-vals">${vals.map(v => `<li>${v}</li>`).join('')}</ul>
                 ${dnaStrip(DNA_SCORES[twin])}
-                <p class="dna-result-note">Matched on how you balance <strong>free time, rest,
-                    income and openness</strong> — the four measures behind the score, across all
-                    ${COUNTRIES.length} countries.</p>
+                <p class="dna-result-note">${dnaTrade(twin, answers)}</p>
                 <button class="dna-go dna-retake">Retake the quiz</button>
             </div>`);
         stage.querySelector('.dna-retake').addEventListener('click', intro);
@@ -329,6 +426,11 @@ function initSectionExit() {
  * than rendering once: on a minute boundary the time changes, and on an hour
  * boundary the whole distribution does. It ticks every 20 seconds, which is
  * cheap and keeps the displayed minute honest without a per-second timer.
+ *
+ * The ribbon underneath is also scrubbable. The panel states one hour, and the
+ * obvious next question is what the other twenty-three look like — the ribbon
+ * already draws them, so hovering it reads any hour out in the same words the
+ * live state uses. See the scrub block below for what stays honest while it does.
  */
 function initRightNow() {
     const host = document.getElementById('rn');
@@ -428,21 +530,139 @@ function initRightNow() {
 
     buildRibbon();
 
-    let lastHour = -1;
+    /* Painting an hour is separate from reading the clock, because the same
+       distribution is now drawn for two reasons: the hour it actually is, and an
+       hour the reader is pointing at. `live` decides the wording — "At this hour"
+       is a claim about the present and must not be said about 4am while it is
+       lunchtime. */
+    let painted = null, paintedLive = null;
+    function paintHour(h, live) {
+        // hourly data, so a re-paint of the same hour in the same tense is a no-op
+        if (h === painted && live === paintedLive) return;
+        painted = h; paintedLive = live;
+        const row = ATUS_HOURS[h];
+        const top = CATS.slice().sort((a, b) => row[b.key] - row[a.key])[0];
+        const when = live ? 'At this hour' : `At ${clockLabel(h)}`;
+        say.innerHTML = `${when}, <b>${Math.round(row[top.key])}%</b> of America is ${top.say}.`;
+        bar.innerHTML = CATS.map(c =>
+            `<span style="width:${row[c.key]}%;background:${c.color}"></span>`).join('');
+        /* The bar is a role="img" and its label said "at this hour" no matter which
+           hour was drawn, so a reader who scrubbed to 4am was told they were looking
+           at the present. It names the hour it is actually showing now. */
+        bar.setAttribute('aria-label', 'Share of the American population in each activity ' +
+            (live ? 'at this hour' : 'at ' + clockLabel(h)));
+    }
+
+    /* "At 3am" reads better than "At 03:00" in a sentence, and this is a sentence.
+       Noon and midnight are named rather than numbered for the same reason: "at
+       12pm" makes a reader stop and work out which twelve it is. */
+    function clockLabel(h) {
+        if (h === 0) return 'midnight';
+        if (h === 12) return 'noon';
+        return (h % 12) + (h < 12 ? 'am' : 'pm');
+    }
+
+    let liveHour = -1, liveTime = '';
     function tick() {
         const now = new Date();
         const h = now.getHours();
-        time.textContent = String(h).padStart(2, '0') + ':' +
+        liveHour = h;
+        liveTime = String(h).padStart(2, '0') + ':' +
             String(now.getMinutes()).padStart(2, '0');
-        moveHand(h, now.getMinutes());
+        /* Only while nothing is being scrubbed. A tick landing mid-hover would
+           otherwise yank the readout back to the present under the reader's
+           pointer — and worse, the big time would contradict the sentence. */
+        if (scrubbing === null) {
+            time.textContent = liveTime;
+            moveHand(h, now.getMinutes());
+            paintHour(h, true);
+        }
+    }
 
-        if (h === lastHour) return;                  // distribution only changes hourly
-        lastHour = h;
-        const row = ATUS_HOURS[h];
-        const top = CATS.slice().sort((a, b) => row[b.key] - row[a.key])[0];
-        say.innerHTML = `At this hour, <b>${Math.round(row[top.key])}%</b> of America is ${top.say}.`;
-        bar.innerHTML = CATS.map(c =>
-            `<span style="width:${row[c.key]}%;background:${c.color}"></span>`).join('');
+    /* ── scrubbing the ribbon ──
+       Hovering the day reads out the hour under the pointer. Three things keep it
+       from lying: the panel says "At 4am" rather than "At this hour", the big clock
+       shows the hour being pointed at rather than the real time, and .rn.scrubbing
+       marks the whole panel so the CSS can say it is no longer live. Leaving puts
+       every one of them back.
+
+       Bound to the .rn-rib wrapper rather than the svg's bands: the bands are
+       stacked polygons with gaps between them at the extremes, and the axis area
+       below them is part of the chart to a reader. mousemove on the wrapper reads a
+       continuous x, so there is no dead ground. */
+    let scrubbing = null;
+
+    function hourAt(clientX) {
+        if (!rib) return null;
+        const r = rib.getBoundingClientRect();
+        if (!r.width) return null;
+        /* The svg's own plot area is inset by L and R in viewBox units, and the
+           element scales to the container — so map through the same fractions the
+           drawing used rather than the element's full width, or the pointer and the
+           band under it disagree by most of an hour at the edges. */
+        const W = 900, L = 30, R = 10;
+        const x0 = r.left + (L / W) * r.width;
+        const plot = ((W - L - R) / W) * r.width;
+        const f = (clientX - x0) / plot;
+        return Math.max(0, Math.min(23, Math.floor(f * 24)));
+    }
+
+    function scrub(h) {
+        if (h === null || h === scrubbing) return;
+        scrubbing = h;
+        host.classList.add('scrubbing');
+        time.textContent = String(h).padStart(2, '0') + ':00';
+        moveHand(h, 0);
+        paintHour(h, false);
+        /* The badge is for looking at the other hours, so it is earned here rather
+           than on arrival at the panel. Idempotent, so every subsequent hour is
+           free. */
+        Badges.earn('now');
+    }
+
+    function unscrub() {
+        if (scrubbing === null) return;
+        scrubbing = null;
+        host.classList.remove('scrubbing');
+        time.textContent = liveTime;
+        const now = new Date();
+        moveHand(now.getHours(), now.getMinutes());
+        paintHour(liveHour, true);
+    }
+
+    if (rib) {
+        rib.addEventListener('mousemove', e => scrub(hourAt(e.clientX)));
+        rib.addEventListener('mouseleave', unscrub);
+        /* Touch has no hover, and a tap that scrolls the page should not also
+           scrub. touchmove is the honest equivalent: a finger dragged across the
+           ribbon reads the hours under it. Not passive, because a horizontal drag
+           on the ribbon is scrubbing, not scrolling. */
+        rib.addEventListener('touchmove', e => {
+            const t = e.touches[0];
+            if (!t) return;
+            const h = hourAt(t.clientX);
+            if (h === null) return;
+            e.preventDefault();
+            scrub(h);
+        });
+        rib.addEventListener('touchend', unscrub);
+        rib.addEventListener('touchcancel', unscrub);
+        /* Keyboard: the ribbon is a real stop in the tab order, and the arrow keys
+           walk the day. Without this the only route to the other twenty-three hours
+           — and to the badge behind them — is a pointer. */
+        rib.tabIndex = 0;
+        rib.setAttribute('role', 'group');
+        rib.setAttribute('aria-label',
+            'The whole day. Use the left and right arrow keys to read any hour.');
+        rib.addEventListener('keydown', e => {
+            const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+            if (!step) return;
+            e.preventDefault();
+            const from = scrubbing === null ? liveHour : scrubbing;
+            scrub((from + step + 24) % 24);
+        });
+        // tabbing away is leaving, the same as the pointer going
+        rib.addEventListener('blur', unscrub);
     }
 
     tick();
@@ -454,10 +674,10 @@ function initRightNow() {
 
    The point is to get a reader to actually touch the charts rather than scroll
    past them, so every badge is tied to a real interaction and none can be
-   earned by scrolling alone. Two exceptions, both deliberate: the last badge is
-   for reaching the live clock, which is the one thing on the page that needs no
-   input, and the "five countries" badge asks for repetition rather than a
-   single click, so there is something left to chase.
+   earned by scrolling alone. There are no exceptions left. There used to be two:
+   the clock badge was awarded for merely reaching the live panel, and it now asks
+   the reader to scrub the day ribbon; and a "five countries" badge asked for
+   repetition rather than a single click, which went with the badge itself.
 
    Kept in memory only. Nothing is written to storage: the piece is read once,
    and a returning reader starting fresh is better than explaining persistence.
@@ -475,11 +695,8 @@ const BADGE_ART = {
         <path class="b-ln b-sp" d="M20 6a19 19 0 0 1 0 28a19 19 0 0 1 0-28"/>
         <circle cx="26" cy="14" r="3.4" class="b-cf"/>
         <circle cx="26" cy="14" r="3.4" class="b-ln b-n o-40"/>`,
-    plane: `<circle cx="20" cy="20" r="14" class="b-cpf o-30"/>
-        <path class="b-ln b-sp" d="M6 30c6 0 10-2 14-6" stroke-dasharray="3 3"/>
-        <path class="b-cf" d="M8 24 32 9l-4.6 10 1.7 8.4-3.9-5-7.6 3.8 1.1-5.7z"/>
-        <path class="b-ln b-n o-40" d="M8 24 32 9l-4.6 10 1.7 8.4-3.9-5-7.6 3.8 1.1-5.7z"/>
-        <circle cx="32" cy="9" r="2.6" class="b-sf"/>`,
+    /* The `plane` glyph stood here, a paper dart on a dashed trail, for the
+       five-countries badge. It went with that badge. */
     ladder: `<circle cx="20" cy="20" r="14" class="b-spf o-25"/>
         <path class="b-ln b-s" d="M13 5v30M27 5v30"/>
         <path class="b-ln b-c" d="M13 11h14M13 18h14M13 25h14M13 32h14"/>
@@ -517,20 +734,19 @@ const BADGE_ART = {
 const BADGES = [
     { id: 'day', art: 'globe', ring: 'support',
       kicker: 'Time use', label: 'Day Tripper', stat: '10h05 vs 10h06',
-      hint: 'Swap the country in the first chart',
+      /* Not "swap the country in the picker" any more: the badge answers a click on
+         any of Chapter One's charts, and a hint that names only the dropdown sends
+         the reader to the one route they were least likely to take. */
+      hint: 'Click any chart in Chapter One',
       fact: 'Mexico spends as much of the day working as it does sleeping, washing and eating: 10h05m against 10h06m.' },
-    { id: 'day5', art: 'plane', ring: 'accent',
-      kicker: 'Unpaid labour', label: 'Jet Lagged', stat: '4 of 35',
-      hint: 'Visit five countries without leaving your chair',
-      fact: 'In Australia, Italy, Poland and Spain, more of the day goes to work nobody pays for than to work somebody does.' },
     { id: 'ladder', art: 'ladder', ring: 'accent',
       kicker: 'Happiness', label: 'Ladder Climber', stat: '4.04 apart',
       hint: 'Poke a country on the happiness scale',
       fact: 'Finland rates its own life 7.82 out of 10 and India rates its own 3.78. Same ten-point scale, four points apart.' },
     /* "Off the Line" stood here — Türkiye and Mexico earning within $456 of each other
        on the money-and-mood scatter. The chart is gone, so the badge went rather than
-       sit in the tray unearnable. Seven now, and every count on the page reads
-       BADGES.length rather than a literal. */
+       sit in the tray unearnable. "Jet Lagged" has since gone too, by request. Six
+       now, and every count on the page reads BADGES.length rather than a literal. */
     { id: 'ranks', art: 'trail', ring: 'ink',
       kicker: 'Rankings', label: 'Line Stalker', stat: 'Four winners',
       hint: 'Follow one country through all four measures',
@@ -541,7 +757,10 @@ const BADGES = [
       fact: 'An American earns 34 times what an Indian does, and still spends 17 fewer minutes a day at the job.' },
     { id: 'now', art: 'owl', ring: 'support',
       kicker: 'Hour by hour', label: 'Clock Watcher', stat: '56% at 8pm',
-      hint: 'Find out what the world is doing this minute',
+      /* Was "Find out what the world is doing this minute", which described arriving
+         at the panel — and arriving is no longer what earns it. The badge is for the
+         other twenty-three hours, so the hint asks for them. */
+      hint: 'Hover across the whole day, hour by hour',
       fact: 'At 8pm more than half of America is at leisure — the most it ever agrees on anything while awake.' },
     { id: 'waves', art: 'ripple', ring: 'support-pale', secret: true,
       kicker: 'Hidden', label: 'Made Waves', stat: '96% asleep',
@@ -607,6 +826,17 @@ const Badges = (function () {
 
     const nameOf = b => (b.id === 'now' ? badgeClockName() : b.label);
 
+    /* The card's closing line reads "That is all six", in words, because the panel
+       is prose and prose spells small numbers. It used to say "eight" as a literal
+       and went stale twice — once when the scatter badge was cut and once when Jet
+       Lagged was — each time telling a reader who had found everything that they
+       had not. Derived from BADGES.length now, like every other count on the page.
+       The fallback digit is unreachable at any plausible size and exists only so
+       that adding badges cannot produce "That is all undefined". */
+    const WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven',
+                   'eight', 'nine', 'ten', 'eleven', 'twelve'];
+    const spell = n => WORDS[n] || String(n);
+
     /* Locked slots stay anonymous: a ghosted medal and nothing else, so the tray
        shows how much is left without spoiling what any of it is. The hint lives
        in the title attribute for anyone who hovers, and on the card once found. */
@@ -671,7 +901,11 @@ const Badges = (function () {
         if (!li) return;
         const got = earned.has(b.id);
         li.classList.toggle('got', got);
-        li.title = got ? nameOf(b) + ' — open again'
+        /* Found: the figure, which is the reward and the one thing not already on
+           screen — the name sits on its own line in the slot, so a tooltip
+           repeating it would say nothing. Locked: the hint, or nothing but
+           "Hidden" for the secret one. */
+        li.title = got ? b.stat + ' · ' + b.fact
                        : b.secret ? 'Hidden' : b.hint;
         li.querySelector('.bdg-meta').setAttribute('aria-hidden', got ? 'false' : 'true');
         li.querySelector('.bdg-kicker').textContent = got ? b.kicker : '';
@@ -726,14 +960,25 @@ const Badges = (function () {
         }
     }
 
-    /* A tucked-away rail has no slot to aim at: collapsed, the tray is clipped to
-       nothing and measures nothing. So it opens before the badge sets off, not
-       when it arrives. */
+    /* A tucked-away rail has no slot to aim at: parked off the right edge of the
+       screen, the slot measures somewhere past innerWidth. So it opens before the
+       badge sets off, not when it arrives.
+
+       Returns how long to wait for it. Removing the class starts a 420ms slide, and
+       deliver() reads the slot's position the moment it is called — so a badge sent
+       off immediately would measure a panel still out in the margin, decide it was
+       off screen, and skip the flight it was owed. The caller waits this out. Zero
+       when the rail was already open, or when motion is off and there is no slide. */
+    const RAIL_SLIDE = 460;                    // the CSS transition, plus a frame
     function openRail() {
-        if (!rail) return;
+        if (!rail || !rail.classList.contains('shut')) return 0;
         rail.classList.remove('shut');
         const t = document.getElementById('badges-toggle');
-        if (t) t.setAttribute('aria-expanded', 'true');
+        if (t) {
+            t.setAttribute('aria-expanded', 'true');
+            t.setAttribute('aria-label', 'Hide the collection');
+        }
+        return still.matches ? 0 : RAIL_SLIDE;
     }
 
     /* ── the flight ──
@@ -885,8 +1130,16 @@ const Badges = (function () {
             if (queue.length) { show(queue.shift()); return; }
             lockPage(false);
             showVeil(false);
-            // put the reader back where they were reading
-            if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
+            /* Put the reader back where they were reading — the keyboard caret,
+               not the viewport. preventScroll matters more here than anywhere
+               else on the page: lastFocus is whatever the reader last touched,
+               which for a badge earned in Chapter Three may well be the country
+               picker back in Chapter One, and a bare focus() scrolls that
+               element into view. The reader closed a card and got yanked two
+               chapters up. */
+            if (lastFocus && document.contains(lastFocus)) {
+                lastFocus.focus({ preventScroll: true });
+            }
             lastFocus = null;
         }, 320);
     }
@@ -901,7 +1154,7 @@ const Badges = (function () {
         card.querySelector('[data-stat]').textContent = b.stat;
         card.querySelector('[data-fact]').textContent = b.fact;
         card.querySelector('[data-foot]').textContent = earned.size === BADGES.length
-            ? 'That is all eight. Nothing left hidden.'
+            ? `That is all ${spell(BADGES.length)}. Nothing left hidden.`
             : `${earned.size} of ${BADGES.length} discovered · ${BADGES.length - earned.size} still out there`;
         /* Remember where the reader was, but never remember the card's own close
            button: showing is already false when a queued card takes over, so
@@ -949,8 +1202,9 @@ const Badges = (function () {
                 earned.add(id);
                 save();
                 const b = BADGES.find(x => x.id === id);
-                openRail();                      // give the badge somewhere to land
-                deliver(b, anim => {
+                // give the badge somewhere to land, and let it slide back in first
+                const wait = openRail();
+                const fly = () => deliver(b, anim => {
                     render(id, anim);             // the slot fills as it arrives
                     const lag = setTimeout(() => {
                         lags.delete(lag);
@@ -959,6 +1213,12 @@ const Badges = (function () {
                     }, CARD_LAG);
                     lags.add(lag);
                 });
+                /* Tracked in `flights` like every other timer here, so a reset while
+                   the rail is still sliding cancels the trip instead of launching a
+                   badge into a collection that has just been emptied. */
+                if (!wait) { fly(); return; }
+                const open = setTimeout(() => { flights.delete(open); fly(); }, wait);
+                flights.add(open);
             }, REVEAL_DELAY));
         },
         has: id => earned.has(id),
@@ -995,20 +1255,16 @@ function initBadges() {
                  document.getElementById('badge-reset'));
 
     /* How the badges work is worth reading once and then never again, so it hides
-       behind an i rather than standing in the panel taking up room. */
-    const info = document.getElementById('badges-info');
-    const note = document.getElementById('badges-note');
-    if (info && note) {
-        info.addEventListener('click', () => {
-            const open = note.hidden;
-            note.hidden = !open;
-            info.setAttribute('aria-expanded', String(open));
-        });
-    }
+       behind an i. It reads on hover and on keyboard focus — pure CSS, no handler
+       here: the note is a role="tooltip" shown by :hover / :focus-visible on the i,
+       so there is no open/closed state for script to track. */
 
     /* The rail can be tucked away, because a panel pinned to the edge of a long
-       read should be dismissible. Only offered where it actually is a rail: at
-       narrow widths the collection sits in the flow and there is nothing to fold.
+       read should be dismissible. It slides off the right edge of the screen and
+       leaves its tab behind — see `.badges.shut` in the stylesheet — so the only
+       state script owns is the class and the button's two labels. Only offered where
+       it actually is a rail: at narrow widths the collection sits in the flow, with
+       nothing to the side of it to slide into.
        The state rides along in sessionStorage with the collection itself. */
     const toggle = document.getElementById('badges-toggle');
     if (toggle && rail) {
@@ -1025,14 +1281,11 @@ function initBadges() {
         toggle.addEventListener('click', () => set(!rail.classList.contains('shut'), true));
     }
 
-    // the one badge with no input: arriving at the live panel
-    const now = document.getElementById('sec-now');
-    if (now && 'IntersectionObserver' in window) {
-        const obs = new IntersectionObserver(es => es.forEach(e => {
-            if (e.isIntersecting) { Badges.earn('now'); obs.disconnect(); }
-        }), { threshold: 0.35 });
-        obs.observe(now);
-    }
+    /* `now` used to be earned by an IntersectionObserver on #sec-now — the one badge
+       that needed no input, awarded for scrolling far enough. It is earned by
+       scrubbing the day ribbon now (see initRightNow), which makes every badge in
+       the collection answer a real interaction and removes the exception this file
+       used to have to explain. Nothing replaces the observer here. */
 }
 
 /**
@@ -1561,7 +1814,7 @@ function buildCoverClock(svg) {
    generated in here, which is why COPY.md Part 2 lost two blocks. */
 
 /**
- * The whole American day, itemised — the one place this story can open every bar.
+ * The whole American day, opened — the one place this story can take a bar apart.
  *
  * Every other chart here treats the day as five numbers, because the OECD file has
  * five measures and no more. The American Time Use Survey publishes 431 activity
@@ -1569,8 +1822,26 @@ function buildCoverClock(svg) {
  * just leisure. That is the section's reason to exist and also its limitation, which
  * the captions say plainly.
  *
- * Three panels, in the order the questions arrive: how the day splits, what is inside
- * each block, and how the shape changes with age.
+ * One visualisation, three levels deep, in the order the questions arrive:
+ *
+ *   level 1  the day as five blocks — the only thing drawn on arrival
+ *   level 2  the chosen block as its activities
+ *   level 3  the chosen activity as Overview | By age | By sex
+ *
+ * Three separate charts stood here before: the stacked day, all forty-four activities
+ * at once, and four hand-picked lines by age band. The middle one was the problem —
+ * forty-four rows at equal visual weight is a list, not a chart, and nothing told the
+ * reader which of them to care about. Now the detail is built only when it is asked
+ * for, and the age and sex numbers hang off whatever the reader chose rather than
+ * sitting further down the page as unrelated visuals. Same data, drawn on demand.
+ *
+ * The prose around it went the same way. This function used to write two paragraphs
+ * and three callout rows of fixed findings into the page on load — the split of the
+ * day, television's share, where the retirement hours go, the sex gap. All of it was
+ * true and all of it pre-empted the interaction: the reader was told the answer, then
+ * offered a control for checking it. What is left is one callout, rewritten by
+ * paintWow() from the state, so the surprise belongs to whatever the reader opened
+ * and to the tab they are reading it on.
  */
 function initDayUS() {
     const host = document.getElementById('du-bar');
@@ -1582,6 +1853,14 @@ function initDayUS() {
         return h ? h + 'h' + String(m).padStart(2, '0') : m + 'm';
     };
     const pct = v => (v / M.grand * 100).toFixed(1) + '%';
+    /* Counts inside a sentence read as words, not digits. Its own copy rather than
+       the one in the Badges module, which is closed over there and counts to twelve;
+       this one has to reach the fourteen rows of the open leisure block. Above that
+       range a digit is fine — "the 23 smallest activities" is a number, not a count
+       a reader holds in their head. */
+    const COUNT = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight',
+                   'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen'];
+    const spell = n => COUNT[n] || String(n);
     /* One colour per block, from the same five the day card uses, so a reader who
        has already met the stacked bar upstairs does not have to learn it twice. */
     const TONE = {
@@ -1589,142 +1868,466 @@ function initDayUS() {
         LEI: 'var(--leisure)', OTH: 'var(--other)'
     };
 
-    // ── 1 · the day as one bar ───────────────────────────────
-    host.innerHTML = D.blocks.map(b =>
-        `<span style="width:${b.min / M.grand * 100}%;background:${TONE[b.key]}"
-               title="${b.label}: ${hm(b.min)}"></span>`).join('');
-    const key = document.getElementById('du-key');
-    if (key) {
-        key.innerHTML = D.blocks.map(b =>
-            `<span><i style="background:${TONE[b.key]}"></i>${b.label}
-             <b>${hm(b.min)}</b></span>`).join('');
+    const crumb = document.getElementById('du-crumb');
+    const open  = document.getElementById('du-open');
+    const ask   = document.getElementById('du-ask');
+    const wow   = document.getElementById('du-wow');
+
+    /* Where the reader is: which block is open, which activity inside it, and which
+       of the three tabs. All three null is level one, and every render reads from
+       here rather than from the DOM, so there is one description of the state. */
+    let atBlock = null, atAct = null, atTab = 'overview';
+
+    /* ── leisure opens finer than the rest ──
+       The tier-2 spine files most of leisure under one group, "Relaxing: TV, reading,
+       games", holding 3h50 — and the whole point of this section is that television
+       is most of that. Seeing it needs the six-digit codes the spine does not reach,
+       which is what D.leisure holds, with the same age and sex profiles as everything
+       else.
+
+       Note what D.leisure is and is not: it is a finer partition of the WHOLE leisure
+       block, not a sub-split of that one group — its twelve items sum to 298.3
+       minutes against the group's 229.8. What it leaves out is volunteering and
+       religion, so those two come back from the spine and the fourteen rows sum to
+       the block total. Opening leisure therefore skips the umbrella group entirely
+       and hands the reader Television at 2h43 as the top row, which is the finding
+       the section is here to make. No other block has a finer split to give. */
+    const LEI_ROWS = D.leisure.labels.map(l => ({
+        key: 'fin-' + l.key,
+        label: l.label,
+        min: D.leisure.overall[l.key],
+        sex: [D.leisure.bySex.men[l.key], D.leisure.bySex.women[l.key]],
+        age: D.leisure.byAge.map(b => b.items[l.key]),
+        block: 'LEI'
+    })).concat(D.groups.filter(g => g.key === '15xx' || g.key === '14xx'))
+       .sort((a, b) => b.min - a.min);
+
+    const actsIn = key => (key === 'LEI'
+        ? LEI_ROWS
+        : D.groups.filter(g => g.block === key).slice().sort((a, b) => b.min - a.min));
+
+    const blockOf = key => D.blocks.find(b => b.key === key);
+    const actOf = key => {
+        if (!key) return null;
+        return LEI_ROWS.find(r => r.key === key) ||
+               D.groups.find(g => g.key === key) || null;
+    };
+
+    // ── level 1 · the day as one bar, every block a button ───
+    /* Real buttons rather than styled spans: they are the primary control of the
+       section, so they belong in the tab order and must answer to Enter and Space
+       without any key handling written here. */
+    function paintDay() {
+        host.innerHTML = D.blocks.map(b =>
+            `<button type="button" data-block="${b.key}"
+                     class="lu-seg${atBlock === b.key ? ' on' : ''}"
+                     style="width:${b.min / M.grand * 100}%;background:${TONE[b.key]}"
+                     aria-pressed="${atBlock === b.key}"
+                     title="${b.label}: ${hm(b.min)} — open it"><span class="vh">Open
+                     ${b.label}, ${hm(b.min)}</span></button>`).join('');
+        const key = document.getElementById('du-key');
+        if (key) {
+            key.innerHTML = D.blocks.map(b =>
+                `<span${atBlock === b.key ? ' class="on"' : ''}><i
+                  style="background:${TONE[b.key]}"></i>${b.label}
+                 <b>${hm(b.min)}</b></span>`).join('');
+        }
+        /* The instruction is only true while nothing is open, and a line that keeps
+           telling a reader to do what they have already done reads as a bug. */
+        if (ask) {
+            ask.textContent = atBlock
+                ? 'Now choose an activity, or go back to the whole day.'
+                : 'Choose a part of the day to open it.';
+        }
     }
 
-    // ── 2 · what is inside each block ────────────────────────
-    /* Bars are scaled inside their own block, not against the whole day. Sleeping is
-       520 minutes and commuting is 17, so one shared scale would draw thirty of the
-       forty-four groups as a line one pixel wide. The block totals above carry the
-       cross-block comparison; these bars carry the within-block one, and every row
-       prints its minutes so the precision is never only in the length. */
-    const list = document.getElementById('du-list');
-    if (list) {
-        list.innerHTML = D.blocks.map(b => {
-            const gs = D.groups.filter(g => g.block === b.key);
-            const max = Math.max(...gs.map(g => g.min));
-            return `<div class="lu-block">
-                <div class="lu-bhead">
-                    <span><i style="background:${TONE[b.key]}"></i>${b.label}</span>
-                    <span class="lu-btot">${hm(b.min)}</span>
-                    <span class="lu-bpct">${pct(b.min)}</span>
-                </div>
-                ${gs.map(g => `<div class="lu-row${g.min === max ? ' lead' : ''}">
-                    <span class="lu-name">${g.label}${g.rest
-                        ? ` <em>(${g.rest} smaller kinds)</em>` : ''}</span>
-                    <div class="lu-track">
-                        <span class="lu-fill" style="width:${g.min / max * 100}%;
-                            background:${TONE[b.key]}"></span>
-                    </div>
-                    <span class="lu-val">${hm(g.min)}</span>
-                </div>`).join('')}
-            </div>`;
-        }).join('');
+    // ── the trail back up ────────────────────────────────────
+    function paintCrumb() {
+        if (!crumb) return;
+        if (!atBlock) { crumb.innerHTML = ''; return; }
+        const b = blockOf(atBlock), a = actOf(atAct);
+        const hop = (label, to) =>
+            `<button type="button" class="lu-hop" data-up="${to}">${label}</button>`;
+        let s = hop('Whole day', 'day') + '<span class="lu-arrow">→</span>';
+        s += a ? hop(b.label, 'block') + '<span class="lu-arrow">→</span>' +
+                 `<span class="lu-here">${a.label}</span>`
+               : `<span class="lu-here">${b.label}</span>`;
+        crumb.innerHTML = s;
     }
 
-    // ── 3 · four activities across seven age bands ───────────
-    /* Sleeping is deliberately not on this chart. It runs 8h19 to 9h18 across every
-       band, so it would sit as a flat rule at the top and squash the four lines that
-       actually move into the bottom fifth of the plot. The copy states its shape
-       instead. */
-    const age = document.getElementById('du-age');
-    if (age) {
-        const pick = k => D.groups.find(g => g.key === k);
-        const LINES = [
-            { label: 'Working', vals: pick('0501').age, color: 'var(--paid)' },
-            { label: 'Television', vals: D.leisure.byAge.map(b => b.items.tv), color: 'var(--accent-pale)' },
-            { label: 'Housework', vals: pick('0201').age, color: 'var(--support)' },
-            { label: 'Caring for own children', vals: pick('0301').age, color: 'var(--support-pale)' }
-        ];
-        const W = 860, H = 320, PL = 46, PR = 152, PT = 20, PB = 40;
-        const hi = Math.max(...LINES.flatMap(l => l.vals));
+    // ── level 2 · the block as its activities ────────────────
+    /* Scaled inside the block, not against the day: sleeping is 520 minutes and
+       commuting is 17, so one shared scale would draw most rows as a hairline. The
+       stacked bar above carries the cross-block comparison, these rows carry the
+       within-block one, and every row prints its minutes so the precision is never
+       only in the length. */
+    function acts(b) {
+        const rows = actsIn(b.key);
+        const max = Math.max(...rows.map(r => r.min));
+        return `<div class="lu-block">
+            <div class="lu-bhead">
+                <span><i style="background:${TONE[b.key]}"></i>${b.label}</span>
+                <span class="lu-btot">${hm(b.min)}</span>
+                <span class="lu-bpct">${pct(b.min)}</span>
+            </div>
+            ${rows.map(r => `<button type="button" class="lu-row${
+                    r.key === atAct ? ' on' : ''}" data-act="${r.key}"
+                    aria-pressed="${r.key === atAct}">
+                <span class="lu-name">${r.label}${r.rest
+                    ? ` <em>(${r.rest} smaller kinds)</em>` : ''}</span>
+                <span class="lu-track">
+                    <span class="lu-fill" style="width:${r.min / max * 100}%;
+                        background:${TONE[b.key]}"></span>
+                </span>
+                <span class="lu-val">${hm(r.min)}</span>
+            </button>`).join('')}
+        </div>`;
+    }
+
+    // ── level 3 · one activity, three ways ───────────────────
+    function tabs() {
+        const T = [['overview', 'Overview'], ['age', 'By age'], ['sex', 'By sex']];
+        return `<div class="lu-tabs" role="tablist">${T.map(([k, l]) =>
+            `<button type="button" role="tab" class="lu-tab${atTab === k ? ' on' : ''}"
+                     data-tab="${k}" aria-selected="${atTab === k}">${l}</button>`
+        ).join('')}</div>`;
+    }
+
+    /* Overview says what the activity is as a share of two things a reader can hold
+       at once: its own block, and the whole day. Neither alone is enough — 2h43 is
+       both "more than half of American leisure" and "11% of the day". */
+    function overview(a, b) {
+        const inBlock = Math.round(a.min / b.min * 100);
+        return `<p class="lu-say"><b>${hm(a.min)}</b> a day
+            &mdash; <b>${inBlock}%</b> of ${b.label.toLowerCase()},
+            and <b>${pct(a.min)}</b> of the whole day.</p>`;
+    }
+
+    /* One line, seven bands. A single series rather than the four hand-picked ones
+       the deleted chart drew, because the reader has already chosen what they want
+       to see and drawing three more would answer a question nobody asked. Scaled
+       from zero: these are minutes of a day, and a truncated axis would invent a
+       cliff out of an hour's drift. */
+    function byAge(a) {
+        const W = 860, H = 250, PL = 46, PR = 18, PT = 18, PB = 38;
+        const vals = a.age;
+        const hi = Math.max(...vals);
+        const step = hi > 240 ? 120 : hi > 90 ? 60 : hi > 30 ? 20 : 10;
+        const top = Math.max(step, Math.ceil(hi / step) * step);
         const X = i => PL + i / (M.bands.length - 1) * (W - PL - PR);
-        const Y = v => PT + (H - PT - PB) - v / hi * (H - PT - PB);
+        const Y = v => PT + (H - PT - PB) - v / top * (H - PT - PB);
         let s = '';
-        for (let v = 0; v <= hi; v += 60) {
+        for (let v = 0; v <= top; v += step) {
             s += `<line class="sc-web" x1="${PL}" y1="${Y(v)}" x2="${W - PR}" y2="${Y(v)}"/>`;
-            s += `<text class="sc-tick" x="${PL - 9}" y="${Y(v) + 4}" text-anchor="end">${v / 60}h</text>`;
+            s += `<text class="sc-tick" x="${PL - 9}" y="${Y(v) + 4}"
+                   text-anchor="end">${v >= 60 ? v / 60 + 'h' : v + 'm'}</text>`;
         }
         M.bands.forEach((b, i) => {
-            s += `<text class="sc-tick" x="${X(i)}" y="${H - PB + 20}" text-anchor="middle">${b}</text>`;
+            s += `<text class="sc-tick" x="${X(i)}" y="${H - PB + 20}"
+                   text-anchor="middle">${b}</text>`;
         });
-        LINES.forEach(l => {
-            const pts = l.vals.map((v, i) => [X(i), Y(v)]);
-            s += `<polyline class="lu-line" points="${pts.map(p => p.join(',')).join(' ')}"
-                   stroke="${l.color}"/>`;
-            pts.forEach(p => {
-                s += `<circle class="lu-pt" cx="${p[0]}" cy="${p[1]}" r="3.4" fill="${l.color}"/>`;
-            });
-            const last = pts[pts.length - 1];
-            s += `<text class="lu-lab" x="${last[0] + 10}" y="${last[1] + 4}"
-                   fill="${l.color}">${l.label}</text>`;
+        const pts = vals.map((v, i) => [X(i), Y(v)]);
+        s += `<polyline class="lu-line" points="${pts.map(p => p.join(',')).join(' ')}"
+               stroke="var(--accent)"/>`;
+        pts.forEach((p, i) => {
+            s += `<circle class="lu-pt" cx="${p[0]}" cy="${p[1]}" r="3.6"
+                   fill="var(--accent)"/>`;
+            s += `<text class="lu-vlab" x="${p[0]}" y="${p[1] - 11}"
+                   text-anchor="middle">${hm(vals[i])}</text>`;
         });
-        age.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img"
-            aria-label="Minutes per day of working, television, housework and childcare by age band">${s}</svg>`;
+        const lo = vals.indexOf(Math.min(...vals)), up = vals.indexOf(hi);
+        return `<div class="lu-stage"><svg viewBox="0 0 ${W} ${H}" role="img"
+            aria-label="${a.label}, minutes per day across seven age bands, from
+            ${hm(vals[0])} at ${M.bands[0]} to ${hm(vals[6])} at ${M.bands[6]}">${s}</svg></div>
+            <p class="lu-say">Highest at <b>${M.bands[up]}</b> with
+            <b>${hm(hi)}</b> a day, lowest at <b>${M.bands[lo]}</b> with
+            <b>${hm(vals[lo])}</b>.</p>`;
     }
 
-    /* Every figure in the section's own copy, written from the data file so the prose
-       cannot drift from the bars beside it. */
-    const set = (id, html) => {
-        const nd = document.getElementById(id);
-        if (nd) nd.innerHTML = html;
-    };
-    const g = k => D.groups.find(x => x.key === k);
-    const blk = k => D.blocks.find(x => x.key === k);
-    const sleep = g('0101'), work = g('0501'), house = g('0201'), cook = g('0202'),
-          kids = g('0301'), relax = g('1203');
+    /* Two bars from a shared centre line rather than two lengths side by side: the
+       question is the size of the gap, and a common baseline is the only way to read
+       a gap without measuring. */
+    function bySex(a) {
+        const men = a.sex[0], women = a.sex[1];
+        const hi = Math.max(men, women) || 1;
+        const gap = Math.abs(men - women);
+        const more = men > women ? 'Men' : 'Women';
+        const row = (label, v) => `<div class="lu-srow">
+            <span class="lu-sname">${label}</span>
+            <span class="lu-track"><span class="lu-fill"
+                  style="width:${v / hi * 100}%;background:${
+                      label === 'Men' ? 'var(--accent)' : 'var(--support)'}"></span></span>
+            <span class="lu-val">${hm(v)}</span>
+        </div>`;
+        return `<div class="lu-sex" role="img" aria-label="${a.label}, ${hm(men)} a day
+            for men against ${hm(women)} for women">
+            ${row('Men', men)}${row('Women', women)}</div>
+            <p class="lu-say">${gap < 1
+                ? 'Men and women spend the same time on this, within a minute a day.'
+                : `<b>${more}</b> spend <b>${hm(gap)}</b> more a day on this.`}</p>`;
+    }
 
-    set('du-lead', `Split every minute of it and the American day is
-        <strong>${hm(sleep.min)}</strong> asleep, <strong>${hm(work.min)}</strong> at work and
-        <strong>${hm(relax.min)}</strong> relaxing — and only
-        <strong>${hm(g('1805').min)}</strong> commuting.`);
-    set('du-body', `The five blocks the rest of this page reports as single numbers open into
-        <strong>${M.groups} activities</strong>, rolled up from the survey&rsquo;s
-        <strong>${M.codes}</strong> codes. Nothing is left over: they sum to
-        ${M.grand.toLocaleString()} minutes. Sleep, meals and washing take
-        <strong>${pct(blk('PCA').min)}</strong> of the day, leisure
-        <strong>${pct(blk('LEI').min)}</strong>, paid work and study
-        <strong>${pct(blk('PAW').min)}</strong>, and the unpaid work the second-shift chapter
-        argues about <strong>${pct(blk('UPW').min)}</strong>.`);
-    set('du-tv-read', `Inside that relaxing block, television alone is
-        <strong>${hm(D.leisure.overall.tv)}</strong> — <strong>${M.tvShare}%</strong> of all
-        American leisure, more than the other eleven ways of spending it put together. Reading
-        takes <strong>${hm(D.leisure.overall.reading)}</strong>, sport
-        <strong>${hm(D.leisure.overall.sport)}</strong>, and going out to anything at all
-        <strong>${hm(D.leisure.overall.goingout)}</strong>.`);
-    /* Where the retirement hours go. Worth counting rather than gesturing at: the
-       obvious sentence is that television absorbs the time work gives back, and it
-       does not — it takes about two of those four hours, with reading and sleep
-       between them taking most of the rest. */
-    const freed = work.age[3] - work.age[6];
-    const tvAge = D.leisure.byAge.map(b => b.items.tv);
-    const readAge = D.leisure.byAge.map(b => b.items.reading);
-    const share = v => Math.round(v / freed * 100) + '%';
-    set('du-age-read', `Working falls off a cliff at retirement, from
-        <strong>${hm(work.age[3])}</strong> a day in the 45&ndash;54s to
-        <strong>${hm(work.age[6])}</strong> after 75 &mdash; <strong>${hm(freed)}</strong> handed
-        back. Television takes <strong>${share(tvAge[6] - tvAge[3])}</strong> of it, reading
-        <strong>${share(readAge[6] - readAge[3])}</strong> and sleep
-        <strong>${share(sleep.age[6] - sleep.age[3])}</strong>. Childcare is the one curve with a
-        peak rather than a slope, <strong>${hm(kids.age[1])}</strong> at 25&ndash;34. Sleep is not
-        drawn here because it barely moves: <strong>${hm(Math.min(...sleep.age))}</strong> to
-        <strong>${hm(Math.max(...sleep.age))}</strong> across every band.`);
-    set('du-sex-read', `Men spend <strong>${hm(work.sex[0] - work.sex[1])}</strong> more a day at
-        work than women. Women spend <strong>${hm((house.sex[1] - house.sex[0]) +
-        (cook.sex[1] - cook.sex[0]))}</strong> more on cleaning, laundry and cooking, and
-        <strong>${hm(kids.sex[1] - kids.sex[0])}</strong> more caring for their children.`);
-    set('du-relax-read', `The leftover goes where you would guess. Men take
-        <strong>${hm(relax.sex[0] - relax.sex[1])}</strong> more relaxing a day than women —
-        television, reading and games — and <strong>${hm(g('1301').sex[0] - g('1301').sex[1])}</strong>
-        more sport.`);
+    /* ── the biggest surprise, rewritten for whatever is open ──
+       This was a fixed paragraph about television, printed whether or not the reader
+       ever opened leisure. It now answers to the state: nothing while the day is
+       whole, the block's own shape once a block is open, and once an activity is
+       chosen, the surprise belonging to the tab being read — so the sentence under
+       the age line is about age and the one under the sex bars is about sex.
+
+       Every branch is computed, and every branch has to be true of all fifty-eight
+       rows, not just the interesting ones. Hence the shape tests below rather than a
+       lookup table of hand-written findings: a table would be prettier for TV and
+       childcare and would lie about "Travelling to appointments". */
+    function paintWow() {
+        if (!wow) return;
+        if (!atBlock) { wow.innerHTML = ''; return; }
+        const b = blockOf(atBlock), a = actOf(atAct);
+        const head = '<p class="callout-head">The biggest surprise</p>';
+        const row = html => `<div class="callout-row"><span class="callout-ic">&#10022;</span>
+            <p>${html}</p></div>`;
+        wow.innerHTML = head + row(a ? wowAct(a, b) : wowBlock(b));
+    }
+
+    /* A block on its own: how lopsided it is. The top row against everything under
+       it is the fact that survives at every level of this section — leisure is
+       television, unpaid work is cleaning and cooking — and it is the reason the
+       reader should keep clicking. */
+    function wowBlock(b) {
+        const rows = actsIn(b.key);
+        const top = rows[0], rest = rows.slice(1).reduce((s, r) => s + r.min, 0);
+        const beats = top.min > rest;
+        return `${b.label} is <b>${hm(b.min)}</b> of the day, and
+            <b>${top.label.toLowerCase()}</b> takes <b>${hm(top.min)}</b> of it &mdash;
+            ${beats
+                ? `more than the other ${spell(rows.length - 1)} put together`
+                : `<b>${Math.round(top.min / b.min * 100)}%</b> of the block, ahead of
+                   ${rows[1].label.toLowerCase()} at <b>${hm(rows[1].min)}</b>`}.`;
+    }
+
+    /* One activity, and which surprise depends on which tab is open. */
+    function wowAct(a, b) {
+        if (atTab === 'age') return wowAge(a);
+        if (atTab === 'sex') return wowSex(a);
+        const rows = actsIn(b.key);
+        const i = rows.findIndex(r => r.key === a.key);
+        /* How many of the smaller activities below it this one outweighs on its own.
+           Always computable, always true, and it says something a percentage does
+           not: it puts the number next to things the reader has just been reading. */
+        let n = 0, run = 0;
+        for (let j = i + 1; j < rows.length; j++) {
+            run += rows[j].min;
+            if (run > a.min) break;
+            n = j - i;
+        }
+        if (n >= 2) {
+            return `<b>${hm(a.min)}</b> a day &mdash; on its own, more than the
+                ${spell(n)} smallest activities in ${b.label.toLowerCase()} put together.`;
+        }
+        /* Only claim a runaway lead when there is one. Cleaning tops unpaid work at 36m
+           with cooking right behind at 33m, and "nothing else comes close" over a
+           three-minute margin is the page overselling its own chart. */
+        if (i === 0 && a.min >= rows[1].min * 1.4) {
+            return `Nothing else in ${b.label.toLowerCase()} comes close:
+                <b>${hm(a.min)}</b> against <b>${hm(rows[1].min)}</b> for
+                ${rows[1].label.toLowerCase()}, the next largest.`;
+        }
+        if (i === 0) {
+            return `It leads ${b.label.toLowerCase()}, but only just:
+                <b>${hm(a.min)}</b> against <b>${hm(rows[1].min)}</b> for
+                ${rows[1].label.toLowerCase()} behind it.`;
+        }
+        /* A week is the frame that makes a small daily number legible — three minutes a
+           day is nothing, twenty-one minutes a week is something you can picture doing.
+           The share of the day comes along only while it still says something: below
+           about seven minutes it rounds to 0.0% and reads as a bug rather than a fact. */
+        const week = a.min * 7;
+        const asWeek = week >= 90 ? hm(Math.round(week)) : Math.round(week) + ' minutes';
+        return a.min >= 7.2
+            ? `<b>${hm(a.min)}</b> a day is <b>${pct(a.min)}</b> of the whole day &mdash;
+               about <b>${asWeek}</b> of every week.`
+            : `<b>${hm(a.min)}</b> a day is easy to miss in a chart of the whole day
+               &mdash; it is <b>${asWeek}</b> of every week.`;
+    }
+
+    /* The shape of the age curve, in words, tested rather than assumed. An interior
+       peak is the interesting case and the one the section wants a reader to find —
+       childcare at 25–34, working at 35–44 — but most activities only slope, and a
+       few barely move at all. */
+    function wowAge(a) {
+        const v = a.age, hi = Math.max(...v), lo = Math.min(...v);
+        const up = v.indexOf(hi);
+        const spread = hi / Math.max(lo, 0.05);
+        if (spread < 1.3) {
+            return `Age changes this hardly at all: <b>${hm(lo)}</b> to <b>${hm(hi)}</b>
+                across every band from ${M.bands[0]} to ${M.bands[6]}. Most of the day
+                does not hold still like this.`;
+        }
+        /* An interior peak is only worth calling one if the middle stands clear of BOTH
+           ends. Cleaning peaks at 65–74 with 46m and still reads 45m after 75, and
+           vehicle upkeep's 3m "peak" at 35–44 is 3m at 15–24 too — writing "falling
+           away on both sides" over a one-minute rounding difference would be the page
+           inventing a shape the line does not have. The margin is a ratio rather than
+           a fixed number of minutes because these rows run from 2 to 520 minutes. */
+        const ends = Math.max(v[0], v[6]);
+        if (up > 0 && up < 6 && hi >= ends * 1.4) {
+            /* Own children's schooling peaks at 6m and both ends round to 0m, so the
+               general form would set "falling away on both sides to 0m and 0m" — true,
+               and it reads as missing data. When both ends vanish at this precision,
+               say that instead of printing the zeros twice. */
+            return hm(v[0]) === hm(v[6])
+                ? `It belongs to one stretch of life and almost no other:
+                   <b>${hm(hi)}</b> a day at <b>${M.bands[up]}</b>, against
+                   <b>${hm(v[0])}</b> at both ends of the range.`
+                : `This is one of the few activities that peaks in the middle of life
+                   rather than at one end: <b>${hm(hi)}</b> at <b>${M.bands[up]}</b>,
+                   falling away on both sides to <b>${hm(v[0])}</b> at ${M.bands[0]} and
+                   <b>${hm(v[6])}</b> after 75.`;
+        }
+        /* Everything else is read across the two ends of life. But the ends are what
+           gets PRINTED, and hm() rounds to the minute: "Other leisure" runs 1.4 to 0.8
+           and would set as "1m a day at 15–24 against 1m after 75" under a sentence
+           claiming it belongs to the young. If the two ends render identically, the
+           only honest reading is that the ends agree, whatever the interior does. */
+        const lo0 = hm(v[0]), lo6 = hm(v[6]);
+        if (lo0 === lo6) {
+            return `It begins and ends life at the same place, <b>${lo0}</b> a day, and the
+                movement is all in between: <b>${hm(hi)}</b> at ${M.bands[up]} against
+                <b>${hm(lo)}</b> at ${M.bands[v.indexOf(lo)]}.`;
+        }
+        const rising = v[6] > v[0];
+        const ratio = Math.max(v[0], v[6]) / Math.max(Math.min(v[0], v[6]), 0.05);
+        /* A shallow slope where the real extreme sits somewhere in the middle. Naming
+           the end again as the "high point" would repeat the figure just printed, so
+           this only fires when the extreme is genuinely interior AND far enough from
+           the ends to be worth a clause: "dipping to 3m" under "3m a day" is noise. */
+        const swing = rising ? v.indexOf(lo) : up;
+        const swingV = rising ? lo : hi;
+        if (ratio < 1.7 && swing > 0 && swing < 6 && hm(swingV) !== lo0 && hm(swingV) !== lo6) {
+            return `It drifts rather than turns: <b>${lo0}</b> a day at ${M.bands[0]}
+                against <b>${lo6}</b> after 75, ${rising ? 'dipping' : 'rising'} to
+                <b>${hm(swingV)}</b> at ${M.bands[swing]} on the way.`;
+        }
+        /* Left with a slope between the two ends. How strong a claim to make about it
+           is the ratio's business, not the direction's: "never comes back" is right for
+           homework at 35m against 0m and absurd for phone calls at 10m against 9m, and
+           the two would otherwise take the same branch. Below 1.4× the ends barely
+           differ, so the sentence just reports them. */
+        if (ratio < 1.4) {
+            return `The two ends of life are closer than you would expect here:
+                <b>${lo0}</b> a day at ${M.bands[0]} against <b>${lo6}</b> after 75.`;
+        }
+        return rising
+            ? `It keeps growing to the end of life: <b>${lo0}</b> a day at ${M.bands[0]}
+               against <b>${lo6}</b> after 75, ${times(ratio)} as much.`
+            : `It thins out with age: <b>${lo0}</b> a day at ${M.bands[0]} against
+               <b>${lo6}</b> after 75${ratio >= 4
+                   ? ', and it never comes back' : ''}.`;
+    }
+
+    /* Words rather than a bare multiple, because these ratios run from 1.2 to 176 and
+       "176× as much" reads as a data error even when it is right. The 1.8 floor is set
+       by television: 2h17 to 4h17 is 1.88×, and "half again as much" undersells a
+       two-hour difference, which is the headline figure of the whole section. */
+    function times(r) {
+        return r >= 9 ? 'many times' : r >= 1.8 ? `${r.toFixed(1)}&times;` : 'half again';
+    }
+
+    /* The gap, and the ratio behind it. The ratio is what makes the small numbers
+       land: four minutes against one is a rounding error in a day and a fourfold
+       difference in a life. */
+    function wowSex(a) {
+        const men = a.sex[0], women = a.sex[1];
+        const gap = Math.abs(men - women);
+        const more = men > women ? 'Men' : 'Women';
+        const less = men > women ? 'women' : 'men';
+        /* Rendered equality, not arithmetic equality. 7.6 against 7.4 is a gap under a
+           minute and sets as "8m for men, 7m for women" — a sentence claiming they are
+           the same, printing two different numbers to prove it. Both tests have to
+           agree before the claim is made. */
+        if (gap < 1 && hm(men) === hm(women)) {
+            return `This is one of the few things the two sexes do in equal measure:
+                <b>${hm(men)}</b> a day each.`;
+        }
+        if (gap < 1) {
+            return `The difference here is under a minute a day &mdash; <b>${hm(men)}</b>
+                for men against <b>${hm(women)}</b> for women, which is as close to equal
+                as this survey can measure.`;
+        }
+        const r = Math.max(men, women) / Math.max(Math.min(men, women), 0.05);
+        /* The ratio only rides along when it is large enough to mean something and
+           small enough to be readable. Both bounds matter: 1.1× is noise, and vehicle
+           upkeep's 5m against 1m is a tenfold difference that reads as an error printed
+           as a multiple, so it gets words instead. */
+        const scale = r >= 9 ? ', many times as much'
+                    : r >= 1.5 ? `, ${r.toFixed(1)}&times; as much` : '';
+        return `<b>${more}</b> spend <b>${hm(gap)}</b> more a day on this than ${less} do
+            &mdash; <b>${hm(Math.max(men, women))}</b> against
+            <b>${hm(Math.min(men, women))}</b>${scale}.`;
+    }
+
+    // ── draw whatever the state says ─────────────────────────
+    function paint() {
+        paintDay();
+        paintCrumb();
+        paintWow();
+        if (!open) return;
+        if (!atBlock) { open.innerHTML = ''; return; }
+        const b = blockOf(atBlock), a = actOf(atAct);
+        let s = acts(b);
+        if (a) {
+            s += `<div class="lu-detail"><p class="lu-dhead">${a.label}</p>${tabs()}
+                  <div class="lu-pane">${
+                      atTab === 'age' ? byAge(a)
+                    : atTab === 'sex' ? bySex(a)
+                    : overview(a, b)}</div></div>`;
+        }
+        open.innerHTML = s;
+    }
+
+    /* One listener on the card for the whole drill-down. Delegation rather than
+       rebinding, because every level is replaced on each paint and listeners
+       attached to the rows would be thrown away with them. */
+    const drill = document.getElementById('du-drill');
+    if (drill) {
+        drill.addEventListener('click', e => {
+            const seg = e.target.closest('[data-block]');
+            if (seg) {
+                // clicking the open block again closes it: the bar is a toggle
+                const k = seg.dataset.block;
+                atBlock = atBlock === k ? null : k;
+                atAct = null; atTab = 'overview';
+                paint();
+                return;
+            }
+            const row = e.target.closest('[data-act]');
+            if (row) {
+                const k = row.dataset.act;
+                atAct = atAct === k ? null : k;
+                atTab = 'overview';
+                paint();
+                return;
+            }
+            const tab = e.target.closest('[data-tab]');
+            if (tab) { atTab = tab.dataset.tab; paint(); return; }
+            const up = e.target.closest('[data-up]');
+            if (up) {
+                if (up.dataset.up === 'day') { atBlock = null; atAct = null; }
+                else atAct = null;
+                atTab = 'overview';
+                paint();
+            }
+        });
+    }
+
+    paint();
+
+    /* Nothing is written into the surrounding prose any more. Five setters stood here
+       — the lead, the body, and three fixed callout rows on television, retirement and
+       the sex gap — each printing a figure from this file into a paragraph the reader
+       met before touching anything. Every one of those numbers is now somewhere in the
+       drill-down, reached by opening the block it belongs to, and the callout above is
+       rewritten by paintWow() for whatever the reader actually chose. The figures did
+       not go; the page stopped announcing them in advance. */
 }
 
 // ── wire everything up ──

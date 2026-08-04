@@ -19,14 +19,15 @@ hand the file back, and it goes into the right place in the page.
 
 | | blocks |
 |---|---|
-| **Part 1 — written in the page** | 94 |
+| **Part 1 — written in the page** | 89 |
 | Cover, chapter marks, section titles and prose | |
 | The Chapter One at-a-glance sheet | |
 | Captions, callouts, the stat band, the footer | |
-| **Part 2 — built while the page runs** | 45 |
-| The seven badge cards | |
+| **Part 2 — built while the page runs** | 43 |
+| The six badge cards | |
 | The day card, the happiness strip, the rank chart | |
-| The American day section, the rank chart, the live clock | |
+| Chapter Three's biggest surprise | |
+| The quiz result card, the live clock | |
 
 ---
 
@@ -123,11 +124,11 @@ Your discoveries
 
 ### 20. Collection · counter (the number is live)  `[badges-count#badge-count]`
 
-0 of 7 discovered
+0 of 6 discovered
 
 ### 21. Collection · note  `[badges-note#badges-note]`
 
-Hidden throughout this story are seven
+Hidden throughout this story are six
 discoveries. Explore the charts, hover over countries, answer questions, and follow
 the data. Every discovery reveals an insight that appears nowhere else. One of them
 isn’t hidden in a chart at all.
@@ -257,180 +258,135 @@ the country’s score.
 
 Worst Life Imaginable ↔ Best Life Imaginable
 
-### 50. Figure · source note  `[source]`
-
-The Cantril ladder: respondents place their own life between the
-worst possible (0) and the best possible (10), and the score is the national
-average. 34 countries, not 35 — Luxembourg keeps a time diary but has no
-ladder score. The axis spans only the range of these countries, not the full
-0–10. World Happiness Report.
-
-### 51. Transition · the hinge  `[beat]`
+### 50. Transition · the hinge  `[beat]`
 
 If Finland is happiest…
 Why doesn’t everyone live like Finland?
 
-### 52. Section · eyebrow  `[sec-num]`
+### 51. Section · eyebrow  `[sec-num]`
 
 One discovery
 
-### 53. Section · TITLE  `[sec-title]`
+### 52. Section · TITLE  `[sec-title]`
 
 No Country Wins Everything
 
-### 54. Section · lead  `[lead]`
+### 53. Section · lead  `[lead]`
 
 Four measures.
 Four winners.
 No country finishes first twice.
 Every strength comes with a trade-off.
 
-### 55. Caption  `[fig-cap]`
+### 54. Caption  `[fig-cap]`
 
 Every line follows one country across four rankings.
 The crossings tell the story.
 Nobody stays on top.
 
-### 56. Chapter close · the payoff  `[beat]`
+### 55. Chapter close · the payoff  `[beat]`
 
 There is no perfect country—
 only different ways of living well.
 
-### 57. Chapter · eyebrow  `[chapter-eyebrow]`
+### 56. Chapter · eyebrow  `[chapter-eyebrow]`
 
 Chapter Three
 
-### 58. Chapter · NAME  `[chapter-name]`
+### 57. Chapter · NAME  `[chapter-name]`
 
-One Country Writes Everything Down
+Inside an Ordinary Day
 
-### 59. Chapter · blurb  `[chapter-blurb]`
+### 58. Chapter · blurb  `[chapter-blurb]`
 
 Until now, every country has been reduced to five numbers. One
 country lets us open the entire day — every minute, every activity, nothing left
 hidden.
 
-### 60. Section · eyebrow  `[sec-num]`
+### 59. Section · eyebrow  `[sec-num]`
 
 A closer look
 
-### 61. Section · TITLE  `[sec-title]`
+### 60. Section · TITLE  `[sec-title]`
 
 What happens inside 1,440 minutes?
 
-### 62. Section · body  `[body]`
+### 61. Section · lead  `[lead]`
 
-The United States isn’t shown because it’s typical.
-It’s shown because it’s unique. Among the countries in this story, it is
-the only one that publishes time diaries in enough detail to rebuild an entire day.
-For everyone else, the day ends as five numbers. Here, we can open every
-minute.
+Most countries tell us how much time people spend.
+Only one lets us open the day minute by minute.
+
+### 62. Instruction pill  `[howto]`
+
+Choose a part of the day to begin.
 
 ### 63. Chart · card head  `[card-head]`
 
-An ordinary American day
+Inside an ordinary day
 Every minute included
 
-### 64. Caption  `[fig-cap]`
+### 64. Drill-down · headline  `[lu-head]`
 
-This is one complete day reconstructed from more than 170,000 real
-time diaries. Nothing has been removed. Every minute belongs somewhere.
+Every minute belongs somewhere.
 
-### 65. Chart · card head  `[card-head]`
+### 65. Drill-down · instruction  `[lu-ask]`
 
-From five activities…
-to forty-four
+Choose a part of the day to open it.
 
 ### 66. Caption  `[fig-cap]`
 
-The five broad categories you’ve seen throughout this story
-unfold into 44 everyday activities. Sleeping. Working. Driving. Cooking.
-Watching television. Reading. Playing. Everything adds back to exactly 1,440
-minutes.
-Bars are scaled within their own block, not across the day.
-Sleeping is 8h40 and commuting is 17 minutes, so one shared scale would draw
-most of these as a hairline. These totals are not the same as the OECD figures
-for the United States elsewhere on this page — ATUS counts travel as its
-own activity where the OECD folds it into whatever the travel was for. Read the
-shares within this section, not across sections.
+One complete day, reconstructed from more than 170,000 time
+diaries, nothing removed.
+Bars are scaled within whatever you have opened, not across the day.
+These totals will not match the OECD figures elsewhere on this page: ATUS
+counts travel as its own activity, where the OECD folds it into whatever the
+trip was for.
 
-### 67. Callout · head  `[callout-head]`
-
-The biggest surprise
-
-### 68. callout-ic  `[callout-ic]`
-
-✦
-
-### 69. Editorial beat  `[beat]`
+### 67. Editorial beat  `[beat]`
 
 Nothing is missing.
 Every minute of the day has been
 accounted for.
 
-### 70. Chart · card head  `[card-head]`
-
-How a day changes across life
-
-### 71. Caption  `[fig-cap]`
-
-A teenager’s day doesn’t look like a retiree’s.
-These curves don’t follow one person through life — they compare
-different generations living during the same years.
-
-### 72. Callout · head  `[callout-head]`
-
-The same 24 hours.
-Different priorities.
-
-### 73. callout-ic  `[callout-ic]`
-
-✦
-
-### 74. callout-ic  `[callout-ic]`
-
-✦
-
-### 75. Chapter · eyebrow  `[chapter-eyebrow]`
+### 68. Chapter · eyebrow  `[chapter-eyebrow]`
 
 Chapter Four
 
-### 76. Chapter · NAME  `[chapter-name]`
+### 69. Chapter · NAME  `[chapter-name]`
 
 Somebody Lives Like You
 
-### 77. Chapter · blurb  `[chapter-blurb]`
+### 70. Chapter · blurb  `[chapter-blurb]`
 
-No two countries spend their day exactly the same way. But
-somewhere in this dataset, one of them comes surprisingly close to yours.
+No two countries live the same day.
+But one comes surprisingly close to yours.
 
-### 78. Section · eyebrow  `[sec-num]`
+### 71. Section · eyebrow  `[sec-num]`
 
 Find your match
 
-### 79. Section · TITLE  `[sec-title]`
+### 72. Section · TITLE  `[sec-title]`
 
 Somewhere out there,
 a country lives like you
 
-### 80. Section · lead  `[lead]`
+### 73. Section · lead  `[lead]`
 
-All 35 countries are scored on four measures: free time,
-rest, income and openness.
+Answer four simple questions.
+We’ll find the country whose day looks most like yours.
 
-### 81. Instruction pill  `[howto]`
+### 74. Instruction pill  `[howto]`
 
-Four questions. Drag each dial to your own life, then see your
-closest match.
+Drag each dial to your own life.
 
-### 82. Caption  `[fig-cap]`
+### 75. Caption  `[fig-cap]`
 
 Find Your Match
 Nearest-neighbour match on four ranked scores. Your answers place you in the same
 0–100 space as the 35 countries; the closest by straight-line distance wins.
 Illustrative, not a ranking.
 
-### 83. Source note  `[source]`
+### 76. Source note  `[source]`
 
 The four scores are an illustrative index built from the same sources used throughout:
 daily free-time share and daily sleep and self-care (OECD Time Use), GDP per person,
@@ -439,28 +395,37 @@ thirty-five rather than by its raw value, because three of the four measures hav
 country sitting so far from the rest that a raw scale would flatten everyone else
 against the floor. Meant for exploring rather than ranking.
 
-### 84. Section · eyebrow  `[sec-num]`
+### 77. Transition · the hinge  `[beat]`
+
+Your day is one of billions.
+Right now, the world is still moving.
+
+### 78. Section · eyebrow  `[sec-num]`
 
 Right now
 
-### 85. Section · TITLE  `[sec-title]`
+### 79. Section · TITLE  `[sec-title]`
 
-While you read this
+Right now
 
-### 86. Section · lead  `[lead]`
+### 80. Section · lead  `[lead]`
 
-Everything above is an average of a day. This one is happening, and you are
-somewhere in the middle of it.
+Everything above was an average. This moment is real. Millions are
+asleep, millions are working, and you are somewhere in between.
 
-### 87. Live clock · label  `[rn-label]`
+### 81. Live clock · label  `[rn-label]`
 
 Right now, where you are
 
-### 88. Live clock · label  `[rn-sub]`
+### 82. Live clock · label, while an hour is being read  `[rn-label]`
+
+Reading the day · leave to return
+
+### 83. Live clock · label  `[rn-sub]`
 
 The whole day, midnight to midnight
 
-### 89. Caption  `[fig-cap]`
+### 84. Caption  `[fig-cap]`
 
 This Hour
 Stacked bar, share of the American population in each activity at your current local
@@ -469,28 +434,26 @@ hour. American Time Use Survey microdata 2003–2015, 3,347,093 activity records
 is the only diary data here that records times of day, so the clock is yours and the
 behaviour is American.
 
-### 90. Section · TITLE  `[sec-title]`
+### 85. Section · TITLE  `[sec-title]`
 
 Same hours.
 Different lives.
 
-### 91. Section · lead  `[lead]`
+### 86. Section · lead  `[lead]`
 
 Everyone is handed the same 1,440 minutes. What changes, from Osaka to
 Mexico City to Rome, is what becomes of them.
 
-### 92. Section · body  `[body]`
+### 87. Closing · the last line  `[closing-last]`
 
-Every person receives the same 1,440 minutes. What changes is how those minutes become
-work, family, rest, opportunity, and connection. Somewhere in these thirty-five
-countries, someone is living a day that looks remarkably like yours. The question
-is—which life would you choose?
+Every day is ordinary.
+Until you compare it with someone else’s.
 
-### 93. site-footer  `[site-footer]`
+### 88. site-footer  `[site-footer]`
 
 A Day in the Life of the World · A VizCon 2026 entry
 
-### 94. Footer · sources  `[src]`
+### 89. Footer · sources  `[src]`
 
 Sources. Daily time use: OECD Time Use Database (minutes per day, both sexes;
 “Work” combines paid and unpaid work), all 35 countries it covers. Happiness: World
@@ -513,182 +476,191 @@ from the data when the change goes back in.
 The badge cards come first because they are plain strings in the source. Everything
 after them is assembled from a template.
 
-### Badge · kicker  `[app.js:648]`
+### Badge · kicker  `[app.js:736]`
 
 Time use
 
-### Badge · kicker  `[app.js:652]`
-
-Unpaid labour
-
-### Badge · kicker  `[app.js:656]`
+### Badge · kicker  `[app.js:743]`
 
 Happiness
 
-### Badge · kicker  `[app.js:664]`
+### Badge · kicker  `[app.js:751]`
 
 Rankings
 
-### Badge · kicker  `[app.js:668]`
+### Badge · kicker  `[app.js:755]`
 
 The average
 
-### Badge · kicker  `[app.js:672]`
+### Badge · kicker  `[app.js:759]`
 
 Hour by hour
 
-### Badge · kicker  `[app.js:676]`
+### Badge · kicker  `[app.js:766]`
 
 Hidden
 
-### Badge · name  `[app.js:648]`
+### Badge · name  `[app.js:736]`
 
 Day Tripper
 
-### Badge · name  `[app.js:652]`
-
-Jet Lagged
-
-### Badge · name  `[app.js:656]`
+### Badge · name  `[app.js:743]`
 
 Ladder Climber
 
-### Badge · name  `[app.js:664]`
+### Badge · name  `[app.js:751]`
 
 Line Stalker
 
-### Badge · name  `[app.js:668]`
+### Badge · name  `[app.js:755]`
 
 Long-Lost Twin
 
-### Badge · name  `[app.js:672]`
+### Badge · name  `[app.js:759]`
 
 Clock Watcher
 
-### Badge · name  `[app.js:676]`
+### Badge · name  `[app.js:766]`
 
 Made Waves
 
-### Badge · stat  `[app.js:648]`
+### Badge · stat  `[app.js:736]`
 
 10h05 vs 10h06
 
-### Badge · stat  `[app.js:652]`
-
-4 of 35
-
-### Badge · stat  `[app.js:656]`
+### Badge · stat  `[app.js:743]`
 
 4.04 apart
 
-### Badge · stat  `[app.js:664]`
+### Badge · stat  `[app.js:751]`
 
 Four winners
 
-### Badge · stat  `[app.js:668]`
+### Badge · stat  `[app.js:755]`
 
 34× the pay
 
-### Badge · stat  `[app.js:672]`
+### Badge · stat  `[app.js:759]`
 
 56% at 8pm
 
-### Badge · stat  `[app.js:676]`
+### Badge · stat  `[app.js:766]`
 
 96% asleep
 
-### Badge · hint  `[app.js:648]`
+### Badge · hint  `[app.js:736]`
 
-Swap the country in the first chart
+Click any chart in Chapter One
 
-### Badge · hint  `[app.js:652]`
-
-Visit five countries without leaving your chair
-
-### Badge · hint  `[app.js:656]`
+### Badge · hint  `[app.js:743]`
 
 Poke a country on the happiness scale
 
-### Badge · hint  `[app.js:664]`
+### Badge · hint  `[app.js:751]`
 
 Follow one country through all four measures
 
-### Badge · hint  `[app.js:668]`
+### Badge · hint  `[app.js:755]`
 
 Answer four questions, meet your country
 
-### Badge · hint  `[app.js:672]`
+### Badge · hint  `[app.js:759]`
 
-Find out what the world is doing this minute
+Hover across the whole day, hour by hour
 
-### Badge · hint  `[app.js:676]`
+### Badge · hint  `[app.js:766]`
 
 Something in the opener reacts to you
 
-### Badge · fact  `[app.js:648]`
+### Badge · fact  `[app.js:736]`
 
 Mexico spends as much of the day working as it does sleeping, washing and eating: 10h05m against 10h06m.
 
-### Badge · fact  `[app.js:652]`
-
-In Australia, Italy, Poland and Spain, more of the day goes to work nobody pays for than to work somebody does.
-
-### Badge · fact  `[app.js:656]`
+### Badge · fact  `[app.js:743]`
 
 Finland rates its own life 7.82 out of 10 and India rates its own 3.78. Same ten-point scale, four points apart.
 
-### Badge · fact  `[app.js:664]`
+### Badge · fact  `[app.js:751]`
 
 Mexico works most, France sleeps most, Norway rests most, Finland is happiest. Nobody finishes first twice.
 
-### Badge · fact  `[app.js:668]`
+### Badge · fact  `[app.js:755]`
 
 An American earns 34 times what an Indian does, and still spends 17 fewer minutes a day at the job.
 
-### Badge · fact  `[app.js:672]`
+### Badge · fact  `[app.js:759]`
 
 At 8pm more than half of America is at leisure — the most it ever agrees on anything while awake.
 
-### Badge · fact  `[app.js:676]`
+### Badge · fact  `[app.js:766]`
 
 At 3am, 96% of America is asleep. At noon, no single activity holds even 30% of them.
 
-### Happiness strip · readout  `[app.js:1313 → #mt-happy-read]`
+### Happiness strip · readout  `[app.js:1467 → #mt-happy-read]`
 
 Finland leads at 7.82, India trails at 3.78. All 34 average 6.45.
 
-### Happiness strip · caption  `[app.js:1238 → #mt-happy-cap]`
+### Happiness strip · caption  `[app.js:1496 → #mt-happy-cap]`
 
 Every dot is one country. The farther right, the happier people rate their own lives.
 
-### Rank chart · readout  `[app.js:1575 → #pc-read]`
+### Rank chart · readout  `[app.js:1773 → #pc-read]`
 
 34 countries, 4 measures. Four different countries come first, and not one of them stays there. · Work Mexico · Sleep France · Leisure Norway · Happiness Finland
 
-### American day · lead  `[app.js:1858 → #du-lead]`
+The four blocks below are one element, `#du-wow`, rewritten on every click. Which
+sentence appears depends on how far into the drill-down the reader has gone and which
+tab they are on, so the wording has to hold for all 58 rows of the section — not only
+for television, which is what each example happens to show.
 
-Split every minute of it and the American day is 8h40 asleep, 3h16 at work and 3h50 relaxing — and only 17m commuting.
+### The surprise · head  `[app.js:2086 → #du-wow]`
 
-### American day · body  `[app.js:1862 → #du-body]`
+The biggest surprise
 
-The five blocks the rest of this page reports as single numbers open into 44 activities, rolled up from the survey’s 431 codes. Nothing is left over: they sum to 1,440 minutes. Sleep, meals and washing take 44.0% of the day, leisure 21.9%, paid work and study 15.7%, and the unpaid work the second-shift chapter argues about 12.1%.
+### The surprise · a block is open  `[app.js:2095 → #du-wow]`
 
-### American day · callout, leisure  `[app.js:1870 → #du-tv-read]`
+Leisure is 5h16 of the day, and television and movies takes 2h43 of it — more than the other thirteen put together.
 
-Inside that relaxing block, television alone is 2h43 — 54.6% of all American leisure, more than the other eleven ways of spending it put together. Reading takes 20m, sport 18m, and going out to anything at all 5m.
+### The surprise · an activity, on Overview  `[app.js:2108 → #du-wow]`
 
-### American day · age readout  `[app.js:1884 → #du-age-read]`
+2h43 a day — on its own, more than the thirteen smallest activities in leisure put together.
 
-Working falls off a cliff at retirement, from 4h23 a day in the 45–54s to 15m after 75 — 4h08 handed back. Television takes 41% of it, reading 19% and sleep 20%. Childcare is the one curve with a peak rather than a slope, 51m at 25–34. Sleep is not drawn here because it barely moves: 8h19 to 9h18 across every band.
+### The surprise · an activity, on By age  `[app.js:2156 → #du-wow]`
 
-### American day · callout, by sex  `[app.js:1893 → #du-sex-read]`
+It keeps growing to the end of life: 2h17 a day at 15–24 against 4h17 after 75, 1.9× as much.
 
-Men spend 1h14 more a day at work than women. Women spend 1h08 more on cleaning, laundry and cooking, and 16m more caring for their children.
+### The surprise · an activity, on By sex  `[app.js:2238 → #du-wow]`
 
-### American day · callout, the leftover  `[app.js:1897 → #du-relax-read]`
+Men spend 27m more a day on this than women do — 2h57 against 2h30.
 
-The leftover goes where you would guess. Men take 34m more relaxing a day than women — television, reading and games — and 11m more sport.
+The result card is assembled from the reader's own four answers as well as the data, so
+everything below except the kicker changes with every run of the quiz. The example is one
+reader's run: it names Korea at 87%, lists all four values because that reader pushed all
+four dials away from the middle, and takes the plain form of the trade sentence. A reader
+who leaves a dial in the middle gets fewer values, and a reader whose answers contradict
+the country's own lopsidedness gets the sentence rephrased about the country instead.
+Leave the figures and the value words alone and rewrite the words around them.
 
-### Live clock · readout  `[app.js:565 → #rn-say]`
+### Quiz result · the kicker  `[app.js:308 → .dna-result-kicker]`
+
+Your closest match
+
+### Quiz result · the match  `[app.js:310 → .dna-result-pct]`
+
+87% match
+
+### Quiz result · what you value  `[app.js:311 → .dna-result-vals]`
+
+You value
+· getting things done
+· rest
+· earning power
+· home
+
+### Quiz result · the trade  `[app.js:168 → .dna-result-note]`
+
+Like Korea, you trade free time for rest.
+
+### Live clock · readout  `[app.js:546 → #rn-say]`
 
 At this hour, 76% of America is asleep, washing or eating.

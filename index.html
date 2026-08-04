@@ -90,11 +90,22 @@
                 <span class="badges-title">Your discoveries</span>
                 <!-- Placeholder only: Badges.paint() overwrites this from BADGES.length,
                      so the number here just has to be right before the script runs. -->
-                <span class="badges-count" id="badge-count">0 of 7 discovered</span>
-                <!-- the rules of the game, folded behind an i: worth reading once,
-                     not worth a standing paragraph in a panel this size -->
+                <span class="badges-count" id="badge-count">0 of 6 discovered</span>
+                <!-- The rules of the game, behind an i: worth reading once, not worth a
+                     standing paragraph in a panel this size.
+
+                     Read on hover, not on click. It used to be a disclosure that
+                     unhid the note in the flow, which pushed the whole tray down the
+                     rail — so the act of asking what the badges are moved the badges.
+                     Now the note floats out of the flow and nothing else shifts, which
+                     is why it is aria-describedby rather than aria-expanded: it is a
+                     description of this button, not a region the button owns.
+
+                     It sits HERE, in .badges-head, and not in .badges-body where it
+                     used to: that element is overflow:hidden at rail widths so it can
+                     animate its own collapse, and it would have clipped the panel. -->
                 <button class="badges-info" id="badges-info" type="button"
-                        aria-expanded="false" aria-controls="badges-note"
+                        aria-describedby="badges-note"
                         aria-label="How discoveries work">
                     <svg viewBox="0 0 16 16" aria-hidden="true">
                         <circle cx="8" cy="8" r="6.7" fill="none" stroke="currentColor" stroke-width="1.5"/>
@@ -103,23 +114,35 @@
                         <circle cx="8" cy="4.7" r="1.05" fill="currentColor"/>
                     </svg>
                 </button>
-                <button class="badges-toggle" id="badges-toggle" type="button"
-                        aria-expanded="true" aria-controls="badges-body"
-                        aria-label="Hide the collection">
-                    <svg viewBox="0 0 16 16" aria-hidden="true">
-                        <path d="M4 6.5 8 10.5 12 6.5" fill="none" stroke="currentColor"
-                              stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </button>
+                <!-- Immediately after the button on purpose: the CSS shows it with an
+                     adjacent-sibling selector, so the two cannot drift apart. -->
+                <p class="badges-note" id="badges-note" role="tooltip">Hidden throughout this story
+                    are six discoveries. Explore the charts, hover over countries, answer
+                    questions, and follow the data. Every discovery reveals an insight that appears
+                    nowhere else. One of them isn’t hidden in a chart at all.</p>
             </div>
             <div class="badges-body" id="badges-body">
-                <p class="badges-note" id="badges-note" hidden>Hidden throughout this story are seven
-                    discoveries. Explore the charts, hover over countries, answer questions, and follow
-                    the data. Every discovery reveals an insight that appears nowhere else. One of them
-                    isn’t hidden in a chart at all.</p>
                 <ul class="badge-tray" id="badge-tray"></ul>
                 <div class="badges-foot" id="badge-reset"></div>
             </div>
+            <!-- The way out, and the way back.
+
+                 A sibling of the head rather than a child of it, because the panel
+                 no longer folds downward — it slides off the right edge of the
+                 screen, and everything inside it goes with it. This is the one part
+                 that has to stay behind, so it hangs off the panel's left edge on
+                 its own and rides out to the screen edge as a thumb tab.
+
+                 aria-controls points at the whole aside now, not just the body: what
+                 the button hides is the panel, not a region within it. -->
+            <button class="badges-toggle" id="badges-toggle" type="button"
+                    aria-expanded="true" aria-controls="badges"
+                    aria-label="Hide the collection">
+                <svg viewBox="0 0 16 16" aria-hidden="true">
+                    <path d="M10 4 6 8l4 4" fill="none" stroke="currentColor"
+                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
         </aside>
 
         <!-- No transition line here. "Before we compare countries… / What does an
@@ -303,15 +326,17 @@
                     <p class="mt-read" id="mt-happy-read"></p>
                 </div>
                 <p class="fig-cap" id="mt-happy-cap"></p>
-                <!-- The caption above states what the chart shows in one line; the method and the
-                     citation live down here, out of the narrative but still on the page. The
-                     caption used to carry all of it, which put the Cantril definition and the
-                     Luxembourg caveat in the same breath as "what am I looking at". -->
-                <p class="source">The Cantril ladder: respondents place their own life between the
-                    worst possible (0) and the best possible (10), and the score is the national
-                    average. 34 countries, not 35 &mdash; Luxembourg keeps a time diary but has no
-                    ladder score. The axis spans only the range of these countries, not the full
-                    0&ndash;10. World Happiness Report.</p>
+                <!-- No source note here either. Most of what it said now lives in the narrative:
+                     the lead explains the ladder ("Imagine a ladder from 0 to 10… where would you
+                     place yourself today?"), the label names both ends, and the footer's Sources
+                     line carries the World Happiness Report citation and the note that Luxembourg
+                     has no score.
+
+                     The one thing no longer stated anywhere: this axis is cropped to the range of
+                     the 34 countries rather than running the full 0–10, so India's mark at the far
+                     left is 3.78 and not the worst life imaginable. The printed ticks start at 4,
+                     which is the only remaining hint. -->
+
             </div>
         </section>
 
@@ -321,7 +346,8 @@
              the rankings, and asks what a day buys without pricing it.
 
              initMoneyMood(), the .sc-dot/.sc-fit/.sc-name styles and the "Off the Line"
-             badge went with it, which is why the collection is seven rather than eight.
+             badge went with it, taking the collection from eight to seven; "Jet Lagged"
+             then went by request, which is why it is six.
              GDP itself is still in the data and still drives the quiz's Income axis. -->
 
         <!-- The hinge the scatter used to be, and the hook into the rankings. It replaced
@@ -382,89 +408,100 @@
         <!-- ═══ CHAPTER THREE · INSIDE ONE BAR ══════════════ -->
         <div class="chapter-mark reveal">
             <span class="chapter-eyebrow">Chapter Three</span>
-            <h2 class="chapter-name">One Country Writes Everything Down</h2>
+            <h2 class="chapter-name">Inside an Ordinary Day</h2>
             <p class="chapter-blurb">Until now, every country has been reduced to five numbers. One
                 country lets us open the entire day &mdash; every minute, every activity, nothing left
                 hidden.</p>
             <div class="chapter-rule"></div>
         </div>
 
-        <!-- ═══ 7 · THE WHOLE DAY, ITEMISED (US ONLY) ══════ -->
+        <!-- ═══ 7 · THE WHOLE DAY, OPENED (US ONLY) ════════ -->
         <!-- The only section on the page that leaves the OECD file. Driven by
              initDayUS() in js/app.js off data/day-us.js, which is built from the
-             431 activity codes in data/time_use_atus/. -->
+             431 activity codes in data/time_use_atus/.
+
+             One visualisation, three levels deep, rather than the three separate
+             charts that stood here: the day as five blocks, the block as its
+             activities, the activity by age and by sex. Everything below the first
+             level is built on demand, so the reader earns the detail by asking for
+             it — forty-four bars at equal weight was the reason this section read
+             as a cluster. The age and sex figures are the same numbers the two
+             deleted charts drew; they are now attached to whichever activity the
+             reader chose, which is what makes them mean anything. -->
         <section class="section notes reveal" id="sec-leisure">
+            <!-- Four lines, and the last one is an instruction rather than a claim.
+                 This column carried three paragraphs arguing for the section before
+                 the reader had seen it: why the United States, how many codes roll
+                 into how many groups, which block takes what share. All of it was
+                 answerable by clicking, and the interaction says it better than the
+                 paragraph did. What is left is the question, the reason only one
+                 country can answer it, and the way in. #du-lead and #du-body are
+                 gone with the prose; the figures they printed are now reached by
+                 opening a block. -->
             <div class="txt">
                 <span class="sec-num">A closer look</span>
                 <h2 class="sec-title">What happens inside 1,440 minutes?</h2>
                 <hr class="rule">
-                <p class="lead" id="du-lead"></p>
-                <p class="body" id="du-body"></p>
-                <p class="body">The United States isn&rsquo;t shown because it&rsquo;s typical.
-                    It&rsquo;s shown because it&rsquo;s unique. Among the countries in this story, it is
-                    the only one that publishes time diaries in enough detail to rebuild an entire day.
-                    For everyone else, the day ends as five numbers. Here, we can open every
-                    minute.</p>
+                <p class="lead">Most countries tell us <strong>how much</strong> time people
+                    spend.<br>Only one lets us open the day minute by minute.</p>
+                <div><span class="howto">Choose a part of the day to begin.</span></div>
             </div>
 
             <div class="viz">
                 <div class="day-card">
-                    <div class="card-head">An ordinary American day<br>Every minute included</div>
-                    <div class="lu-day" id="du-bar" role="img"
-                         aria-label="Stacked bar of the American day split into five blocks"></div>
-                    <div class="lu-daykey" id="du-key"></div>
-                    <p class="fig-cap">This is one complete day reconstructed from more than 170,000 real
-                        time diaries. Nothing has been removed. Every minute belongs somewhere.</p>
-                </div>
+                    <div class="card-head">Inside an ordinary day<br>Every minute included</div>
 
-                <div class="day-card">
-                    <div class="card-head">From five activities&hellip;<br>to forty-four</div>
-                    <div class="lu-stage" id="du-list" role="img"
-                         aria-label="Bars, American minutes per day for 44 activities grouped into five blocks"></div>
-                    <p class="fig-cap">The five broad categories you&rsquo;ve seen throughout this story
-                        unfold into 44 everyday activities. Sleeping. Working. Driving. Cooking.
-                        Watching television. Reading. Playing. Everything adds back to exactly 1,440
-                        minutes.
-                        <b>Bars are scaled within their own block, not across the day.</b>
-                        Sleeping is 8h40 and commuting is 17 minutes, so one shared scale would draw
-                        most of these as a hairline. These totals are not the same as the OECD figures
-                        for the United States elsewhere on this page &mdash; ATUS counts travel as its
-                        own activity where the OECD folds it into whatever the travel was for. Read the
-                        shares within this section, not across sections.</p>
-                </div>
-
-                <div class="callout">
-                    <p class="callout-head">The biggest surprise</p>
-                    <div class="callout-row">
-                        <span class="callout-ic">✦</span>
-                        <p id="du-tv-read"></p>
+                    <!-- The whole drill-down. Level one is written by initDayUS()
+                         into #du-bar; the crumb, the activity list and the tabbed
+                         detail below it are filled in as the reader descends and
+                         are empty until then. -->
+                    <div class="lu-drill" id="du-drill">
+                        <p class="lu-head">Every minute belongs somewhere.</p>
+                        <p class="lu-ask" id="du-ask">Choose a part of the day to open it.</p>
+                        <div class="lu-day" id="du-bar" role="img"
+                             aria-label="The American day as five blocks. Choose a block to open it."></div>
+                        <div class="lu-daykey" id="du-key"></div>
+                        <!-- aria-live, because opening a block replaces the panel
+                             below rather than moving the page: without this the
+                             only signal that anything happened is visual. -->
+                        <nav class="lu-crumb" id="du-crumb" aria-live="polite"></nav>
+                        <div class="lu-open" id="du-open"></div>
                     </div>
+
+                    <!-- Halved. Three sentences went: "Every minute belongs somewhere",
+                         which is printed verbatim eight lines above as .lu-head; the
+                         hairline argument for scaling within the open block, which
+                         justified a warning the reader will believe without it; and
+                         "read the shares within this section", which restated the
+                         OECD point immediately after making it. -->
+                    <p class="fig-cap">One complete day, reconstructed from more than 170,000 time
+                        diaries, nothing removed.
+                        <b>Bars are scaled within whatever you have opened, not across the day.</b>
+                        These totals will not match the OECD figures elsewhere on this page: ATUS
+                        counts travel as its own activity, where the OECD folds it into whatever the
+                        trip was for.</p>
                 </div>
+
+                <!-- The one callout left, and it answers to the drill-down rather
+                     than sitting beside it. It held a fixed sentence about
+                     television; now initDayUS() rewrites it for whatever the reader
+                     has opened and whichever tab they are on, so the surprise is
+                     about their choice. Empty on arrival — there is nothing to be
+                     surprised by until something is open — and .callout:empty is
+                     display:none, so no frame sits there waiting.
+
+                     A second callout stood below this one, "The same 24 hours.
+                     Different priorities.", carrying three fixed rows on retirement,
+                     the sex gap and the leftover. Every one of those numbers is now
+                     reachable in the By age and By sex tabs of the activity it
+                     belongs to, which is the whole argument of this rebuild: the
+                     figure lands when the reader asks for it, attached to something
+                     they chose. Reprinting them beside the chart in advance was the
+                     page answering a question nobody had put yet. -->
+                <div class="callout" id="du-wow" aria-live="polite"></div>
 
                 <p class="beat">Nothing is missing.<br>Every minute of the day has been
                     accounted for.</p>
-
-                <div class="day-card">
-                    <div class="card-head">How a day changes across life</div>
-                    <div class="lu-stage" id="du-age" role="img"
-                         aria-label="Lines, minutes per day of working, television, housework and childcare by age band"></div>
-                    <p class="sc-read" id="du-age-read"></p>
-                    <p class="fig-cap">A teenager&rsquo;s day doesn&rsquo;t look like a retiree&rsquo;s.
-                        These curves don&rsquo;t follow one person through life &mdash; they compare
-                        different generations living during the same years.</p>
-                </div>
-
-                <div class="callout">
-                    <p class="callout-head">The same 24 hours.<br>Different priorities.</p>
-                    <div class="callout-row">
-                        <span class="callout-ic">✦</span>
-                        <p id="du-sex-read"></p>
-                    </div>
-                    <div class="callout-row">
-                        <span class="callout-ic">✦</span>
-                        <p id="du-relax-read"></p>
-                    </div>
-                </div>
             </div>
         </section>
 
@@ -472,8 +509,8 @@
         <div class="chapter-mark reveal">
             <span class="chapter-eyebrow">Chapter Four</span>
             <h2 class="chapter-name">Somebody Lives Like You</h2>
-            <p class="chapter-blurb">No two countries spend their day exactly the same way. But
-                somewhere in this dataset, one of them comes surprisingly close to yours.</p>
+            <p class="chapter-blurb">No two countries live the same day.<br>But one comes
+                surprisingly close to yours.</p>
             <div class="chapter-rule"></div>
         </div>
 
@@ -482,10 +519,15 @@
                 <span class="sec-num">Find your match</span>
                 <h2 class="sec-title">Somewhere out there,<br>a country lives like you</h2>
                 <hr class="rule">
-                <p class="lead">All 35 countries are scored on four measures: <strong>free time,
-                    rest, income</strong> and <strong>openness</strong>.</p>
-                <div><span class="howto">Four questions. Drag each dial to your own life, then see your
-                    closest match.</span></div>
+                <!-- The lead used to name the four measures and say all 35 countries are
+                     scored on them. True, and nothing the reader wants before they have
+                     answered anything — it is the method, and the method is already in
+                     the caption and the source note below the quiz, which is where a
+                     reader goes looking once the result makes them curious. What replaces
+                     it is the offer. -->
+                <p class="lead">Answer four simple questions.<br>We&rsquo;ll find the country whose
+                    day looks most like yours.</p>
+                <div><span class="howto">Drag each dial to your own life.</span></div>
             </div>
 
             <div class="viz">
@@ -505,6 +547,13 @@
             </div>
         </section>
 
+        <!-- The hinge into the live panel. Without it the reader goes from their own
+             result straight into a clock and has to work out why: the quiz was about
+             them, and the next thing is the world carrying on regardless. One sentence
+             makes the clock the proof of that rather than a fourth chart. -->
+        <p class="beat ask">Your day is one of billions.<br>Right now, the world is still
+            moving.</p>
+
         <!-- ═══ RIGHT NOW · LIVE PANEL ══════════════════════ -->
         <!-- Sits last, immediately before the closing: everything above is an
              average of a day, and this is the one that is happening. Driven by
@@ -512,21 +561,44 @@
         <section class="section notes reveal" id="sec-now">
             <div class="txt">
                 <span class="sec-num">Right now</span>
-                <h2 class="sec-title">While you read this</h2>
+                <!-- "While you read this" described the reader; "Right now" is the claim,
+                     and it is the only section on the page that can make it. -->
+                <h2 class="sec-title">Right now</h2>
                 <hr class="rule">
-                <p class="lead">Everything above is an average of a day. This one is happening, and you are
-                    somewhere in the middle of it.</p>
+                <p class="lead">Everything above was an average. This moment is real. Millions are
+                    asleep, millions are working, and you are somewhere in between.</p>
             </div>
 
             <div class="viz">
                 <div class="rn" id="rn">
-                    <p class="rn-label">Right now, where you are</p>
+                    <!-- Two lines in one box, one shown at a time. The panel is in the
+                         present tense, and the ribbon below can be scrubbed to read any
+                         hour — at which point "Right now" is no longer true, so the
+                         second line takes over. Both are real elements stacked in a grid
+                         cell rather than one line rewritten by script, so the copy stays
+                         where COPY.md can see it and the box never changes height under
+                         the 4.4rem clock. initRightNow() only toggles .scrubbing on #rn. -->
+                    <p class="rn-label">
+                        <span class="rn-liveline">Right now, where you are</span>
+                        <span class="rn-scrubbed">Reading the day &middot; leave to return</span>
+                    </p>
                     <p class="rn-time" id="rn-time">--:--</p>
-                    <p class="rn-say" id="rn-say"></p>
+                    <!-- Live, because the arrow keys on the ribbon below change this
+                         sentence and nothing else would say so: the hour walks, the
+                         bar redraws, and a reader not looking at it hears silence.
+                         Polite rather than assertive, and paintHour() ignores a repaint
+                         of the same hour, so a pointer sweeping the day coalesces into
+                         the hour it lands on instead of reading out all twenty-four. -->
+                    <p class="rn-say" id="rn-say" aria-live="polite"></p>
+                    <!-- The label is rewritten by paintHour() to name the hour actually
+                         drawn; "at this hour" is only true before the first scrub. -->
                     <div class="rn-bar" id="rn-bar" role="img"
                          aria-label="Share of the American population in each activity at this hour"></div>
                     <div class="rn-key" id="rn-key"></div>
-                    <!-- the whole day behind the current hour, so this minute has context -->
+                    <!-- The whole day behind the current hour, so this minute has context
+                         — and hoverable, so the other twenty-three are readable too. The
+                         tabindex, role and arrow-key handling are added by initRightNow()
+                         alongside the listeners that make them mean anything. -->
                     <p class="rn-sub">The whole day, midnight to midnight</p>
                     <div class="rn-rib" id="rn-rib"></div>
                 </div>
@@ -542,14 +614,17 @@
         <!-- ═══ CLOSING ═════════════════════════════════════ -->
         <section class="section center closing reveal" id="sec-close">
             <h2 class="sec-title closing-title">Same hours.<br>Different lives.</h2>
+            <!-- One paragraph, not two. The .lead and the .body said the same thing twice
+                 — both opened on everyone being handed the same 1,440 minutes, and the
+                 second then listed five nouns and closed on a question the page has spent
+                 four chapters refusing to answer for the reader. -->
             <p class="lead">Everyone is handed the same 1,440 minutes. What changes, from Osaka to
                 Mexico City to Rome, is what becomes of them.</p>
-            <p class="body" style="margin:1.4rem auto 0; max-width:560px; text-align:center;">
-                Every person receives the same 1,440 minutes. What changes is how those minutes become
-                work, family, rest, opportunity, and connection. Somewhere in these thirty-five
-                countries, someone is living a day that looks remarkably like yours. The question
-                is—which life would you choose?
-            </p>
+            <!-- The last line, and it closes the loop: the opening asked "What becomes of
+                 those minutes?", and this is the answer, given only after the reader has
+                 seen someone else's day. -->
+            <p class="closing-last">Every day is ordinary.<br>Until you compare it with someone
+                else&rsquo;s.</p>
         </section>
     </main>
 

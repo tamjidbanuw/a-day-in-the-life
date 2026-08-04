@@ -540,7 +540,14 @@ body {
 }
 .callout-ic svg { width: 22px; height: 22px; }
 .callout-row p { font-size: 1.05rem; line-height: 1.45; color: rgb(var(--white-rgb) / 0.92); }
-.callout-row strong { color: var(--white); font-weight: 700; }
+.callout-row strong,
+/* Chapter Three's callout is written by paintWow() rather than typed into the page,
+   and template strings there use <b> where the hand-written ones use <strong>. Same
+   emphasis, so the same rule. */
+.callout-row b { color: var(--white); font-weight: 700; }
+/* Chapter Three's is filled in only once the reader opens something, and until then
+   a dark 90px slab would sit under the chart looking like a load that failed. */
+.callout:empty { display: none; }
 
 .source {
     max-width: 620px; margin: 2.4rem 0 0;
@@ -649,12 +656,46 @@ body {
     letter-spacing: 0.16em; text-transform: uppercase;
     color: rgb(var(--white-rgb) / 0.45);
 }
+/* The ribbon is scrubbable: hovering it reads out the hour under the pointer. The
+   resize cursor says "this axis responds to sideways movement", which is what it
+   does, and is the one cursor that means that without implying a link. */
+.rn-rib { cursor: ew-resize; }
 .rn-rib svg { width: 100%; height: auto; display: block; overflow: visible; }
 .rn-rib .rib-ax { font-size: 9.5px; fill: rgb(var(--white-rgb) / 0.45); }
 .rn-rib .rib-grid { stroke: rgb(var(--white-rgb) / 0.14); stroke-width: 1; }
 .rn-rib .rib-hand { stroke: var(--white); stroke-width: 1.5; }
 .rn-rib .rib-hand-cap { fill: var(--white); }
 .rn-rib .rib-clip-rect { transition: width 1.6s cubic-bezier(0.22,1,0.36,1); }
+/* The hand is a clock hand at rest and a cursor while scrubbing, so it moves with
+   the pointer rather than easing after it — no transition on x, deliberately. */
+.rn-rib .rib-hand, .rn-rib .rib-hand-cap { transition: opacity 0.2s ease; }
+/* Focusable for the keyboard route into the day (arrow keys), so it needs a visible
+   focus state — the panel is navy, where the page's default ring would disappear. */
+.rn-rib:focus-visible {
+    outline: 2px solid var(--accent-pale);
+    outline-offset: 4px;
+    border-radius: 4px;
+}
+
+/* ── while an hour is being read rather than lived ──
+   The panel's whole claim is the present tense, so when the reader points at 4am it
+   has to stop asserting that. The number is the thing that would lie loudest — it
+   is set in 4.4rem type — so it drops to the copper the readout already uses for
+   its figures and away from white, which is the live colour. */
+.rn.scrubbing .rn-time { color: var(--accent-pale); }
+/* And the label above it stops saying "where you are" is now.
+
+   Two real elements swapped, rather than one element with its text rewritten or a
+   CSS `content:` string: both of those put a line of the page's copy somewhere
+   COPY.md cannot reach, and this line sits directly above the largest number in the
+   panel. Stacked in a grid cell so they occupy the same box — the label is followed
+   by 4.4rem type, and a swap that changed the row's height would jolt it. */
+.rn-label { display: grid; }
+.rn-label > span { grid-area: 1 / 1; }
+.rn-label .rn-scrubbed { color: var(--accent-pale); }
+.rn-label .rn-scrubbed,
+.rn.scrubbing .rn-label .rn-liveline { visibility: hidden; }
+.rn.scrubbing .rn-label .rn-scrubbed { visibility: visible; }
 @media (prefers-reduced-motion: reduce) {
     .rn-bar span { transition: none; }
     .rn-rib .rib-clip-rect { transition: none; }
@@ -802,47 +843,53 @@ body {
 /* dots are a highlight cue, not permanent furniture: hidden until a line is picked */
 .pc-dot { stroke: var(--ink-deep); stroke-width: 1.5; opacity: 0; transition: opacity 0.25s ease; }
 .pc-dot.on { opacity: 1; }
-/* ── The US leisure panels ───────────────────────────────────────────
-   On paper rather than on the dark panel, because they carry printed labels and
+/* ── Plot furniture for the American day's age chart ────────────────
+   On paper rather than on the dark panel, because it carries printed labels and
    fine marks: dark on light, the way the rest of the page reads.
 
-   This block was shared with the money-and-mood scatter, which is gone. The
-   scatter-only rules went with it: .sc-stage (its stage was #mm-chart), .sc-axl,
-   .sc-fit, .sc-r, .sc-dot and .sc-name. The `sc-` prefix survives on the four
-   below only because the leisure charts genuinely use them. */
-.lu-stage { margin: 1.6rem 0 0; }
-.lu-stage svg { width: 100%; height: auto; display: block; overflow: visible; }
+   This block was shared with the money-and-mood scatter, which is gone, and with
+   the three-chart version of Chapter Three, which is now one drill-down. What went
+   with them: .sc-stage, .sc-axl, .sc-fit, .sc-r, .sc-dot, .sc-name and .sc-read,
+   whose readout is now a callout row. The `sc-` prefix survives on the two below
+   only because the age chart genuinely uses them. */
 .sc-web  { stroke: var(--line); stroke-width: 1; }
 .sc-tick { font-size: 10.5px; fill: var(--ink-faint); }
-.sc-read {
-    margin: 0.9rem 0 0; min-height: 3.2rem;
-    font-size: 0.92rem; line-height: 1.5; color: var(--ink-soft);
-}
-.sc-read b { color: var(--ink); font-weight: 600; }
-.sc-read em { font-style: normal; color: var(--accent); font-variant-numeric: tabular-nums; }
 
-/* the itemised leisure bars */
-.lu-row {
-    display: grid; grid-template-columns: 13rem 1fr 3.4rem 2.2rem;
-    align-items: center; gap: 0.7rem; padding: 0.2rem 0;
-    font-size: 0.84rem; color: var(--ink-soft);
-}
-.lu-row.lead { color: var(--ink); font-weight: 600; }
-.lu-track { background: var(--track); border-radius: 2px; height: 0.85rem; overflow: hidden; }
-.lu-row.lead .lu-track { height: 1.15rem; }
-.lu-fill { display: block; height: 100%; border-radius: 2px; }
-.lu-val, .lu-pct { font-variant-numeric: tabular-nums; text-align: right; }
-.lu-pct { color: var(--ink-faint); }
-.lu-line { fill: none; stroke-width: 2.2; stroke-linejoin: round; }
-.lu-lab  { font-size: 11px; font-weight: 600; }
-.lu-name em { font-style: normal; color: var(--ink-faint); }
+/* ─── CHAPTER THREE: THE DAY, OPENED ────────────────────────
+   One visualisation three levels deep — the day as five blocks, the block as its
+   activities, the activity by age and by sex — so most of what follows is a control
+   rather than a mark: segments of the stacked bar, rows of the open block, the
+   crumb back up, the three tabs. All of them are real <button>s, which is why every
+   rule here starts by undoing a button's own styling.
 
-/* the whole day as one bar, then the blocks it opens into */
+   Nothing below level one exists until it is asked for, so these rules describe
+   panels that are absent on arrival. */
+.lu-drill { padding: 0 clamp(1rem, 3vw, 1.5rem); }
+.lu-head {
+    margin: 1.1rem 0 0.2rem; font-size: 1.02rem; font-weight: 600; color: var(--ink);
+}
+.lu-ask {
+    margin: 0 0 0.7rem; font-size: 0.84rem; color: var(--ink-faint);
+}
+
+/* level 1 · the whole day, every block a button */
 .lu-day {
-    display: flex; height: 2.2rem; border-radius: 3px; overflow: hidden;
+    display: flex; height: 2.6rem; border-radius: 3px; overflow: hidden;
     background: var(--track); margin: 0.2rem 0 0.9rem;
 }
-.lu-day span { display: block; height: 100%; }
+.lu-seg {
+    display: block; height: 100%; padding: 0; border: 0;
+    font: inherit; cursor: pointer; position: relative;
+    /* The segment is the colour, so there is nothing to see but the width. A border
+       would eat into a 6%-wide block, hence an inset shadow for the open one. */
+    transition: box-shadow 0.2s ease, filter 0.2s ease;
+}
+.lu-seg:hover { filter: brightness(1.08); }
+.lu-seg.on {
+    box-shadow: inset 0 0 0 2px var(--ink-deep);
+    filter: brightness(1.06);
+}
+.lu-seg:focus-visible { outline: 2px solid var(--ink-deep); outline-offset: 2px; }
 .lu-daykey {
     display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem;
     font-size: 0.78rem; color: var(--ink-soft);
@@ -852,7 +899,25 @@ body {
     margin-right: 6px; vertical-align: -1px;
 }
 .lu-daykey b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
-.lu-block + .lu-block { margin-top: 1.1rem; }
+.lu-daykey .on { color: var(--ink); font-weight: 600; }
+
+/* the trail back up, drawn only once something is open */
+.lu-crumb {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 0.4rem;
+    margin: 1.2rem 0 0.2rem; font-size: 0.8rem;
+}
+.lu-crumb:empty { display: none; }
+.lu-hop {
+    font: inherit; padding: 0; border: 0; background: none; cursor: pointer;
+    color: var(--accent); font-weight: 600; text-decoration: underline;
+    text-underline-offset: 2px;
+}
+.lu-hop:hover { color: var(--accent-deep); }
+.lu-arrow { color: var(--ink-faint); }
+.lu-here { color: var(--ink); font-weight: 600; }
+
+/* level 2 · the activities inside the open block */
+.lu-block { margin-top: 0.5rem; }
 .lu-bhead {
     display: grid; grid-template-columns: 1fr auto auto; gap: 0.9rem;
     align-items: baseline; padding-bottom: 0.3rem; margin-bottom: 0.35rem;
@@ -865,9 +930,77 @@ body {
 }
 .lu-btot { font-variant-numeric: tabular-nums; }
 .lu-bpct { color: var(--ink-faint); font-weight: 400; font-variant-numeric: tabular-nums; }
+
+.lu-row {
+    display: grid; grid-template-columns: 13rem 1fr 3.4rem;
+    align-items: center; gap: 0.7rem; padding: 0.2rem 0.35rem;
+    font-size: 0.84rem; color: var(--ink-soft);
+    width: 100%; text-align: left; font-family: inherit;
+    border: 0; background: none; cursor: pointer; border-radius: 4px;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+.lu-row:hover { background: var(--white); color: var(--ink); }
+.lu-row.on { background: var(--white); color: var(--ink); font-weight: 600; }
+.lu-row:focus-visible { outline: 2px solid var(--accent-pale); outline-offset: 1px; }
+.lu-track {
+    display: block; background: var(--track);
+    border-radius: 2px; height: 0.85rem; overflow: hidden;
+}
+.lu-row.on .lu-track { height: 1.05rem; }
+.lu-fill { display: block; height: 100%; border-radius: 2px; }
+.lu-val { font-variant-numeric: tabular-nums; text-align: right; }
+.lu-name em { font-style: normal; color: var(--ink-faint); }
+
+/* level 3 · one activity, three ways */
+.lu-detail {
+    margin-top: 1.1rem; padding-top: 1rem;
+    border-top: 1px solid var(--line);
+}
+.lu-dhead {
+    margin: 0 0 0.6rem; font-size: 0.98rem; font-weight: 600; color: var(--ink);
+}
+.lu-tabs { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.4rem; }
+.lu-tab {
+    font: inherit; font-size: 0.76rem; font-weight: 600; cursor: pointer;
+    padding: 0.3rem 0.7rem; border-radius: 999px;
+    border: 1px solid var(--line); background: var(--white); color: var(--ink-soft);
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.lu-tab:hover { border-color: var(--accent-pale); color: var(--ink); }
+.lu-tab.on {
+    background: var(--ink-deep); border-color: var(--ink-deep); color: var(--white);
+}
+.lu-tab:focus-visible { outline: 2px solid var(--accent-pale); outline-offset: 2px; }
+/* min-height so switching tabs does not jump the page: the age chart is the tall
+   one, and without a floor the card would shrink under the reader's pointer. */
+.lu-pane { min-height: 8rem; }
+.lu-say {
+    margin: 0.7rem 0 0; font-size: 0.9rem; line-height: 1.5; color: var(--ink-soft);
+}
+.lu-say b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.lu-say em { font-style: normal; font-weight: 600; color: var(--ink); }
+.lu-vlab {
+    font-size: 10px; fill: var(--ink-soft); font-variant-numeric: tabular-nums;
+}
+.lu-sex { margin-top: 0.9rem; }
+.lu-srow {
+    display: grid; grid-template-columns: 4.2rem 1fr 3.4rem;
+    align-items: center; gap: 0.7rem; padding: 0.25rem 0;
+    font-size: 0.86rem; color: var(--ink-soft);
+}
+.lu-sname { font-weight: 600; color: var(--ink); }
+
+.lu-stage { margin: 0.9rem 0 0; }
+.lu-stage svg { width: 100%; height: auto; display: block; overflow: visible; }
+.lu-line { fill: none; stroke-width: 2.2; stroke-linejoin: round; }
+
 @media (max-width: 620px) {
     .lu-row { grid-template-columns: 7.5rem 1fr 3.1rem; font-size: 0.78rem; }
-    .lu-pct { display: none; }
+    /* the per-point minute labels collide below about 620px */
+    .lu-vlab { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .lu-seg, .lu-row, .lu-tab { transition: none; }
 }
 
 .pc-pick { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 1rem; }
@@ -900,6 +1033,9 @@ body {
     text-align: left;
 }
 .badges-head {
+    /* position:relative so the note can float against it instead of sitting in
+       the flow — see .badges-note below. */
+    position: relative;
     display: flex; align-items: baseline; gap: 0.7rem;
     font-size: 0.74rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
     color: var(--ink-faint); margin-bottom: 1.4rem;
@@ -919,13 +1055,11 @@ body {
 .badges-info {
     display: grid; place-items: center;
     width: 20px; height: 20px; padding: 0; flex: none;
-    color: var(--ink-faint); background: none; border: 0; cursor: pointer;
+    color: var(--ink-faint); background: none; border: 0; cursor: help;
     transition: color 0.2s ease, transform 0.2s ease;
 }
 .badges-info svg { width: 15px; height: 15px; }
 .badges-info:hover { color: var(--accent); }
-.badges-info[aria-expanded="true"] { color: var(--accent); }
-.badges-note[hidden] { display: none; }
 /* the only way to clear a collection: sessionStorage survives a hard refresh */
 .bdg-reset {
     font: inherit; font-size: 0.66rem; font-weight: 700;
@@ -958,8 +1092,24 @@ body {
        Symmetric means paying for the rail twice, which is why the rail itself is
        narrow: at its old 208px the charts fell to 291px at a 1100px window, which
        is not a chart. At 132px the same symmetric layout leaves them within a few
-       pixels of where the lopsided version had them. */
-    :root { --rail: 156px; }
+       pixels of where the lopsided version had them.
+
+       152px now. The medals doubled to 92px to be recognisable and the name sits
+       underneath, but they run in ONE column rather than two: two columns of 92px
+       medals needed a 236px rail, and because the gutter is symmetric that cost the
+       story column ~230px at every width, taking the widest chart down to 424px at the
+       1100px breakpoint. One column gives almost all of it back.
+
+       The medal itself only needs 119.2px (92 + 27.2px of padding); the head is what
+       sets the floor. The count, the i and the chevron measure 106px together, and at
+       a 140px rail they had 111px to share — tight enough that the i's glyph touched
+       the count's last letter. 152px gives the row 123px and the crowding goes away.
+
+       The trade is height: seven stacked slots is ~900px, taller than a laptop
+       viewport, so the rail scrolls (see the `overflow-y` rule below, which is now
+       unconditional rather than a short-screen exception).
+       --rail stays width + 24px, matching the clamp on `right` below at its cap. */
+    :root { --rail: 176px; }
     main { padding-inline: var(--rail); }
 
     .badges {
@@ -967,18 +1117,49 @@ body {
         top: 50%; right: clamp(0.7rem, 1.5vw, 1.5rem);
         transform: translateY(-50%);
         z-index: 45;
-        width: 132px; max-width: none;
+        width: 152px; max-width: none;
         margin: 0; padding: 0.8rem 0.85rem 0.9rem;
-        /* deliberately not overflow:auto — any overflow value but visible clips
-           the stars at the rail wall as they fly out of an edge slot. Tall
-           enough screens never need to scroll; the short-screen rule below
-           takes the clipping back when it has to. */
+        /* Still visible here, deliberately. One column of 92px medals is taller than
+           the viewport and has to scroll, but the scrolling belongs to the tray (see
+           `.badge-tray` below), not to the rail: an overflow value on this element
+           would establish a clipping box around the whole aside, and the i's tooltip
+           is a descendant that floats outside it — it would be cut off at the rail
+           wall. Scrolling the tray instead keeps the head, the tooltip and the foot
+           out of the clip. */
         max-height: calc(100vh - 5rem); overflow: visible;
         background: var(--paper);
         border: 1px solid var(--line); border-top: 1px solid var(--line);
         border-radius: 14px;
         box-shadow: 0 30px 60px -34px rgb(var(--ink-deep-rgb) / 0.45);
-        transition: box-shadow 0.4s ease, border-color 0.4s ease;
+        transition: transform 0.42s cubic-bezier(0.22,1,0.36,1),
+                    box-shadow 0.4s ease, border-color 0.4s ease;
+    }
+    /* Tucked away sideways, not folded shut.
+       Collapsing vertically left a header pill still sitting in the margin, which
+       is the one part of the panel with nothing in it worth reading — the reader
+       asked for the rail to go away and got a label instead. So the whole panel
+       slides off the right edge and only a thumb tab stays behind.
+
+       100% is the panel's own 152px; adding the same clamp used for `right` above
+       carries it past the gap it was inset by, so its left edge lands exactly on
+       the edge of the screen and the tab (which hangs off that edge, below) is all
+       that is left in view. */
+    .badges.shut {
+        transform: translateY(-50%)
+                   translateX(calc(100% + clamp(0.7rem, 1.5vw, 1.5rem)));
+    }
+    /* Off screen is not the same as gone: a translated panel keeps its place in the
+       tab order, so the i and the reset button would still take focus out there
+       where nothing can be seen. visibility does remove them, and unlike display it
+       leaves the box measurable — which matters, because a badge landing reopens
+       the rail and has to find a slot to aim at.
+
+       Held until the slide finishes so the panel is watched on its way out rather
+       than blinking; the toggle opts back in, since it is the way back. */
+    .badges.shut .badges-head,
+    .badges.shut .badges-body {
+        visibility: hidden;
+        transition: visibility 0s linear 0.42s;
     }
     /* Because the tray is fixed at this width it is out of the flow, so the seam rule
        up top (`.badges:has(+ .chapter-mark)`) trims padding that occupies no space.
@@ -991,57 +1172,169 @@ body {
     .section:has(+ .badges + .chapter-mark) {
         padding-bottom: clamp(1.5rem, 3vw, 2.5rem);
     }
+    /* One line, no wrapping. At 140px the head has ~111px to hold the count, the i and
+       the chevron; "4 of 7 discovered" alone measured 97.9px of it, so the row wrapped
+       to three lines. Shortening the count to "4 / 7" in script is not an option — it
+       is COPY.md-tracked text — so the tracking comes off and the two 20px buttons are
+       allowed to sit tight against it. flex-wrap: nowrap makes a bad fit obvious
+       instead of silently stacking. */
     .badges-head {
-        gap: 0.25rem; margin-bottom: 0;
-        font-size: 0.55rem; letter-spacing: 0.06em;
-        align-items: center; flex-wrap: wrap;
+        gap: 0.15rem; margin-bottom: 0;
+        font-size: 0.55rem; letter-spacing: 0.02em;
+        align-items: center; flex-wrap: nowrap;
     }
-    /* 132px will not hold the words and the count on one line; the count is the
-       part that changes, so it is the part that stays */
+    /* Hidden: the head has only ~111px, which the count and the two buttons already
+       fill. "Your discoveries" on top of that wraps the row and buys nothing the count
+       does not already say. The count is the part that changes, so it is the part that
+       stays. The aside keeps its aria-label either way. */
     .badges-title { display: none; }
-    .badges-count { font-size: 0.6rem; white-space: nowrap; }
-    .badges-toggle {
-        display: grid; place-items: center;
-        width: 20px; height: 20px; padding: 0; flex: none;
-        color: var(--ink-faint); background: none; border: 0; cursor: pointer;
-        transition: transform 0.32s cubic-bezier(0.22,1,0.36,1), color 0.2s ease;
+    /* 0.52rem, down from 0.6rem: at 0.6 the count measured 97.9px of the 111px on
+       offer and pushed the buttons onto their own lines. It is also the flex item that
+       gives — the buttons are fixed 20px squares — hence min-width: 0. */
+    .badges-count {
+        font-size: 0.52rem; white-space: nowrap;
+        min-width: 0; margin-right: auto;
     }
-    .badges-toggle svg { width: 14px; height: 14px; }
-    .badges-toggle:hover { color: var(--accent); }
-    .badges.shut .badges-toggle { transform: rotate(-90deg); }
+    /* The note is absolutely positioned, so it is out of flow and contributes no width
+       to the head — but it is still a flex child, and without this Chrome hands it a
+       stretched cross-size that confuses the row's height. */
+    .badges-head .badges-note { align-self: start; }
+    /* A tab on the outside edge, not a chevron in the header.
 
-    /* collapsing hides the grid but keeps the header pill readable */
+       It has to survive the panel sliding away, so it cannot live inside anything
+       that goes with it: it is absolutely positioned against the aside and hangs
+       off its left edge, half-round on that side like a pull. When the panel is
+       tucked, the tab is carried to the screen edge with it and is the only thing
+       still visible — so it is also the only affordance for getting the collection
+       back, and it is sized for a thumb rather than for a 20px header slot.
+
+       Vertically centred rather than pinned to the top: shut, there is no header to
+       align with, and the middle of the right edge is where a hand goes looking. */
+    .badges-toggle {
+        position: absolute;
+        top: 50%; left: -1px;
+        transform: translate(-100%, -50%);
+        display: grid; place-items: center;
+        width: 22px; height: 54px; padding: 0;
+        color: var(--ink-faint);
+        background: var(--paper);
+        border: 1px solid var(--line); border-right: 0;
+        border-radius: 8px 0 0 8px;
+        cursor: pointer;
+        /* the panel's own shadow, clipped to the side that sticks out */
+        box-shadow: -6px 12px 24px -16px rgb(var(--ink-deep-rgb) / 0.45);
+        transition: color 0.2s ease, background 0.2s ease;
+    }
+    .badges-toggle svg {
+        width: 14px; height: 14px;
+        transition: transform 0.32s cubic-bezier(0.22,1,0.36,1);
+    }
+    .badges-toggle:hover { color: var(--accent); background: var(--accent-wash); }
+    /* The arrow points the way the panel will go: left to tuck it away, right to
+       bring it back. Rotating the glyph rather than swapping the path keeps the
+       turn animated. */
+    .badges.shut .badges-toggle svg { transform: rotate(180deg); }
+
+    /* overflow: hidden is what used to animate the vertical collapse. The collapse
+       is sideways now and belongs to the aside, so this element no longer animates
+       anything — but the clip stays, because the tray inside scrolls and the last
+       slot needs a box to be clipped against.
+
+       max-height has to clear what the tray inside it is allowed to be, or this
+       element clips the tray's last slot and its scrollbar. The tray is
+       `100vh - 13rem` plus the foot, so `100vh - 9rem` leaves room for both. */
     .badges-body {
         overflow: hidden;
-        max-height: 78vh; opacity: 1;
-        transition: max-height 0.42s cubic-bezier(0.22,1,0.36,1), opacity 0.3s ease,
-                    margin-top 0.42s cubic-bezier(0.22,1,0.36,1);
+        max-height: calc(100vh - 9rem);
         margin-top: 0.85rem;
     }
-    .badges.shut .badges-body { max-height: 0; opacity: 0; margin-top: 0; }
 
-    .badge-tray { grid-template-columns: repeat(2, 1fr); gap: 0.7rem 0.35rem; }
-    .badges .bdg-medal { width: 48px; height: 48px; }
-    .badges .bdg-medal svg { width: 36px; height: 36px; }
-    /* smaller medal, shorter flight, or the stars would land in the next slot */
-    .badges .bdg-stars { --reach: 34px; }
-    .badges .bdg-star { width: calc(var(--sz) * 0.55); height: calc(var(--sz) * 0.55); }
-    /* in the rail the medal leads and the name follows, clipped to one line */
-    .badges .bdg { display: flex; flex-direction: column-reverse; gap: 0.3rem; }
-    .badges .bdg-meta { min-height: 0; margin-bottom: 0; }
-    .badges .bdg-kicker, .badges .bdg-stat { display: none; }
-    /* Wrapping, not ellipsis: at 132px a name like "Amateur Actuary" cannot fit
-       on one line, and two readable lines beat one truncated one. */
-    .badges .bdg-name {
-        font-size: 0.5rem; line-height: 1.2; letter-spacing: 0.01em;
-        white-space: normal;
+    /* ONE column, name under the medal.
+
+       The medal is the point of the rail — it is what the reader recognises — so it
+       gets the width, and the name goes underneath where it can use the full slot
+       instead of a column to the medal's right. One column keeps the rail narrow
+       (152px against 236px for two), which is what buys the story column its width
+       back; the cost is a rail taller than the window, which is why it scrolls.
+
+       The scroll lives HERE rather than on `.badges`, so the clipping box wraps only
+       the slots: the head, the reset button and the i's floating tooltip all stay
+       outside it. 100vh minus 13rem covers the rail's own padding, the head and the
+       foot; the tray takes what is left and scrolls within it.
+
+       The cost is the star burst, which flies outside a slot's box and is clipped at
+       the tray wall — overflow-y: auto forces the x axis to clip too. That is the
+       price of one column, and it is the cheaper side of the trade: a little sparkle
+       against ~230px of story column. */
+    .badge-tray {
+        grid-template-columns: 1fr; gap: 0.7rem;
+        max-height: calc(100vh - 13rem); overflow-y: auto;
+        /* thin and unobtrusive: the rail is furniture, not a document */
+        scrollbar-width: thin; scrollbar-color: var(--line) transparent;
     }
-    .badges-note {
-        font-size: 0.66rem; line-height: 1.45;
-        margin: 0 0 0.8rem; padding: 0.55rem 0.6rem;
+    /* 92px, double the 46px it was. The artwork inside the ring is the thing being
+       recognised and it now reads at a glance. The svg keeps its ~76% share. */
+    .badges .bdg-medal { width: 92px; height: 92px; }
+    .badges .bdg-medal svg { width: 70px; height: 70px; }
+    /* the medal doubled, so the flight scales with it or the stars burst too close in */
+    .badges .bdg-stars { --reach: 64px; }
+    .badges .bdg-star { width: calc(var(--sz) * 0.7); height: calc(var(--sz) * 0.7); }
+    /* Stacked, medal first. column-reverse rather than a reordered source, so the DOM
+       still reads meta-then-medal like the in-flow tray and the screen-reader order
+       is unchanged — only the visual order flips. */
+    .badges .bdg {
+        display: flex; flex-direction: column-reverse; align-items: center;
+        gap: 0.25rem; text-align: center;
+        padding: 0.3rem 0.15rem; border-radius: 9px;
+        transition: background 0.2s ease;
+    }
+    .badges .bdg-orb { flex: none; margin: 0; }
+    .badges .bdg-meta { min-height: 0; margin-bottom: 0; width: 100%; }
+    .badges .bdg-kicker, .badges .bdg-stat { display: none; }
+    /* Under the medal now, with the whole slot to work in rather than a column beside
+       it. Measured at this size, all seven names fit on one line — the longest
+       ("Ladder Climber") is 71.7px in a 92px slot, and the longest single word
+       ("Long-Lost") is 45.6px, so nothing is at risk of breaking mid-word even if a
+       fallback font runs wider. Wrapping is left enabled as the safety valve rather
+       than nowrap+ellipsis: a name that somehow does not fit is better read on two
+       lines than truncated.
+
+       min-height reserves exactly one line, so a locked slot (empty name) makes the
+       same box as a found one and the grid rows stay even as badges land. Reserving
+       two, as an earlier pass did, padded every row for a wrap that never happens and
+       cost ~50px of rail height. */
+    .badges .bdg-name {
+        font-size: 0.62rem; line-height: 1.25; letter-spacing: 0;
+        min-height: 1.25em;
+    }
+    /* In the rail the note still floats, but the rail is pinned to the right edge
+       of the screen, so a panel growing rightward from left:0 would run straight off
+       it. Anchor it to the right edge of the head and let it grow leftward into the
+       story column instead — where there is room — and drop the shrunk-for-the-flow
+       type back up so a floating tooltip stays readable. The border flips to the
+       right side to point back at the i it belongs to.
+
+       `.badges .badges-note`, not just `.badges-note`: the base rule sits lower in
+       the file (near the veil block), so at equal specificity it would win on source
+       order and undo the right-anchor. The extra class outranks it. */
+    .badges .badges-note {
+        left: auto; right: 0;
+        max-width: min(260px, 60vw);
+        font-size: 0.78rem; line-height: 1.5;
+        padding: 0.6rem 0.75rem;
+        border-left: 1px solid var(--line);
+        border-right: 2px solid var(--accent-pale);
+        border-radius: 8px 0 0 8px;
     }
     .badges-foot:not(:empty) { margin-top: 0.7rem; }
     .bdg-reset { font-size: 0.58rem; }
+
+    /* Scale in place rather than the tray's translateY lift: the slots are stacked
+       in a tight grid here, and a medal rising 4px crowds the row above it. Same
+       "this responds to you" cue, no encroaching. */
+    .badges .bdg:hover .bdg-medal { transform: scale(1.06); }
+    /* the whole slot is the hover target — the name below is part of the same badge */
+    .badges .bdg.got:hover { background: var(--accent-wash); }
 
     /* a badge landing nudges the whole rail, so it is noticed off to the side */
     .badges.flash {
@@ -1057,14 +1350,12 @@ body {
     }
 }
 
-/* Not enough height for all eight slots: the rail has to scroll, which means it
-   has to clip, which costs the stars their flight outside the rim. Losing a
-   little sparkle beats losing half the collection off the bottom of the screen.
-   The threshold allows for a full collection, where every slot has gained a name
-   and the rail stands at its tallest. */
-@media (min-width: 1100px) and (max-height: 780px) {
-    .badges { overflow-y: auto; }
-}
+/* No short-screen scroll exception any more. This used to be a media query with a
+   height threshold that had to be re-measured every time the slot size changed —
+   780px for two columns of tall cards, then 560px, then 620px, then 730px. One
+   column of 92px medals is taller than every viewport, so the rail scrolls
+   unconditionally and the threshold has nothing left to guard. The `overflow-y`
+   now lives on `.badges` itself, up in the rail block. */
 
 .bdg { text-align: center; }
 .bdg.ring-accent       { --ring: var(--accent); }
@@ -1212,14 +1503,42 @@ body {
     from { opacity: 0; transform: translateY(4px); }
     to   { opacity: 1; transform: none; }
 }
-/* shown only when the i is pressed, so it reads as an answer to a question */
+/* A floating tooltip, not a block in the flow. It reads on hover of the i (and
+   on keyboard focus, below) and floats over whatever is beneath it, so opening it
+   shifts nothing — the tray does not move. Anchored to .badges-head, which is
+   position:relative; it hangs below the head and aligns to the left edge so the
+   text runs into the panel's width rather than off toward the i on the right. */
 .badges-note {
-    font-size: 0.82rem; line-height: 1.5; color: var(--ink-soft);
-    margin: 0 0 1.3rem;
-    padding: 0.7rem 0.85rem;
-    background: var(--accent-wash);
+    position: absolute; z-index: 6;
+    top: calc(100% + 0.5rem); left: 0;
+    width: max-content; max-width: min(300px, 78vw);
+    font-size: 0.82rem; font-weight: 400; line-height: 1.5; letter-spacing: normal;
+    text-transform: none; color: var(--ink-soft);
+    margin: 0; padding: 0.7rem 0.85rem;
+    background: var(--paper);
+    border: 1px solid var(--line);
     border-left: 2px solid var(--accent-pale);
     border-radius: 0 8px 8px 0;
+    box-shadow: 0 10px 28px rgb(0 0 0 / 0.13);
+    /* Hidden until asked for. visibility (not display) so it can fade, and
+       pointer-events:none so the invisible panel never eats a click meant for the
+       tray beneath it. */
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transform: translateY(-3px);
+    transition: opacity 0.16s ease, transform 0.16s ease, visibility 0s linear 0.16s;
+}
+/* Hover the i, or focus it with the keyboard, and the note appears. :focus-visible
+   rather than :focus so a mouse press doesn't leave it stuck open after the pointer
+   leaves. pointer-events go live in the shown state so a reader can move the pointer
+   onto the note itself — .badges-note:hover then holds it open across the gap. */
+.badges-info:hover + .badges-note,
+.badges-info:focus-visible + .badges-note,
+.badges-note:hover {
+    opacity: 1; visibility: visible; pointer-events: auto; transform: none;
+    transition: opacity 0.16s ease, transform 0.16s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+    .badges-note { transition: visibility 0s; transform: none; }
 }
 
 /* ─── THE VEIL ──────────────────────────────────────────────
@@ -1412,6 +1731,14 @@ html.bdg-locked, html.bdg-locked body { overflow: hidden; }
     .badges.flash { animation: none; }
     .badges-count.bump { animation: none; }
     .bdg:hover .bdg-medal { transform: none; }
+    /* The rail still tucks away sideways — that is a state change, not decoration,
+       so it stays. It just arrives there at once instead of sliding, and the panel's
+       contents leave the tab order in the same instant rather than after the slide
+       they no longer wait for. */
+    .badges { transition: box-shadow 0.4s ease, border-color 0.4s ease; }
+    .badges.shut .badges-head,
+    .badges.shut .badges-body { transition: visibility 0s; }
+    .badges-toggle svg { transition: none; }
 }
 
 /* ─── FIGURE CAPTION ────────────────────────────────────────
@@ -1463,6 +1790,17 @@ html.bdg-locked, html.bdg-locked body { overflow: hidden; }
 }
 .closing-title { color: var(--accent); }
 .closing .lead { color: var(--ink-soft); max-width: 560px; margin: 1.2rem auto 0; }
+/* The last line on the page. Set like a .beat rather than a .lead — it is the page
+   speaking, not a caption — and given the air of a .beat.close above it, because
+   nothing follows but the footer and the pause is the point. */
+.closing-last {
+    margin: clamp(3rem, 6.5vw, 5rem) auto 0;
+    max-width: 30ch;
+    font-size: clamp(1.15rem, 2.4vw, 1.5rem); font-weight: 700;
+    line-height: 1.3; letter-spacing: -0.01em;
+    color: var(--ink-deep);
+    text-wrap: balance;
+}
 
 /* ─── FOOTER ────────────────────────────────────────────── */
 .site-footer {
@@ -1586,6 +1924,44 @@ html.bdg-locked, html.bdg-locked body { overflow: hidden; }
 }
 .dna-result-note { font-size: 0.98rem; color: rgb(var(--white-rgb) / 0.85); max-width: 440px; margin: 1.4rem auto 0; }
 .dna-result-note strong { color: var(--white); }
+/* The match figure. Sits between the country and the bars, and is the one number on
+   the card — so it is set as one, at the size of a stat rather than a sentence. The
+   word stays small: "82%" is the thing being read, "match" only says what it is. */
+.dna-result-pct {
+    font-size: 0.9rem; letter-spacing: 0.06em; text-transform: uppercase;
+    font-weight: 600; color: rgb(var(--white-rgb) / 0.62);
+    margin: -0.9rem 0 1.5rem;
+}
+.dna-result-pct b {
+    display: block; font-size: clamp(1.6rem, 4vw, 2.1rem); font-weight: 700;
+    letter-spacing: -0.01em; text-transform: none; color: var(--white);
+    line-height: 1.1;
+}
+/* What the reader said they value. Above the bars, because the bars are the country's
+   shape and this is theirs. A list rather than a comma sentence: there can be four of
+   these, and four value-phrases run together read as one long clause nobody finishes. */
+.dna-result-vals {
+    font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase;
+    font-weight: 600; color: rgb(var(--white-rgb) / 0.6);
+    margin: 0 0 0.7rem;
+}
+.dna-vals {
+    list-style: none; padding: 0;
+    /* Left-aligned inside a centred card: bullets down a ragged centre line are
+       unreadable, so the block centres and the text does not. */
+    width: max-content; max-width: 100%;
+    margin: 0 auto 1.9rem;
+    text-align: left;
+    display: flex; flex-direction: column; gap: 0.35rem;
+}
+.dna-vals li {
+    font-size: 1.1rem; font-weight: 700; color: var(--white); line-height: 1.35;
+    padding-left: 1.1rem; position: relative;
+}
+.dna-vals li::before {
+    content: '\2022'; position: absolute; left: 0;
+    color: var(--accent); font-weight: 700;
+}
 
 .dna-strip { display: flex; flex-direction: column; gap: 0.7rem; max-width: 440px; margin: 0 auto; }
 .dna-ax { display: grid; grid-template-columns: 110px 1fr; align-items: center; gap: 0.8rem; }

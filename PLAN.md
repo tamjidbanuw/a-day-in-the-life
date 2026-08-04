@@ -77,12 +77,13 @@ Cover, opener, ten sections across four chapters, close. Reading order top to bo
 | | | **CHAPTER TWO · The Only Number Here That Asks** | | |
 | 5 | `#sec-happy` | A simple question / **Happiness isn't measured. It's answered.** | Wide strip: 34 marks on the ladder, average called out, vertical leaders with tiered labels; readout stacks leader / trailer / average; dots fade in, then Finland, then India, then the names | 4.1 |
 | 6 | `#sec-ranks` | Nobody leads / **No Country Wins Everything** | Rank slope chart, 34 countries × 4 measures; the four that come first are drawn, the other 30 ghosted until hovered | 4.2 |
-| | | **CHAPTER THREE · One Country Writes Everything Down** | | |
-| 8 | `#sec-leisure` | Every minute / **One country writes down all 1,440 minutes** | Three cards: the day as one stacked bar, 44 activities grouped under the five blocks, then four activities by age band; plus two callouts | 5.1 |
+| | | **CHAPTER THREE · Inside an Ordinary Day** | | |
+| 8 | `#sec-leisure` | A closer look / **What happens inside 1,440 minutes?** | One drill-down, three levels deep: the day as five blocks → the chosen block's activities → the chosen activity as Overview / By age / By sex, with a crumb back up. One callout under it, written by `paintWow()` from whatever is open — nothing on arrival, the block's lopsidedness once a block is open, then the surprise belonging to the tab being read. (Was three separate cards — stacked bar, all 44 activities at once, four hand-picked lines by age — under two callouts of fixed findings and three paragraphs that answered the chart before the reader touched it.) | 5.1 |
 | | | **CHAPTER FOUR · Somebody Lives Like You** | | |
-| 9 | `#sec-dna` | Find your match / **Somewhere out there, a country lives like you** | Four-question quiz → matched country, across all 35 | 6.1 |
-| — | `#sec-now` | Right now / **While you read this** | Live coda: reader's clock, US activity share this hour, 24-hour ribbon with a marker at the current time | 7.1 |
-| — | `#sec-close` | **Same hours. Different lives.** | Text payoff, then `.site-footer` sources | — |
+| 9 | `#sec-dna` | Find your match / **Somewhere out there, a country lives like you** | Four-question quiz → matched country, across all 35. The result is a card, not a readout: closest match, a match percentage, the reader's own values as a list, the country's four bars, and one sentence naming the trade it makes. | 6.1 |
+| — | `.beat.ask` | **Your day is one of billions. Right now, the world is still moving.** | The hinge into the coda. Without it the reader goes from their own result straight into a clock and has to work out why it is there. | — |
+| — | `#sec-now` | Right now / **Right now** | Live coda: reader's clock, US activity share this hour, 24-hour ribbon with a marker at the current time | 7.1 |
+| — | `#sec-close` | **Same hours. Different lives.** | One paragraph, then the last line — "Every day is ordinary. Until you compare it with someone else's." — then `.site-footer` sources | — |
 
 ### The widening (12 → 35, and life expectancy dropped)
 
@@ -259,9 +260,12 @@ hairline. The block totals in the panel above carry the cross-block comparison.
   **The one thing that did not survive on its own: the `day` and `day5` badges.** Both were
   earned only by changing the country in `#sec-day`'s picker, so deleting it would have left
   two of them unreachable and the collection impossible to finish — with nothing on
-  screen to say so. They are wired to the glance sheet's picker now, in `initCountryBadges()`,
-  and both hints still read true: it is the first chart on the page, and five countries is
-  still five distinct values.
+  screen to say so. They were wired to the glance sheet's picker instead, in
+  `initCountryBadges()`.
+  **Since superseded:** `day5` ("Jet Lagged", five distinct countries) has been removed
+  outright by request, taking its `plane` glyph and the Set that counted distinct picker
+  values with it. `initCountryBadges()` now watches for a single `change` and earns `day`
+  alone; the collection is six.
 - **The money-and-mood scatter** (`#sec-money`, `initMoneyMood`): GDP per person on a log axis
   against the ladder, with a least-squares fit and r = +0.91 printed on the chart. Cut with the
   income argument, so Chapter Two goes from the happiness strip straight to the rankings. With
@@ -335,13 +339,25 @@ to be told where to look.
 - Every section carries `.reveal` for scroll-in fade, via IntersectionObserver.
 
 ### Known structural problems
-- **Chapter One names no source.** Nothing inside `#sec-glance` says where its numbers come
-  from. The line that carried it — "OECD Time Use Database, both sexes, average minutes per
-  day" — sat in `#sec-day`'s day card caption and went when that section was cut; the braid's
-  own caption went later, and it never held a source anyway. The whole chapter is one OECD
-  extract and is now cited only in the footer's `Sources` line. The page is not uncited, but
-  the chapter is, and cited sources are 15% of the VizCon score. Cheapest fix: a source line
-  under the day card, where the three caveats already sit.
+- **Only the footer cites anything now.** Chapters One and Two both name their sources
+  nowhere. Chapter One lost its line when `#sec-day` was cut ("OECD Time Use Database, both
+  sexes, average minutes per day" sat in that card's caption); Chapter Two had `.source` notes
+  under both figures for a while and they were cut too. The footer's `Sources` line still
+  carries everything — OECD Time Use Database, World Happiness Report with the Luxembourg
+  note, World Bank, UN, ATUS — and there is an assertion in the round-trip check that each
+  survives somewhere on the page. So the page is cited; no individual chart is. Cited sources
+  are 15% of the VizCon score, and a reader who screenshots one chart carries no provenance
+  with it. The only `.source` element left on the page belongs to the quiz.
+- **One caveat is now unstated anywhere: the happiness axis is cropped.** It spans the range
+  of the 34 countries, roughly 3.78 to 7.82, not the full 0–10 — so India's mark at the far
+  left is not "the worst life imaginable", which is what the axis label now implies at that
+  end. The printed ticks starting at 4 are the only remaining hint. This was the last line of
+  the strip's source note. Cheapest fix if it matters: print the tick for 0 and 10, or say
+  "3.8 to 7.8 of 10" in the caption.
+- **The ranks-are-by-size caveat is also gone for the slope chart.** "1st on Work is the
+  longest working day, not the best one" went with that section's source note. Chapter One's
+  ranking still says "Longer doesn't always mean better", so the idea appears once on the
+  page, attached to a different chart.
 - **Unpaid work can no longer be compared by eye.** This is the one real cost of cutting
   `#sec-work`, and it is worth knowing rather than rediscovering. That chart stacked two
   segments from a common left edge, so the unpaid band could be read across all 35 countries
@@ -367,7 +383,13 @@ to be told where to look.
   is a reference for this document, nothing the reader sees. The old numbering ran 1.1–6.1 in
   plain order, tracking neither chapter nor section, and was never cited in the prose.
 - **`#sec-now` sits outside any chapter**, after Chapter Four's section. It reads as a coda but
-  visually belongs to that chapter.
+  visually belongs to that chapter. It is reached through the `.beat.ask` hinge rather than
+  directly, so the clock arrives as proof that the world carries on past the reader's own
+  result rather than as a fourth chart.
+- **The closing says one thing once.** The `.lead` and a second `.body` paragraph both opened on
+  everyone being handed the same 1,440 minutes; the `.body` is gone, and what follows the `.lead`
+  is the last line, which answers the question the opener asked — and only now that the reader
+  has seen someone else's day.
 - **Section 1's heading changes with the country** ("Mexico spends its day like this"), so it does
   not state a finding the way the others do.
 - **"8 Billion People" is the only title-cased heading**; the rest are sentence case.
