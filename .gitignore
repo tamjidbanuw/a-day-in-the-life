@@ -14,3 +14,8 @@ data/WHR26_Data_Figure_2.1.xlsx
 *.log
 node_modules/
 .vscode/
+
+# Scratch from verifying changes: headless probe pages, the scripts that build them,
+# their dumped output and screenshots. All disposable, all named tmp-*, and thirteen of
+# them had piled up untracked before this rule existed.
+tmp-*
