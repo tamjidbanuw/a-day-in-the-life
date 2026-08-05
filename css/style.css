@@ -71,6 +71,24 @@
     /* gutter reserved for the collection rail; 0 until the rail actually exists,
        so the narrow layout is untouched. Set once, in the rail's media query. */
     --rail: 0px;
+    /* THE CHAPTER SEAM. Four chapter marks, and the reader should not be able to
+       tell them apart by feel: closing statement → eyebrow → title → blurb →
+       divider → first visualisation, the same distance every time.
+
+       The mark's own interior was already uniform (44px above the eyebrow, 12.8
+       to the title, 16 to the blurb, 24 to the divider, 8 below it). What was not
+       is the two joints, because each was left to whatever happened to sit on the
+       other side of it — a section contributed 40px, a plain beat 56, a .close
+       beat 104, and #sec-glance answered the divider with 32 where its three
+       siblings answered with 96. Measured ink to ink at 1400px, the approach ran
+       90 / 90 / 106 / 154 and the departure 54 / 104 / 104 / 104.
+
+       So the seam owns both numbers now instead of inheriting them. --seam-in is
+       the old section value, which two of the four seams already used; --seam-out
+       is .section's own top padding, which three of the four already used. Both
+       keep their clamps, so the seam still closes on a phone. */
+    --seam-in:  clamp(1.5rem, 3vw, 2.5rem);
+    --seam-out: clamp(3.5rem, 7vw, 6rem);
     --font: 'IBM Plex Sans', -apple-system, sans-serif;
 }
 
@@ -254,8 +272,11 @@ body {
    unsupported the seam simply keeps the old, roomier spacing. */
 .section:has(+ .chapter-mark),
 .badges:has(+ .chapter-mark) {
-    padding-bottom: clamp(1.5rem, 3vw, 2.5rem);
+    padding-bottom: var(--seam-in);
 }
+/* The beat half of this seam is NOT here — it is with the beat variants near the end
+   of the file, because .beat.close would otherwise outrank it on both specificity and
+   source order. Search --seam-in. */
 .chapter-eyebrow {
     display: inline-block;
     font-size: 0.72rem; font-weight: 700;
@@ -300,7 +321,11 @@ body {
 .section {
     max-width: 1200px;
     margin: 0 auto;
-    padding: clamp(3.5rem, 7vw, 6rem) clamp(1.5rem, 4vw, 3rem);
+    /* --seam-out, not a repeat of its clamp: a section's top padding IS the far side
+       of a chapter seam whenever a chapter mark precedes it, which is true of four of
+       them. Same number as before; now it is one number with a name, so trimming a
+       chapter's opening distance is a single edit rather than four. */
+    padding: var(--seam-out) clamp(1.5rem, 4vw, 3rem);
 }
 
 /* centered editorial sections (opener, quiz, closing) */
@@ -424,6 +449,14 @@ body {
 @media (max-width: 900px) {
     .section.notes .viz > :first-child { margin-top: 2.2rem; }
 }
+/* The same reset one level up, for a section whose first child is not in a column.
+   A .howto pill carries a 14.4px top margin because it normally follows a paragraph;
+   in #sec-glance it IS the first thing in the section, so that margin stacked on top
+   of the section's own padding and Chapter One opened 14px lower than the three
+   chapters that open with a .sec-num. Nothing else in the page relies on a first
+   child's top margin — the .viz rule above has been zeroing exactly this for the
+   notes columns all along; this only extends it to the sections themselves. */
+.section > :first-child { margin-top: 0; }
 
 
 .sec-num {
@@ -2074,11 +2107,17 @@ html.bdg-locked, html.bdg-locked body { overflow: hidden; }
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 /* Matches the 1340px of the .notes sections around it — at .section's default
-   1200 this block would sit visibly inset from its neighbours. Top padding is
-   trimmed because the chapter mark directly above already brings its own air. */
+   1200 this block would sit visibly inset from its neighbours.
+
+   Top padding is NOT trimmed, though it was. The argument for trimming it was that
+   the chapter mark above already brings its own air, which is true — but it is just
+   as true of the three other sections that open a chapter, and they all answer the
+   divider with .section's full top padding. Trimming only this one made the first
+   chapter open at 54px where the other three open at 104, so Chapter One arrived
+   sooner than any chapter after it. Left to inherit .section's padding, which is
+   what --seam-out is. */
 #sec-glance {
     max-width: 1340px;
-    padding-top: clamp(1.25rem, 2.5vw, 2rem);
 }
 #sec-glance .card-sub {
     padding: 0.7rem 1.3rem 0;
@@ -2459,9 +2498,30 @@ html.bdg-locked, html.bdg-locked body { overflow: hidden; }
    beat's own weight and size — only the ink moves. */
 .beat-soft { color: var(--ink-soft); }
 
-/* The beat that ends a chapter. Twice the air, because nothing follows it but a chapter
-   mark, and the pause is the point. */
+/* The beat that ends a chapter. Twice the air above, because it is the page stopping
+   to say something and the pause is the point. Below is a different question — see the
+   seam rule directly under this one. */
 .beat.close {
     margin: clamp(4rem, 8vw, 6.5rem) auto;
     max-width: 30ch;
+}
+/* The approach half of the chapter seam, for the two chapters a beat hands over to
+   rather than a section. A beat spends margin where a section spends padding, so this
+   joint was inheriting whichever beat variant happened to close the chapter: 56px from
+   a plain .beat before Chapter One, 104 from .beat.close before Chapter Three, against
+   the 40 the two section-led seams contributed. Widest and narrowest of the four, at
+   the two seams the reader feels most.
+
+   Only the bottom margin moves. The air ABOVE a closing beat is what separates it from
+   the chart it comments on, and .beat.close wanting twice as much of that is right —
+   it is the air below, which the chapter mark's own 44px padding already provides,
+   that was being paid for twice.
+
+   Placed after .beat.close deliberately. It is (0,1,1) against that rule's (0,2,0),
+   so specificity alone loses; it needs the later source position AND to not be
+   outranked, which is why the property is set on its own rather than inside the
+   shorthand above. Where :has() is unsupported the seam keeps the old, roomier
+   spacing, same as the section side. */
+.beat:has(+ .chapter-mark) {
+    margin-bottom: var(--seam-in);
 }
