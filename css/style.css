@@ -2498,11 +2498,17 @@ html.bdg-locked, html.bdg-locked body { overflow: hidden; }
    beat's own weight and size — only the ink moves. */
 .beat-soft { color: var(--ink-soft); }
 
-/* The beat that ends a chapter. Twice the air above, because it is the page stopping
-   to say something and the pause is the point. Below is a different question — see the
-   seam rule directly under this one. */
+/* The beat that ends a chapter. It used to claim twice the air above — the argument
+   being that this is the page stopping to say something and the pause is the point.
+   But every beat here is the page stopping to say something, and the other four do it
+   on the base margin. All this bought was 201px above "There is no perfect country"
+   against 153 above "If Finland is happiest", two beats of the same kind one section
+   apart, which read as a gap rather than as emphasis. What sets this one apart is its
+   narrower measure and what follows it, not a bigger hole in front of it.
+
+   So only max-width is left. The margin comes from .beat like everyone else's, and the
+   space below comes from the seam rule under this one. */
 .beat.close {
-    margin: clamp(4rem, 8vw, 6.5rem) auto;
     max-width: 30ch;
 }
 /* The approach half of the chapter seam, for the two chapters a beat hands over to
@@ -2512,16 +2518,13 @@ html.bdg-locked, html.bdg-locked body { overflow: hidden; }
    the 40 the two section-led seams contributed. Widest and narrowest of the four, at
    the two seams the reader feels most.
 
-   Only the bottom margin moves. The air ABOVE a closing beat is what separates it from
-   the chart it comments on, and .beat.close wanting twice as much of that is right —
-   it is the air below, which the chapter mark's own 44px padding already provides,
-   that was being paid for twice.
+   Only the bottom margin moves: the air above a beat separates it from the chart it
+   comments on, which is a different job from the seam and is left to .beat.
 
-   Placed after .beat.close deliberately. It is (0,1,1) against that rule's (0,2,0),
-   so specificity alone loses; it needs the later source position AND to not be
-   outranked, which is why the property is set on its own rather than inside the
-   shorthand above. Where :has() is unsupported the seam keeps the old, roomier
-   spacing, same as the section side. */
+   Still placed after .beat.close, even though that rule no longer sets a margin for
+   this to override. Setting margin-bottom on its own also leaves .beat's `auto` side
+   margins intact, so the beat stays centred. Where :has() is unsupported the seam
+   keeps the old, roomier spacing, same as the section side. */
 .beat:has(+ .chapter-mark) {
     margin-bottom: var(--seam-in);
 }
