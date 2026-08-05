@@ -2075,6 +2075,15 @@ html.bdg-locked, html.bdg-locked body { overflow: hidden; }
 
 /* ── the two-column block ──────────────────────────────────────────────────── */
 .gl-grid { display: grid; gap: 18px; }
+/* .day-card's base rule carries margin: 2.4rem 0 1.4rem, written for a card sitting
+   alone in a section's flow. In here the grid's own 18px gap already spaces the
+   cells, so that margin was pure surplus — and worse, asymmetric: the .dc-card in
+   the column beside it has no margin of its own, so "Compare countries" started
+   38.4px lower than "One country's day" and the two columns visibly failed to line
+   up. Zeroed, the card fills its cell and both column tops meet.
+   Scoped to a direct child of the grid, so the .day-card in #sec-ranks and the rest
+   keep the spacing they were written with. */
+.gl-grid > * > .day-card { margin: 0; }
 @media (min-width: 1000px) {
     .gl-grid { grid-template-columns: 1fr 1.1fr; }
     .gl-full { grid-column: 1 / -1; }
