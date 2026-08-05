@@ -1517,26 +1517,37 @@ function initMetricStrips() {
             setTimeout(() => { if (b) b.classList.add('lo'); }, 900);
         };
         let started = false;
-        const start = () => {
+        /* Two ways in, and they are not the same thing. `start` plays the sequence and
+           belongs to the reader arriving; `bail` just makes the chart visible. The old
+           code used one for both, so the safety timer PLAYED the entrance — 34 dots
+           cascading four screens below the fold while the reader was still on the
+           cover, and a finished chart by the time they got there. */
+        const reveal = () => { started = true; host.classList.add('in'); };
+        const start = () => { if (!started) { reveal(); mark(); } };
+        const bail = () => {
             if (started) return;
             started = true;
-            host.classList.add('in');
+            /* Dropping .staged un-hides without animating: the hidden state hangs off
+               that class, so removing it leaves the dots at their natural opacity and
+               no keyframe ever runs. .in is not added, so nothing is staged to fade. */
+            host.classList.remove('staged');
             mark();
         };
         if (calm || !('IntersectionObserver' in window)) {
             start();
         } else {
             /* .staged is what hides the dots, so it goes on only now — with the observer
-               armed and a timer behind it. If neither ever fired the chart would sit
-               empty, so the timer is a floor rather than a nicety: worst case the
-               sequence plays before the reader gets here and they meet a finished chart,
-               which is exactly what they used to get. */
+               armed and a fallback behind it. If the observer never fired the chart
+               would sit empty, so the fallback is a floor rather than a nicety. It is
+               generous now (12s) and no longer animates, because its only job is to
+               guarantee the chart is never blank; the entrance itself waits for the
+               reader however long that takes. */
             host.classList.add('staged');
             const obs = new IntersectionObserver(es => es.forEach(e => {
                 if (e.isIntersecting) { start(); obs.disconnect(); }
             }), { threshold: 0.25 });
             obs.observe(host);
-            setTimeout(start, 4000);
+            setTimeout(bail, 12000);
         }
     });
 }

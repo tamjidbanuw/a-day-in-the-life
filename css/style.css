@@ -1856,8 +1856,15 @@ html.bdg-locked, html.bdg-locked body { overflow: hidden; }
 /* ─── LIFESTYLE DNA: stepped quiz → twin ────────────────── */
 /* one card, one step at a time; each swap fades in */
 #dna { max-width: 680px; margin: 0 auto; text-align: left; }
-.dna-stage {
-    margin-top: 2rem;
+/* The fade belongs to a stage SWAP, not to the first paint. This element is built
+   during page load, four screens below the fold, so an unconditional animation here
+   played the quiz card's entrance at a reader who was still on the cover — they
+   arrived at a card that had already finished arriving.
+   Scoped to .in on the section, which the scroll-reveal observer adds when #sec-dna
+   is actually reached. Every later stage is created after that class is already
+   present, so answering a question still fades the next one in. */
+.dna-stage { margin-top: 2rem; }
+#sec-dna.in .dna-stage {
     animation: dna-reveal 0.4s cubic-bezier(0.22,1,0.36,1) both;
 }
 /* only the question carries the cream card surface; result brings its own dark one */
