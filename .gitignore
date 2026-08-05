@@ -14,6 +14,10 @@ data/WHR26_Data_Figure_2.1.xlsx
 *.log
 node_modules/
 .vscode/
+# Local tool permissions. Both files are allowlists of one-off shell commands — mostly
+# the tmp-* probe scripts, which are themselves ignored below and already deleted. They
+# describe this machine, not this project, and say nothing a checkout needs.
+.claude/
 
 # Scratch from verifying changes: headless probe pages, the scripts that build them,
 # their dumped output and screenshots. All disposable, all named tmp-*, and thirteen of
