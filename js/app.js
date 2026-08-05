@@ -1944,11 +1944,21 @@ function initDayUS() {
                  <b>${hm(b.min)}</b></span>`).join('');
         }
         /* The instruction is only true while nothing is open, and a line that keeps
-           telling a reader to do what they have already done reads as a bug. */
+           telling a reader to do what they have already done reads as a bug.
+
+           The at-rest line names what is BEHIND the bar, not just what to do with it.
+           "Choose a part of the day to open it" tells a reader the bar is clickable
+           and nothing about why they would bother — and the honest answer is a good
+           one: five blocks open into fifty activities, each of which splits by age and
+           by sex. None of that was visible or even implied on arrival, so the section
+           looked like a finished stacked bar with a caption under it. The count comes
+           from the data rather than being written in, so it cannot drift from what
+           actually opens. */
         if (ask) {
+            const rows = D.blocks.reduce((n, b) => n + actsIn(b.key).length, 0);
             ask.textContent = atBlock
                 ? 'Now choose an activity, or go back to the whole day.'
-                : 'Choose a part of the day to open it.';
+                : `Open any block — ${rows} activities inside, each by age and sex.`;
         }
     }
 

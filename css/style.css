@@ -934,28 +934,76 @@ body {
 .lu-head {
     margin: 1.1rem 0 0.2rem; font-size: 1.02rem; font-weight: 600; color: var(--ink);
 }
+/* The one instruction attached to the bar, so it carries the weight of one. It was
+   --ink-faint at 0.84rem — the palest ink in the file at nearly the smallest size,
+   directly under a bold heading, which is how a reader scrolled past a section with
+   fifty openable activities in it. Now accent and 0.9rem, with the arrow below
+   pointing at the thing it means. Still one short line; it just isn't whispering. */
 .lu-ask {
-    margin: 0 0 0.7rem; font-size: 0.84rem; color: var(--ink-faint);
+    margin: 0 0 0.55rem; font-size: 0.9rem; font-weight: 600;
+    color: var(--accent-deep);
+}
+/* The cue between the instruction and the bar. A small caret, because the sentence
+   says "open" and the reader needs to know what to open — the words and the target
+   were previously 40px apart with nothing tying them together.
+
+   inline-block after the text rather than its own block: as a block it took the full
+   column width and its 8px box landed at the far left, pointing at the bar's edge
+   instead of at the sentence it belongs to. As an inline it trails the last word,
+   which is what a caret after a sentence should do. */
+.lu-ask::after {
+    content: ''; display: inline-block;
+    width: 6px; height: 6px; margin-left: 0.4rem; vertical-align: 2px;
+    border-right: 2px solid var(--accent-pale);
+    border-bottom: 2px solid var(--accent-pale);
+    transform: rotate(45deg);
 }
 
 /* level 1 · the whole day, every block a button */
 .lu-day {
-    display: flex; height: 2.6rem; border-radius: 3px; overflow: hidden;
+    display: flex; height: 2.6rem; border-radius: 3px;
     background: var(--track); margin: 0.2rem 0 0.9rem;
+    /* No overflow:hidden. The segments now carry their own outer ring on hover and
+       when open, and clipping the bar would shave the outer edge off the first and
+       last of them. Each segment rounds its own corners instead — see .lu-seg. */
 }
+/* A row of five buttons that has to keep reading as one stacked bar. The seam between
+   them is the affordance: at rest this was a single flat band of colour with nothing
+   to say it could be pressed except cursor:pointer and a hover brightness, neither of
+   which a scrolling reader ever sees and neither of which exists on touch. So the
+   divisions are now drawn — a paper-coloured hairline between segments, and a slight
+   lift on the whole set — which reads as five tiles rather than one image. */
 .lu-seg {
     display: block; height: 100%; padding: 0; border: 0;
     font: inherit; cursor: pointer; position: relative;
     /* The segment is the colour, so there is nothing to see but the width. A border
        would eat into a 6%-wide block, hence an inset shadow for the open one. */
-    transition: box-shadow 0.2s ease, filter 0.2s ease;
+    transition: box-shadow 0.2s ease, filter 0.2s ease, transform 0.2s ease;
+    /* box-shadow, not a margin or a border: both of those would come out of the
+       segment's width, and width here IS the data. A 2px paper-coloured spacer on the
+       right of each, drawn over the neighbour rather than displacing it. */
+    box-shadow: inset -2px 0 0 var(--paper);
 }
-.lu-seg:hover { filter: brightness(1.08); }
+.lu-seg:first-child { border-radius: 3px 0 0 3px; }
+.lu-seg:last-child  { border-radius: 0 3px 3px 0; box-shadow: none; }
+/* Hover and focus lift the segment clear of the bar, so the pointer is answered by
+   something more definite than a brightness shift. */
+.lu-seg:hover, .lu-seg:focus-visible {
+    filter: brightness(1.08);
+    transform: translateY(-2px);
+    box-shadow: inset -2px 0 0 var(--paper), 0 3px 8px rgb(var(--shade-rgb) / 0.18);
+}
+.lu-seg:last-child:hover, .lu-seg:last-child:focus-visible {
+    box-shadow: 0 3px 8px rgb(var(--shade-rgb) / 0.18);
+}
 .lu-seg.on {
     box-shadow: inset 0 0 0 2px var(--ink-deep);
     filter: brightness(1.06);
 }
 .lu-seg:focus-visible { outline: 2px solid var(--ink-deep); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+    .lu-seg:hover, .lu-seg:focus-visible { transform: none; }
+}
 .lu-daykey {
     display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem;
     font-size: 0.78rem; color: var(--ink-soft);
@@ -966,6 +1014,34 @@ body {
 }
 .lu-daykey b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
 .lu-daykey .on { color: var(--ink); font-weight: 600; }
+
+/* The panel the levels open into. Empty until a block is chosen, and that emptiness
+   was the whole problem with this section: below the legend the card simply stopped,
+   so the drill-down looked like a finished stacked bar with a caption under it and a
+   reader had no reason to think there was anything to open.
+
+   :empty gets a dashed floor with a line naming what appears there. A held space, the
+   way the crumb and the callout are held — the reader can see that something is meant
+   to arrive here, and that they are the one who has to ask for it. It costs 88px of a
+   6,000px chapter and it is the difference between a chart and an invitation.
+
+   Content in CSS because it belongs to the empty STATE rather than to the document:
+   the element has real children the moment anything is open, and a placeholder in the
+   HTML would have to be removed by the first paint. It is decorative and duplicated by
+   #du-ask directly above, so nothing is lost where content is unsupported or where a
+   screen reader skips it. */
+.lu-open:empty {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 88px; margin-top: 0.9rem;
+    border: 1px dashed var(--line); border-radius: 8px;
+    background:
+        repeating-linear-gradient(45deg, transparent 0 6px,
+            rgb(var(--shade-rgb) / 0.012) 6px 12px);
+}
+.lu-open:empty::before {
+    content: 'Choose a block above to open it here';
+    font-size: 0.82rem; color: var(--ink-faint);
+}
 
 /* the trail back up, drawn only once something is open */
 .lu-crumb {
@@ -1842,6 +1918,22 @@ html.bdg-locked, html.bdg-locked body { overflow: hidden; }
     border-radius: 999px;
     padding: 0.35rem 0.85rem;
 }
+
+/* What is behind the drill-down, in the sidebar where the argument lives.
+   Not a .howto: a pill is an instruction, and the instruction for this chart now sits
+   directly above the bar where it can be acted on. This says what the reader gets for
+   acting, which is the part that was missing — the section presented as a finished
+   stacked bar and gave no sign that fifty activities and two breakdowns were one click
+   underneath. Sized between the lead and a caption, so it reads as a promise rather
+   than as small print. */
+.dd-what {
+    margin-top: 1rem;
+    font-size: 0.9rem; font-weight: 700; line-height: 1.45;
+    color: var(--ink);
+    border-left: 2px solid var(--accent-pale);
+    padding-left: 0.7rem;
+}
+.dd-what span { font-weight: 400; color: var(--ink-soft); }
 
 /* Shared bar grow-in, used by the insight bars and the DNA axes. */
 @keyframes bar-grow { from { width: 0 !important; } }

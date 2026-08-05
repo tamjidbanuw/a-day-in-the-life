@@ -19,11 +19,11 @@ hand the file back, and it goes into the right place in the page.
 
 | | blocks |
 |---|---|
-| **Part 1 — written in the page** | 90 |
+| **Part 1 — written in the page** | 89 |
 | Cover, chapter marks, section titles and prose | |
 | The Chapter One at-a-glance sheet | |
 | Captions, callouts, the stat band, the footer | |
-| **Part 2 — built while the page runs** | 43 |
+| **Part 2 — built while the page runs** | 45 |
 | The six badge cards | |
 | The day card, the happiness strip, the rank chart | |
 | Chapter Three's biggest surprise | |
@@ -320,9 +320,10 @@ What happens inside 1,440 minutes?
 Most countries tell us how much time people spend.
 Only one lets us open the day minute by minute.
 
-### 63. Instruction pill  `[howto]`
+### 63. What is inside the drill-down  `[dd-what]`
 
-Choose a part of the day to begin.
+Five blocks. Fifty activities.
+Every one of them splits by age and by sex.
 
 ### 64. Chart · card head  `[card-head]`
 
@@ -333,11 +334,7 @@ Every minute included
 
 Every minute belongs somewhere.
 
-### 66. Drill-down · instruction  `[lu-ask]`
-
-Choose a part of the day to open it.
-
-### 67. Caption  `[fig-cap]`
+### 66. Caption  `[fig-cap]`
 
 One complete day, reconstructed from more than 170,000 time
 diaries, nothing removed.
@@ -346,51 +343,51 @@ These totals will not match the OECD figures elsewhere on this page: ATUS
 counts travel as its own activity, where the OECD folds it into whatever the
 trip was for.
 
-### 68. Editorial beat  `[beat]`
+### 67. Editorial beat  `[beat]`
 
 Nothing is missing.
 Every minute of the day has been
 accounted for.
 
-### 69. Chapter · eyebrow  `[chapter-eyebrow]`
+### 68. Chapter · eyebrow  `[chapter-eyebrow]`
 
 Chapter Four
 
-### 70. Chapter · NAME  `[chapter-name]`
+### 69. Chapter · NAME  `[chapter-name]`
 
 Somebody Lives Like You
 
-### 71. Chapter · blurb  `[chapter-blurb]`
+### 70. Chapter · blurb  `[chapter-blurb]`
 
 No two countries live the same day.
 But one comes surprisingly close to yours.
 
-### 72. Section · eyebrow  `[sec-num]`
+### 71. Section · eyebrow  `[sec-num]`
 
 Find your match
 
-### 73. Section · TITLE  `[sec-title]`
+### 72. Section · TITLE  `[sec-title]`
 
 Somewhere out there,
 a country lives like you
 
-### 74. Section · lead  `[lead]`
+### 73. Section · lead  `[lead]`
 
 Answer four simple questions.
 We’ll find the country whose day looks most like yours.
 
-### 75. Instruction pill  `[howto]`
+### 74. Instruction pill  `[howto]`
 
 Drag each dial to your own life.
 
-### 76. Caption  `[fig-cap]`
+### 75. Caption  `[fig-cap]`
 
 Find Your Match
 Nearest-neighbour match on four ranked scores. Your answers place you in the same
 0–100 space as the 35 countries; the closest by straight-line distance wins.
 Illustrative, not a ranking.
 
-### 77. Source note  `[source]`
+### 76. Source note  `[source]`
 
 The four scores are an illustrative index built from the same sources used throughout:
 daily free-time share and daily sleep and self-care (OECD Time Use), GDP per person,
@@ -399,37 +396,37 @@ thirty-five rather than by its raw value, because three of the four measures hav
 country sitting so far from the rest that a raw scale would flatten everyone else
 against the floor. Meant for exploring rather than ranking.
 
-### 78. Transition · the hinge  `[beat]`
+### 77. Transition · the hinge  `[beat]`
 
 Your day is one of billions.
 Right now, the world is still moving.
 
-### 79. Section · eyebrow  `[sec-num]`
+### 78. Section · eyebrow  `[sec-num]`
 
 Right now
 
-### 80. Section · TITLE  `[sec-title]`
+### 79. Section · TITLE  `[sec-title]`
 
 Right now
 
-### 81. Section · lead  `[lead]`
+### 80. Section · lead  `[lead]`
 
 Everything above was an average. This moment is real. Millions are
 asleep, millions are working, and you are somewhere in between.
 
-### 82. Live clock · label  `[rn-label]`
+### 81. Live clock · label  `[rn-label]`
 
 Right now, where you are
 
-### 83. Live clock · label, while an hour is being read  `[rn-label]`
+### 82. Live clock · label, while an hour is being read  `[rn-label]`
 
 Reading the day · leave to return
 
-### 84. Live clock · label  `[rn-sub]`
+### 83. Live clock · label  `[rn-sub]`
 
 The whole day, midnight to midnight
 
-### 85. Caption  `[fig-cap]`
+### 84. Caption  `[fig-cap]`
 
 This Hour
 Stacked bar, share of the American population in each activity at your current local
@@ -438,26 +435,26 @@ hour. American Time Use Survey microdata 2003–2015, 3,347,093 activity records
 is the only diary data here that records times of day, so the clock is yours and the
 behaviour is American.
 
-### 86. Section · TITLE  `[sec-title]`
+### 85. Section · TITLE  `[sec-title]`
 
 Same hours.
 Different lives.
 
-### 87. Section · lead  `[lead]`
+### 86. Section · lead  `[lead]`
 
 Everyone is handed the same 1,440 minutes. What changes, from Osaka to
 Mexico City to Rome, is what becomes of them.
 
-### 88. Closing · the last line  `[closing-last]`
+### 87. Closing · the last line  `[closing-last]`
 
 Every day is ordinary.
 Until you compare it with someone else’s.
 
-### 89. site-footer  `[site-footer]`
+### 88. site-footer  `[site-footer]`
 
 A Day in the Life of the World · A VizCon 2026 entry
 
-### 90. Footer · sources  `[src]`
+### 89. Footer · sources  `[src]`
 
 Sources. Daily time use: OECD Time Use Database (minutes per day, both sexes;
 “Work” combines paid and unpaid work), all 35 countries it covers. Happiness: World
@@ -611,6 +608,19 @@ Every dot is one country. The farther right, the happier people rate their own l
 ### Rank chart · readout  `[app.js:1773 → #pc-read]`
 
 34 countries, 4 measures. Four different countries come first, and not one of them stays there. · Work Mexico · Sleep France · Leisure Norway · Happiness Finland
+
+The two blocks below are one element, `#du-ask`, the instruction above the day bar. It
+moved here from Part 1 when the at-rest line started counting the activities it
+promises — `50` is summed from the data at load, so it cannot drift from what actually
+opens. Which of the two shows depends on whether a block is open.
+
+### Drill-down · instruction, nothing open yet  `[app.js:1961 → #du-ask]`
+
+Open any block — 50 activities inside, each by age and sex.
+
+### Drill-down · instruction, a block is open  `[app.js:1960 → #du-ask]`
+
+Now choose an activity, or go back to the whole day.
 
 The four blocks below are one element, `#du-wow`, rewritten on every click. Which
 sentence appears depends on how far into the drill-down the reader has gone and which
