@@ -1876,9 +1876,45 @@ html.bdg-locked, html.bdg-locked body { overflow: hidden; }
     display: flex; flex-direction: column; justify-content: center;
 }
 
-/* intro screen — no box, just the button */
-.dna-intro { text-align: center; padding: 1rem 0; }
+/* Intro screen — no box, but the same footprint as the question card that replaces it.
+   The button was correctly centred inside this element and still read as adrift,
+   because the element is the full 680px of the column and nothing else was in it: a
+   150px button floating in a wide band of empty paper, with the eye finding no axis to
+   put it on. Matching .dna-q's min-height and centring both ways gives it the card's
+   own optical centre, and stops the section jumping 240px taller the moment the quiz
+   starts.
 
+   min-height rather than height: a question card grows past 240px on a narrow column,
+   and the intro should not be the one thing here with a fixed box. */
+.dna-intro {
+    text-align: center;
+    min-height: 240px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+}
+/* And centred on the PAGE, not on the chart column.
+   Above 900px this section is a two-column grid, so everything in .viz — including the
+   quiz — is centred 133px right of the page's axis. That is right for the question and
+   result cards, which fill the column and are read against the notes beside them. It is
+   wrong for a lone 150px button with nothing else in view: there is no column edge to
+   register it against, so it just reads as off-centre.
+
+   The offset is exactly half the sidebar plus the gap, both of which are known — 228px
+   and the grid's own clamp — so it can be corrected without measuring anything at run
+   time. It matched at every width tested from 950 to 1600 (133.2px at 1300 and up,
+   easing to 128.3px at 950 as the gap clamp closes).
+
+   Only the intro moves. translate rather than a margin so it shifts nothing else, and
+   only where the two columns exist — below 900px the grid is one column and the button
+   is already on the page's axis. */
+@media (min-width: 901px) {
+    .dna-intro {
+        transform: translateX(calc(-1 * (228px + clamp(1.2rem, 3vw, 2.4rem)) / 2));
+    }
+}
+
+/* Redundant now that .dna-intro centres its own children, but .dna-go is a flex item in
+   .dna-q too and this is what keeps it from stretching the width of that card. */
 .dna-start { align-self: center !important; }
 
 /* step counter + progress */
@@ -2405,6 +2441,16 @@ html.bdg-locked, html.bdg-locked body { overflow: hidden; }
        everyone live like Finland?" at 38 characters, and at 34ch it wrapped to a third
        line at every width — an authored break plus an unwanted one. */
     max-width: 42ch;
+}
+/* A beat that is a direct child of a .notes grid rather than of main. It spans both
+   columns and centres on the section, so it lands on the same axis as every beat that
+   sits between sections. Without the span it would be dealt into the 228px sidebar. */
+.section.notes > .beat-span {
+    grid-column: 1 / -1;
+    /* .beat's `margin: … auto` centres it in the grid AREA; the area is the full width
+       once spanned, so auto is doing the work and only the top margin is restated —
+       the section's own bottom padding carries the space below. */
+    margin-bottom: 0;
 }
 /* The second line of a two-line beat, when the first states a fact and the second
    hands the reader on. --ink-soft rather than --ink-deep: one step off black, enough

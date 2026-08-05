@@ -523,9 +523,18 @@
                      page answering a question nobody had put yet. -->
                 <div class="callout" id="du-wow" aria-live="polite"></div>
 
-                <p class="beat">Nothing is missing.<br>Every minute of the day has been
-                    accounted for.</p>
             </div>
+
+            <!-- Outside .viz, so it centres on the page rather than on the chart column.
+                 It used to be the last child of .viz, where it was centred within that
+                 column and therefore sat 133px right of every other beat on the page —
+                 the same words as "There is no perfect country", set to a different
+                 axis. It is the chapter speaking, not a note about the drill-down, so
+                 it takes the same full-width line the other beats do.
+                 .beat-span, not a bare sibling: .section.notes is a two-column grid, so
+                 a direct child would otherwise be dealt into the 228px sidebar. -->
+            <p class="beat beat-span">Nothing is missing.<br>Every minute of the day has been
+                accounted for.</p>
         </section>
 
         <!-- ═══ CHAPTER FOUR · YOUR CLOSEST MATCH ════════════ -->
