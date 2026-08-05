@@ -476,7 +476,7 @@
                      the instruction lives with the bar and the sidebar keeps the
                      argument. -->
                 <p class="dd-what">Five blocks. Fifty activities.<br>
-                    <span>Every one of them splits by age and by sex.</span></p>
+                    <span>Every activity can be explored by age and sex.</span></p>
             </div>
 
             <div class="viz">
@@ -488,8 +488,15 @@
                          detail below it are filled in as the reader descends and
                          are empty until then. -->
                     <div class="lu-drill" id="du-drill">
-                        <p class="lu-head">Every minute belongs somewhere.</p>
-                        <p class="lu-ask" id="du-ask">Choose a part of the day to open it.</p>
+                        <!-- No headline above this. "Every minute belongs somewhere" stood
+                             here, and it was the third time the same thought landed in
+                             about two inches: the card head already says "Every minute
+                             included" and the caption below says "nothing removed". The
+                             one line the reader has to read at this spot is the one that
+                             tells them the bar opens, and a heading above it was taking
+                             the first look. The text in this element is only the pre-JS
+                             fallback; paintDay() swaps it for the state the reader is in. -->
+                        <p class="lu-ask" id="du-ask">Open any block to explore it.</p>
                         <div class="lu-day" id="du-bar" role="img"
                              aria-label="The American day as five blocks. Choose a block to open it."></div>
                         <div class="lu-daykey" id="du-key"></div>

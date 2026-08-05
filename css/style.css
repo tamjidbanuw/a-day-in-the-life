@@ -931,16 +931,17 @@ body {
    Nothing below level one exists until it is asked for, so these rules describe
    panels that are absent on arrival. */
 .lu-drill { padding: 0 clamp(1rem, 3vw, 1.5rem); }
-.lu-head {
-    margin: 1.1rem 0 0.2rem; font-size: 1.02rem; font-weight: 600; color: var(--ink);
-}
-/* The one instruction attached to the bar, so it carries the weight of one. It was
-   --ink-faint at 0.84rem — the palest ink in the file at nearly the smallest size,
-   directly under a bold heading, which is how a reader scrolled past a section with
-   fifty openable activities in it. Now accent and 0.9rem, with the arrow below
-   pointing at the thing it means. Still one short line; it just isn't whispering. */
+/* The one line attached to the bar, and now the only line above it, so it carries the
+   weight of one. It was --ink-faint at 0.84rem — the palest ink in the file at nearly
+   the smallest size, directly under a bold heading, which is how a reader scrolled past
+   a section with fifty openable activities in it. Now accent and 0.9rem, with the caret
+   below pointing at the thing it means. Still one short line; it just isn't whispering.
+
+   The top margin is the 1.1rem the deleted .lu-head used to hold off the card head.
+   It stays with the drill-down rather than becoming padding on .lu-drill, because the
+   space belongs to the first line, not to the panel. */
 .lu-ask {
-    margin: 0 0 0.55rem; font-size: 0.9rem; font-weight: 600;
+    margin: 1.1rem 0 0.55rem; font-size: 0.9rem; font-weight: 600;
     color: var(--accent-deep);
 }
 /* The cue between the instruction and the bar. A small caret, because the sentence
@@ -1020,7 +1021,8 @@ body {
    so the drill-down looked like a finished stacked bar with a caption under it and a
    reader had no reason to think there was anything to open.
 
-   :empty gets a dashed floor with a line naming what appears there. A held space, the
+   :empty gets a dashed floor with two lines: where the reader is, and what to do. A
+   held space, the
    way the crumb and the callout are held — the reader can see that something is meant
    to arrive here, and that they are the one who has to ask for it. It costs 88px of a
    6,000px chapter and it is the difference between a chart and an invitation.
@@ -1031,15 +1033,24 @@ body {
    #du-ask directly above, so nothing is lost where content is unsupported or where a
    screen reader skips it. */
 .lu-open:empty {
-    display: flex; align-items: center; justify-content: center;
+    /* column, and two pseudo-elements rather than one with a \A in it, because the two
+       lines are not the same kind of sentence: the first states where the reader is,
+       the second tells them what to do about it, and they want different weights. */
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 0.2rem;
     min-height: 88px; margin-top: 0.9rem;
+    text-align: center;
     border: 1px dashed var(--line); border-radius: 8px;
     background:
         repeating-linear-gradient(45deg, transparent 0 6px,
             rgb(var(--shade-rgb) / 0.012) 6px 12px);
 }
 .lu-open:empty::before {
-    content: 'Choose a block above to open it here';
+    content: 'Nothing is open yet.';
+    font-size: 0.86rem; font-weight: 600; color: var(--ink-soft);
+}
+.lu-open:empty::after {
+    content: 'Click on a block to begin.';
     font-size: 0.82rem; color: var(--ink-faint);
 }
 
