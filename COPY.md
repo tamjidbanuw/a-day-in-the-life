@@ -129,8 +129,8 @@ Your discoveries
 
 Hidden throughout this story are six
 discoveries. Explore the charts, hover over countries, answer questions, and follow
-the data. Every discovery reveals an insight that appears nowhere else. One of them
-isn’t hidden in a chart at all.
+the data. Every discovery reveals an insight that appears nowhere else. The last one
+is buried four levels deep.
 
 ### 22. Transition · into Chapter One  `[beat]`
 
@@ -473,135 +473,135 @@ from the data when the change goes back in.
 The badge cards come first because they are plain strings in the source. Everything
 after them is assembled from a template.
 
-### Badge · kicker  `[app.js:736]`
+### Badge · kicker  `[app.js:811]`
 
 Time use
 
-### Badge · kicker  `[app.js:743]`
+### Badge · kicker  `[app.js:818]`
 
 Happiness
 
-### Badge · kicker  `[app.js:751]`
+### Badge · kicker  `[app.js:829]`
 
 Rankings
 
-### Badge · kicker  `[app.js:755]`
+### Badge · kicker  `[app.js:833]`
 
 The average
 
-### Badge · kicker  `[app.js:759]`
+### Badge · kicker  `[app.js:837]`
 
 Hour by hour
 
-### Badge · kicker  `[app.js:766]`
+### Badge · kicker  `[app.js:855]`
 
-Hidden
+Chapter Three
 
-### Badge · name  `[app.js:736]`
+### Badge · name  `[app.js:811]`
 
 Day Tripper
 
-### Badge · name  `[app.js:743]`
+### Badge · name  `[app.js:818]`
 
 Ladder Climber
 
-### Badge · name  `[app.js:751]`
+### Badge · name  `[app.js:829]`
 
-Line Stalker
+Pattern Finder
 
-### Badge · name  `[app.js:755]`
+### Badge · name  `[app.js:833]`
 
 Long-Lost Twin
 
-### Badge · name  `[app.js:759]`
+### Badge · name  `[app.js:837]`
 
 Clock Watcher
 
-### Badge · name  `[app.js:766]`
+### Badge · name  `[app.js:855]`
 
-Made Waves
+Drill Master
 
-### Badge · stat  `[app.js:736]`
+### Badge · stat  `[app.js:811]`
 
 10h05 vs 10h06
 
-### Badge · stat  `[app.js:743]`
+### Badge · stat  `[app.js:818]`
 
 4.04 apart
 
-### Badge · stat  `[app.js:751]`
+### Badge · stat  `[app.js:829]`
 
 Four winners
 
-### Badge · stat  `[app.js:755]`
+### Badge · stat  `[app.js:833]`
 
 34× the pay
 
-### Badge · stat  `[app.js:759]`
+### Badge · stat  `[app.js:837]`
 
 56% at 8pm
 
-### Badge · stat  `[app.js:766]`
+### Badge · stat  `[app.js:855]`
 
-96% asleep
+9h18 to 8h19
 
-### Badge · hint  `[app.js:736]`
+### Badge · hint  `[app.js:811]`
 
 Click any chart in Chapter One
 
-### Badge · hint  `[app.js:743]`
+### Badge · hint  `[app.js:818]`
 
 Poke a country on the happiness scale
 
-### Badge · hint  `[app.js:751]`
+### Badge · hint  `[app.js:829]`
 
 Follow one country through all four measures
 
-### Badge · hint  `[app.js:755]`
+### Badge · hint  `[app.js:833]`
 
 Answer four questions, meet your country
 
-### Badge · hint  `[app.js:759]`
+### Badge · hint  `[app.js:837]`
 
 Hover across the whole day, hour by hour
 
-### Badge · hint  `[app.js:766]`
+### Badge · hint  `[app.js:855]`
 
-Something in the opener reacts to you
+Open a block, then an activity, then split it by age or sex
 
-### Badge · fact  `[app.js:736]`
+### Badge · fact  `[app.js:811]`
 
-Mexico spends as much of the day working as it does sleeping, washing and eating: 10h05m against 10h06m.
+Mexico spends almost exactly as much time working as sleeping, washing and eating — 10h05m versus 10h06m.
 
-### Badge · fact  `[app.js:743]`
+### Badge · fact  `[app.js:818]`
 
-Finland rates its own life 7.82 out of 10 and India rates its own 3.78. Same ten-point scale, four points apart.
+The happiest country scores almost twice as high as the least happy one.
 
-### Badge · fact  `[app.js:751]`
+### Badge · fact  `[app.js:829]`
 
-Mexico works most, France sleeps most, Norway rests most, Finland is happiest. Nobody finishes first twice.
+No country wins twice. Mexico works most. France sleeps most. Norway has the most leisure. Finland is happiest.
 
-### Badge · fact  `[app.js:755]`
+### Badge · fact  `[app.js:833]`
 
-An American earns 34 times what an Indian does, and still spends 17 fewer minutes a day at the job.
+An American earns 34x more than an Indian — and still spends 17 fewer minutes a day working.
 
-### Badge · fact  `[app.js:759]`
+### Badge · fact  `[app.js:837]`
 
-At 8pm more than half of America is at leisure — the most it ever agrees on anything while awake.
+At 8pm, most Americans are finally off the clock. It’s the only waking hour when a majority are doing the same thing: relaxing.
 
-### Badge · fact  `[app.js:766]`
+### Badge · fact  `[app.js:855]`
 
-At 3am, 96% of America is asleep. At noon, no single activity holds even 30% of them.
+Sleep is the flattest thing in the American day: 9h18 at 15–24, 8h19 at 45–54, and never more than an hour apart at any age.
 
-### Happiness strip · readout  `[app.js:1467 → #mt-happy-read]`
+### Happiness strip · readout  `[app.js:1443 → #mt-happy-read]`
 
 Finland leads at 7.82, India trails at 3.78. All 34 average 6.45.
 
-### Happiness strip · caption  `[app.js:1496 → #mt-happy-cap]`
+### Happiness strip · caption  `[app.js:1450 → #mt-happy-cap]`
 
 Every dot is one country. The farther right, the happier people rate their own lives.
 
-### Rank chart · readout  `[app.js:1773 → #pc-read]`
+### Rank chart · readout  `[app.js:1869 → #pc-read]`
 
 34 countries, 4 measures. Four different countries come first, and not one of them stays there. · Work Mexico · Sleep France · Leisure Norway · Happiness Finland
 
@@ -609,11 +609,11 @@ The two blocks below are one element, `#du-ask`, the instruction above the day b
 It lives here rather than in Part 1 because the sentence swaps as the reader goes in:
 an invitation while nothing is open, a next step once something is.
 
-### Drill-down · instruction, nothing open yet  `[app.js:1957 → #du-ask]`
+### Drill-down · instruction, nothing open yet  `[app.js:2042 → #du-ask]`
 
 Open any block to explore it.
 
-### Drill-down · instruction, a block is open  `[app.js:1956 → #du-ask]`
+### Drill-down · instruction, a block is open  `[app.js:2041 → #du-ask]`
 
 Now choose an activity, or go back to the whole day.
 
@@ -622,23 +622,23 @@ sentence appears depends on how far into the drill-down the reader has gone and 
 tab they are on, so the wording has to hold for all 58 rows of the section — not only
 for television, which is what each example happens to show.
 
-### The surprise · head  `[app.js:2086 → #du-wow]`
+### The surprise · head  `[app.js:2187 → #du-wow]`
 
 The biggest surprise
 
-### The surprise · a block is open  `[app.js:2095 → #du-wow]`
+### The surprise · a block is open  `[app.js:2197 → #du-wow]`
 
 Leisure is 5h16 of the day, and television and movies takes 2h43 of it — more than the other thirteen put together.
 
-### The surprise · an activity, on Overview  `[app.js:2108 → #du-wow]`
+### The surprise · an activity, on Overview  `[app.js:2225 → #du-wow]`
 
 2h43 a day — on its own, more than the thirteen smallest activities in leisure put together.
 
-### The surprise · an activity, on By age  `[app.js:2156 → #du-wow]`
+### The surprise · an activity, on By age  `[app.js:2322 → #du-wow]`
 
 It keeps growing to the end of life: 2h17 a day at 15–24 against 4h17 after 75, 1.9× as much.
 
-### The surprise · an activity, on By sex  `[app.js:2238 → #du-wow]`
+### The surprise · an activity, on By sex  `[app.js:2340 → #du-wow]`
 
 Men spend 27m more a day on this than women do — 2h57 against 2h30.
 
@@ -670,6 +670,6 @@ You value
 
 Like Korea, you trade free time for rest.
 
-### Live clock · readout  `[app.js:546 → #rn-say]`
+### Live clock · readout  `[app.js:613 → #rn-say]`
 
 At this hour, 76% of America is asleep, washing or eating.

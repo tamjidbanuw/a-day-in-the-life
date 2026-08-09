@@ -836,7 +836,8 @@ body {
    make Finland light up, and it would have permanently broken the hover
    highlight: an animation holding its end value outranks every normal
    declaration, so `.mt-dot.on` would never apply again. The colour change is a
-   class added on a timer instead, and it transitions via the rule above. */
+   class added on a timer instead, and it transitions via the rule above.
+
    The hidden state hangs off .staged, which initMetricStrips adds only once it has
    drawn the chart AND armed something to un-hide it. Hiding on .mt-strip alone would
    mean any failure to add .in — a dead observer, an exception between render and
@@ -1213,16 +1214,8 @@ body {
 }
 .badges-info svg { width: 15px; height: 15px; }
 .badges-info:hover { color: var(--accent); }
-/* the only way to clear a collection: sessionStorage survives a hard refresh */
-.bdg-reset {
-    font: inherit; font-size: 0.66rem; font-weight: 700;
-    letter-spacing: 0.12em; text-transform: uppercase;
-    padding: 0.15rem 0.5rem;
-    color: var(--ink-faint); background: none;
-    border: 1px solid var(--line); border-radius: 999px; cursor: pointer;
-}
-.bdg-reset:hover { color: var(--accent); border-color: var(--accent-pale); }
-.badges-foot:not(:empty) { margin-top: 1rem; }
+/* A .bdg-reset pill and the .badges-foot that held it stood here — a "Start over"
+   button under the tray, shown once a collection existed. Both gone with the button. */
 .badge-tray {
     list-style: none;
     display: grid;
@@ -1265,10 +1258,24 @@ body {
     :root { --rail: 176px; }
     main { padding-inline: var(--rail); }
 
+    /* --rail-top is the panel's distance from the top of the viewport, and it is the
+       one number the whole rail is built from: the panel's own height budget and the
+       tray's both subtract it, so wherever the panel sits it fits on screen.
+
+       initRailPin() in app.js keeps it at max(the cover's bottom edge + a gap, --rail-
+       rest). While any of the dark cover is still on screen the rail sits under it, so
+       a paper-coloured card never crosses the cover; once the cover has scrolled away
+       the rail settles at --rail-rest and stays there, which is the sticky part. The
+       fallback here is --rail-rest itself, so with JS off the panel is simply pinned
+       and never covers anything — the cover is 38vh and the rest position clears it at
+       any viewport over ~700px tall, and below that the panel would be scrolling its
+       tray regardless. */
+    :root { --rail-rest: 4.6rem; }
+
     .badges {
         position: fixed;
-        top: 50%; right: clamp(0.7rem, 1.5vw, 1.5rem);
-        transform: translateY(-50%);
+        top: var(--rail-top, var(--rail-rest));
+        right: clamp(0.7rem, 1.5vw, 1.5rem);
         z-index: 45;
         width: 152px; max-width: none;
         margin: 0; padding: 0.8rem 0.85rem 0.9rem;
@@ -1279,7 +1286,8 @@ body {
            is a descendant that floats outside it — it would be cut off at the rail
            wall. Scrolling the tray instead keeps the head, the tooltip and the foot
            out of the clip. */
-        max-height: calc(100vh - 5rem); overflow: visible;
+        max-height: calc(100vh - var(--rail-top, var(--rail-rest)) - 1.5rem);
+        overflow: visible;
         background: var(--paper);
         border: 1px solid var(--line); border-top: 1px solid var(--line);
         border-radius: 14px;
@@ -1296,13 +1304,16 @@ body {
        100% is the panel's own 152px; adding the same clamp used for `right` above
        carries it past the gap it was inset by, so its left edge lands exactly on
        the edge of the screen and the tab (which hangs off that edge, below) is all
-       that is left in view. */
+       that is left in view.
+
+       X only. This used to carry a translateY(-50%) as well, because the panel was
+       centred by a transform against `top: 50%`; it is positioned by `top` alone now,
+       so a Y term here would shift it half its own height every time it was shut. */
     .badges.shut {
-        transform: translateY(-50%)
-                   translateX(calc(100% + clamp(0.7rem, 1.5vw, 1.5rem)));
+        transform: translateX(calc(100% + clamp(0.7rem, 1.5vw, 1.5rem)));
     }
     /* Off screen is not the same as gone: a translated panel keeps its place in the
-       tab order, so the i and the reset button would still take focus out there
+       tab order, so the i and every found medal would still take focus out there
        where nothing can be seen. visibility does remove them, and unlike display it
        leaves the box measurable — which matters, because a badge landing reopens
        the rail and has to find a slot to aim at.
@@ -1394,11 +1405,12 @@ body {
        slot needs a box to be clipped against.
 
        max-height has to clear what the tray inside it is allowed to be, or this
-       element clips the tray's last slot and its scrollbar. The tray is
-       `100vh - 13rem` plus the foot, so `100vh - 9rem` leaves room for both. */
+       element clips the tray's last slot and its scrollbar. The tray is now the only
+       thing in here, so the two budgets are the same number and neither clips the
+       other. The 4rem gap between them was the foot's. */
     .badges-body {
         overflow: hidden;
-        max-height: calc(100vh - 9rem);
+        max-height: calc(100vh - var(--rail-top, var(--rail-rest)) - 5.5rem);
         margin-top: 0.85rem;
     }
 
@@ -1411,9 +1423,11 @@ body {
        back; the cost is a rail taller than the window, which is why it scrolls.
 
        The scroll lives HERE rather than on `.badges`, so the clipping box wraps only
-       the slots: the head, the reset button and the i's floating tooltip all stay
-       outside it. 100vh minus 13rem covers the rail's own padding, the head and the
-       foot; the tray takes what is left and scrolls within it.
+       the slots: the head and the i's floating tooltip stay outside it. The subtracted
+       5.5rem covers the rail's own padding and the head above; the tray takes the rest
+       and scrolls within it. It was 9.5rem while a "Start over" button sat below the
+       tray — with the button gone that was 64px of medal clipped to hold empty space,
+       so it comes down to match .badges-body, which is now its only wrapper.
 
        The cost is the star burst, which flies outside a slot's box and is clipped at
        the tray wall — overflow-y: auto forces the x axis to clip too. That is the
@@ -1421,7 +1435,8 @@ body {
        against ~230px of story column. */
     .badge-tray {
         grid-template-columns: 1fr; gap: 0.7rem;
-        max-height: calc(100vh - 13rem); overflow-y: auto;
+        max-height: calc(100vh - var(--rail-top, var(--rail-rest)) - 5.5rem);
+        overflow-y: auto;
         /* thin and unobtrusive: the rail is furniture, not a document */
         scrollbar-width: thin; scrollbar-color: var(--line) transparent;
     }
@@ -1479,8 +1494,6 @@ body {
         border-right: 2px solid var(--accent-pale);
         border-radius: 8px 0 0 8px;
     }
-    .badges-foot:not(:empty) { margin-top: 0.7rem; }
-    .bdg-reset { font-size: 0.58rem; }
 
     /* Scale in place rather than the tray's translateY lift: the slots are stacked
        in a tight grid here, and a medal rising 4px crowds the row above it. Same

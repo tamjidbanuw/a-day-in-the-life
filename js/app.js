@@ -378,6 +378,73 @@ function initCoverScroll() {
 }
 
 /**
+ * Where the badge rail sits, top edge only.
+ *
+ * The rail is a paper-coloured card in a fixed gutter, and the cover it opens over is
+ * a full-bleed dark band. Centred on the viewport it began the page crossing that
+ * band: at 1400x813 the panel ran 73→740 while the cover ended at 331, so two thirds
+ * of a light card sat on top of the dark opener — the one place on the page where the
+ * reader is meant to be looking at nothing else.
+ *
+ * So the top follows the cover down. While any of the cover is on screen the rail sits
+ * just below its bottom edge; once the cover has gone the rail settles at REST and
+ * stops moving, which is the sticky half of it. Nothing here animates — the panel is
+ * pinned to a number that happens to change while the cover is leaving, and it tracks
+ * the scroll exactly rather than easing behind it, because a card that lags reads as
+ * sliding around on its own.
+ *
+ * Written to a custom property rather than to `top` directly: the panel's max-height
+ * and the tray's are both derived from it in the stylesheet, so one number moves the
+ * position and both height budgets together, and the rail can never end up taller
+ * than the space left below it.
+ *
+ * The rail rules live behind min-width: 1100px. Below that the panel is in the flow at
+ * the foot of the opener and the property is unused, so it is removed rather than left
+ * behind at a stale value.
+ */
+function initRailPin() {
+    const rail = document.getElementById('badges');
+    const cover = document.querySelector('.cover');
+    if (!rail || !cover) return;
+
+    /* Read from a media query matching the CSS rather than testing innerWidth, so the
+       breakpoint cannot drift away from the one the stylesheet uses. */
+    const wide = matchMedia('(min-width: 1100px)');
+    const REST = 4.6 * 16;                  // --rail-rest, in px
+    const GAP = 16;                         // clear of the cover's edge, not touching it
+
+    let queued = false;
+    let last = null;
+
+    function paint() {
+        queued = false;
+        if (!wide.matches) {
+            if (last !== null) {
+                document.documentElement.style.removeProperty('--rail-top');
+                last = null;
+            }
+            return;
+        }
+        const bottom = cover.getBoundingClientRect().bottom;
+        const top = Math.round(Math.max(REST, bottom + GAP));
+        if (top === last) return;           // most scroll events move it nowhere
+        last = top;
+        document.documentElement.style.setProperty('--rail-top', top + 'px');
+    }
+
+    addEventListener('scroll', () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(paint);
+    }, { passive: true });
+    addEventListener('resize', paint);
+    /* Also on the query itself: crossing the breakpoint is what decides whether the
+       property should exist at all, and a zoom change can cross it without a resize. */
+    wide.addEventListener('change', paint);
+    paint();
+}
+
+/**
  * Section exit — the same handoff the cover makes, reused for any section
  * wrapping its contents in .sec-exit. As the section scrolls up and out, the
  * group shrinks and fades, so the chapter mark underneath arrives on a clear
@@ -720,11 +787,19 @@ const BADGE_ART = {
         <path class="b-ln b-c" d="M20 12v8l6 3.6"/>
         <circle cx="20" cy="20" r="2" class="b-cf"/>
         <path class="b-ln b-sp" d="M20 6.5v2M33.5 20h-2M20 33.5v-2M6.5 20h2"/>`,
-    ripple: `<circle cx="20" cy="20" r="14" class="b-spf o-22"/>
-        <circle cx="20" cy="20" r="3" class="b-cf"/>
-        <path class="b-ln b-c" d="M13 20a7 7 0 0 1 14 0"/>
-        <path class="b-ln b-s" d="M8 20a12 12 0 0 1 24 0"/>
-        <path class="b-ln b-sp" d="M3.5 21a16.5 16.5 0 0 1 33 0" stroke-dasharray="3 3"/>`
+    /* The `ripple` glyph stood here, concentric wavefronts, for the secret badge. It
+       went with that badge.
+
+       `core` is four nested rings with a dot at the middle and a line down through
+       them, because the badge is for going four levels down: the day, a block, an
+       activity, then the split. The rings pale as they go out and the centre is the
+       only filled thing, so the eye lands where the reader ended up. */
+    core: `<circle cx="20" cy="20" r="14" class="b-spf o-22"/>
+        <circle cx="20" cy="20" r="14" class="b-ln b-sp"/>
+        <circle cx="20" cy="20" r="10" class="b-ln b-s"/>
+        <circle cx="20" cy="20" r="6" class="b-ln b-c"/>
+        <circle cx="20" cy="20" r="2.6" class="b-cf"/>
+        <path class="b-ln b-n o-40" d="M20 3v6" stroke-dasharray="2.5 2.5"/>`
 };
 
 /* Each badge is a collectible: a kicker, a name, the figure it stands for, and
@@ -738,34 +813,48 @@ const BADGES = [
          any of Chapter One's charts, and a hint that names only the dropdown sends
          the reader to the one route they were least likely to take. */
       hint: 'Click any chart in Chapter One',
-      fact: 'Mexico spends as much of the day working as it does sleeping, washing and eating: 10h05m against 10h06m.' },
+      fact: 'Mexico spends almost exactly as much time working as sleeping, washing and eating — 10h05m versus 10h06m.' },
     { id: 'ladder', art: 'ladder', ring: 'accent',
       kicker: 'Happiness', label: 'Ladder Climber', stat: '4.04 apart',
       hint: 'Poke a country on the happiness scale',
-      fact: 'Finland rates its own life 7.82 out of 10 and India rates its own 3.78. Same ten-point scale, four points apart.' },
+      /* The two scores are on the stat line above this and printed again in the
+         strip's own readout, so the fact does the arithmetic instead of repeating
+         them: 7.82 against 3.78 is 2.07×, which "almost twice as high" covers. */
+      fact: 'The happiest country scores almost twice as high as the least happy one.' },
     /* "Off the Line" stood here — Türkiye and Mexico earning within $456 of each other
        on the money-and-mood scatter. The chart is gone, so the badge went rather than
        sit in the tray unearnable. "Jet Lagged" has since gone too, by request. Six
        now, and every count on the page reads BADGES.length rather than a literal. */
     { id: 'ranks', art: 'trail', ring: 'ink',
-      kicker: 'Rankings', label: 'Line Stalker', stat: 'Four winners',
+      kicker: 'Rankings', label: 'Pattern Finder', stat: 'Four winners',
       hint: 'Follow one country through all four measures',
-      fact: 'Mexico works most, France sleeps most, Norway rests most, Finland is happiest. Nobody finishes first twice.' },
+      fact: 'No country wins twice. Mexico works most. France sleeps most. Norway has the most leisure. Finland is happiest.' },
     { id: 'quiz', art: 'twin', ring: 'accent',
       kicker: 'The average', label: 'Long-Lost Twin', stat: '34× the pay',
       hint: 'Answer four questions, meet your country',
-      fact: 'An American earns 34 times what an Indian does, and still spends 17 fewer minutes a day at the job.' },
+      fact: 'An American earns 34x more than an Indian — and still spends 17 fewer minutes a day working.' },
     { id: 'now', art: 'owl', ring: 'support',
       kicker: 'Hour by hour', label: 'Clock Watcher', stat: '56% at 8pm',
       /* Was "Find out what the world is doing this minute", which described arriving
          at the panel — and arriving is no longer what earns it. The badge is for the
          other twenty-three hours, so the hint asks for them. */
       hint: 'Hover across the whole day, hour by hour',
-      fact: 'At 8pm more than half of America is at leisure — the most it ever agrees on anything while awake.' },
-    { id: 'waves', art: 'ripple', ring: 'support-pale', secret: true,
-      kicker: 'Hidden', label: 'Made Waves', stat: '96% asleep',
-      hint: 'Something in the opener reacts to you',
-      fact: 'At 3am, 96% of America is asleep. At noon, no single activity holds even 30% of them.' }
+      fact: 'At 8pm, most Americans are finally off the clock. It’s the only waking hour when a majority are doing the same thing: relaxing.' },
+    /* "Made Waves" stood here — the secret badge, earned by four ripples in the cover
+       dot field. Removed by request, and the ripples stay: they are the reason the
+       opener feels alive, they just no longer award anything.
+
+       Its replacement is the first badge tied to going DEEP rather than to touching a
+       chart once. Chapter Three is four levels down — day, block, activity, then the
+       age or sex split — and a reader who reaches the bottom of it has done more work
+       than any other interaction on the page asks for. Nothing was watching for that.
+       Not secret: the whole problem in this chapter was readers not knowing there was
+       anything to open, so a badge that admits what it wants is worth more than one
+       that hides. */
+    { id: 'drill', art: 'core', ring: 'support-pale',
+      kicker: 'Chapter Three', label: 'Drill Master', stat: '9h18 to 8h19',
+      hint: 'Open a block, then an activity, then split it by age or sex',
+      fact: 'Sleep is the flattest thing in the American day: 9h18 at 15–24, 8h19 at 45–54, and never more than an hour apart at any age.' }
 ];
 
 /* The clock badge renames itself depending on when you get there, because the
@@ -784,8 +873,11 @@ const Badges = (function () {
 
        Worth being straight about the limit: a hard refresh does not clear
        sessionStorage either, because the browser gives a page no way to tell a
-       hard reload from a normal one. What does clear it is closing the tab, or
-       the reset control in the tray. */
+       hard reload from a normal one. Closing the tab is what clears it. There was
+       a "Start over" button in the tray as well; it is gone, and api.reset()
+       stays because everything in here that can be interrupted — pending timers,
+       card lags, a badge mid-flight — is written to survive being emptied, and
+       that is worth keeping reachable rather than deleting the guards with it. */
     const STORE = 'adl-collection-v1';
     /* Badges are awarded on a delay. Interrupting somebody the instant they
        touch a chart is the fastest way to stop them touching charts: the card
@@ -804,7 +896,7 @@ const Badges = (function () {
     const flights = new Set();                 // flight timers, likewise
     const queue = [];
     let tray = null, count = null, card = null, showing = false;
-    let rail = null, resetSlot = null;
+    let rail = null;
 
     function load() {
         try {
@@ -903,10 +995,12 @@ const Badges = (function () {
         li.classList.toggle('got', got);
         /* Found: the figure, which is the reward and the one thing not already on
            screen — the name sits on its own line in the slot, so a tooltip
-           repeating it would say nothing. Locked: the hint, or nothing but
-           "Hidden" for the secret one. */
-        li.title = got ? b.stat + ' · ' + b.fact
-                       : b.secret ? 'Hidden' : b.hint;
+           repeating it would say nothing. Locked: the hint.
+
+           There was a `b.secret ? 'Hidden' : b.hint` branch here for the one badge
+           that would not say what it wanted. That badge is gone and no other is
+           secret, so every locked slot now names its own route. */
+        li.title = got ? b.stat + ' · ' + b.fact : b.hint;
         li.querySelector('.bdg-meta').setAttribute('aria-hidden', got ? 'false' : 'true');
         li.querySelector('.bdg-kicker').textContent = got ? b.kicker : '';
         li.querySelector('.bdg-name').textContent = got ? nameOf(b) : '';
@@ -943,14 +1037,6 @@ const Badges = (function () {
                 void count.offsetWidth;              // restart the animation
                 count.classList.add('bump');
             }
-        }
-        // the reset only appears once there is something to reset
-        if (resetSlot) {
-            resetSlot.innerHTML = earned.size
-                ? '<button type="button" class="bdg-reset">Start over</button>'
-                : '';
-            const btn = resetSlot.querySelector('.bdg-reset');
-            if (btn) btn.addEventListener('click', () => api.reset());
         }
         if (justEarned && rail) {
             rail.classList.remove('flash');
@@ -1182,8 +1268,8 @@ const Badges = (function () {
     }
 
     const api = {
-        mount(trayEl, countEl, railEl, resetEl) {
-            tray = trayEl; count = countEl; rail = railEl || null; resetSlot = resetEl || null;
+        mount(trayEl, countEl, railEl) {
+            tray = trayEl; count = countEl; rail = railEl || null;
             // a found badge can be opened again: the figure is the point of it
             tray.addEventListener('click', e => {
                 const li = e.target.closest('.bdg.got');
@@ -1251,8 +1337,7 @@ function initBadges() {
     const tray = document.getElementById('badge-tray');
     if (!tray) return;
     const rail = document.getElementById('badges');
-    Badges.mount(tray, document.getElementById('badge-count'), rail,
-                 document.getElementById('badge-reset'));
+    Badges.mount(tray, document.getElementById('badge-count'), rail);
 
     /* How the badges work is worth reading once and then never again, so it hides
        behind an i. It reads on hover and on keyboard focus — pure CSS, no handler
@@ -2325,7 +2410,18 @@ function initDayUS() {
                 return;
             }
             const tab = e.target.closest('[data-tab]');
-            if (tab) { atTab = tab.dataset.tab; paint(); return; }
+            if (tab) {
+                atTab = tab.dataset.tab;
+                /* Drill Master. The tabs only exist once a block AND an activity are
+                   open, so reaching either split means all four levels have been
+                   opened — no need to track the path, the state proves it. Overview
+                   does not count: it is where an activity lands by default, so
+                   awarding it would pay for the click that got here rather than for
+                   going further. Badges.earn is idempotent. */
+                if (atTab === 'age' || atTab === 'sex') Badges.earn('drill');
+                paint();
+                return;
+            }
             const up = e.target.closest('[data-up]');
             if (up) {
                 if (up.dataset.up === 'day') { atBlock = null; atAct = null; }
@@ -2356,6 +2452,7 @@ function initDayUS() {
     if (coverClock) buildCoverClock(coverClock);
     initBadges();
     initCoverScroll();
+    initRailPin();
     initSectionExit();
     initRightNow();
     initMetricStrips();

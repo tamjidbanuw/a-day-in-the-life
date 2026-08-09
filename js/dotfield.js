@@ -180,7 +180,11 @@
     const RIPPLE_LIFE = 0.9;                        // seconds a ripple lives
     const RIPPLE_BAND = 84 * devicePixelRatio;      // thickness of the wavefront
     const RIPPLE_FORCE = 3.2;                        // push strength
-    let lastRipple = 0, lastMx = 0, lastMy = 0, rippled = 0;
+    // The ripples used to award the secret "Made Waves" badge on the fourth one, with
+    // a pointerdown handler so a touch reader could reach it too. That badge is gone,
+    // and the ripples stay: they are why the opener feels alive under the cursor. The
+    // counter and the tap handler went with the badge — nothing was reading them.
+    let lastRipple = 0, lastMx = 0, lastMy = 0;
     canvas.addEventListener('pointermove', e => {
         const r = canvas.getBoundingClientRect();
         const mx = (e.clientX - r.left) * devicePixelRatio;
@@ -191,17 +195,7 @@
         if (now - lastRipple > 90 && moved > 6 * devicePixelRatio) {
             ripples.push({ x: mx, y: my, born: now });
             lastRipple = now; lastMx = mx; lastMy = my;
-            rippled++;
-            // the hidden badge: a few ripples means they found this on purpose.
-            // Badges lives in js/app.js, which loads after this file, so it is
-            // only referenced here at event time and guarded either way.
-            if (rippled === 4 && typeof Badges !== 'undefined') Badges.earn('waves');
         }
-    });
-    // tapping counts too, so the badge is reachable without a mouse
-    canvas.addEventListener('pointerdown', () => {
-        rippled += 2;
-        if (rippled >= 4 && typeof Badges !== 'undefined') Badges.earn('waves');
     });
 
     let t0 = null;
