@@ -1508,11 +1508,17 @@ body {
         border-color: var(--accent-pale);
         box-shadow: 0 30px 60px -30px rgb(var(--accent-rgb) / 0.55);
     }
+    /* Scale ONLY. Every frame used to carry a translateY(-50%), left over from when
+       the panel was centred by a transform against `top: 50%`. The panel is
+       positioned by `top` alone now, so that term was no longer cancelling anything
+       out — it MOVED the rail half its own height upward for the duration of the
+       animation and dropped it back at 100%, which is the flicker: a jump up and a
+       snap back on every badge earned. The taller the rail, the bigger the jump. */
     @keyframes rail-pop {
-        0%   { transform: translateY(-50%) scale(1); }
-        35%  { transform: translateY(-50%) scale(1.045); }
-        70%  { transform: translateY(-50%) scale(0.99); }
-        100% { transform: translateY(-50%) scale(1); }
+        0%   { transform: scale(1); }
+        35%  { transform: scale(1.045); }
+        70%  { transform: scale(0.99); }
+        100% { transform: scale(1); }
     }
 }
 
