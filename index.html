@@ -3,11 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A Day in the Life of the World</title>
+    <title>A Day in the Life of the World · How 35 countries spend 1,440 minutes</title>
+    <!-- The description is the sentence a search result or a shared link shows, and it
+         gets one job: say what the data is and how big it is, because "a day in the life"
+         alone could be anything. The og: pair repeats title and description rather than
+         inheriting them — no crawler is required to fall back to <title>. No og:image:
+         there is no static preview image to point at, and a broken one renders worse
+         than none. -->
+    <meta name="description" content="A scrollytelling data story: how 35 countries spend
+        the same 1,440 minutes, built from OECD time-use diaries, the World Happiness
+        Report and 170,842 American Time Use Survey respondents.">
+    <meta name="author" content="A VizCon 2026 entry">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="A Day in the Life of the World">
+    <meta property="og:description" content="Eight billion people. One planet.
+        1,440 shared minutes. How 35 countries spend the same day.">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="top-banner" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+
+    <!-- Every chart on this page is drawn by script into an empty container, so with
+         JavaScript off the prose all reads and twenty chart areas are simply blank.
+         Saying so is better than leaving a reader to wonder whether the page is broken
+         or still loading. Placed first in the body so it is the first thing read, and it
+         costs nothing when script runs: <noscript> renders nothing at all then. -->
+    <noscript>
+        <p class="noscript-note">This story’s charts are drawn in the browser with
+            JavaScript, which is currently turned off — the writing below will read
+            normally, but the charts will be blank. Turning JavaScript on restores
+            them.</p>
+    </noscript>
 
     <!-- Slides in as the cover scrolls away, so the title stays available.
          aria-hidden because the <h1> below already announces the same words. -->
@@ -78,8 +104,19 @@
                     humanity. This story follows them — not because they are the whole world, but
                     because they reveal how an ordinary day is lived across it.</p>
 
-                <!-- the field leads the section: visual first, explanation after -->
-                <div class="df-stage"><canvas id="df-canvas"></canvas></div>
+                <!-- the field leads the section: visual first, explanation after.
+
+                     role="img" with a label, because a bare <canvas> is announced as
+                     nothing at all: the dots carry the one idea that these 35 countries
+                     are over half of humanity, and a screen reader had no way to reach
+                     it. The figure is in the label rather than only in the caption below,
+                     so the chart states its own point the way a sighted reader gets it
+                     from the shape. The drifting dots themselves are decoration and are
+                     not described — the count is what matters. -->
+                <div class="df-stage"><canvas id="df-canvas" role="img"
+                        aria-label="Every dot is millions of people. The highlighted dots
+                            are the 35 countries in this story, together more than half
+                            the world's population."></canvas></div>
 
                 <div class="df-legend">
                     <span class="df-key"><i class="on"></i>Countries in this story</span>

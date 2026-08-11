@@ -37,7 +37,14 @@
        different things, and a later palette may well pull them apart. */
     --ink:        #1A1A1A;
     --ink-soft:   #45484B;
-    --ink-faint:  #83868A;
+    /* Was #83868A, which measured 3.56:1 against --paper — under the 4.5:1 WCAG AA
+       needs for body text, and this token carries 26 usages including captions, axis
+       ticks, source notes and the drill-down's percentages. Those are small type, so
+       it was the palest ink in the file at nearly the smallest size, which is the
+       worst pairing available. #6B6E72 measures 4.99:1 on --paper and 4.57:1 on the
+       darker --card, so it passes on both surfaces it actually appears on, and it is
+       still clearly the quietest grey of the three. */
+    --ink-faint:  #6B6E72;
     /* tints of the accent, for the one instruction pill and its text */
     /* The same colours as component triples. A token holding "#1A1A1A" cannot be
        given an alpha, and rgba() literals are how the old navy and the old copper
@@ -94,6 +101,20 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+/* One ring for everything that takes focus, declared before the components so any of
+   them can override it with a shape that suits them (several do — the day-bar segments,
+   the drill-down rows and tabs, the glance pills). The point is the floor: this page has
+   grown a lot of interactive parts, and without a default a control added later is
+   keyboard-invisible until somebody remembers to style it. :focus-visible rather than
+   :focus so a mouse press does not leave a ring behind on a button that was clicked.
+
+   currentColor, so the ring works on the dark panels as well as on paper without a
+   second rule: it takes the colour of whatever type is already legible there. */
+:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
 body {
     background: var(--paper);
     color: var(--ink);
@@ -111,6 +132,24 @@ body {
 .top-banner span:nth-child(3) { background: var(--support-pale); }
 .top-banner span:nth-child(4) { background: var(--accent-pale); }
 .top-banner span:nth-child(5) { background: var(--accent); }
+
+/* The no-JS note. Styled like a notice rather than like body copy, because it is not
+   part of the story: it is the page explaining its own missing pieces. Only ever seen
+   when scripting is off, so it can afford to be plain — the accent bar on the left is
+   the whole treatment. --ink, not --ink-faint: this is the one paragraph on the page
+   that must not be quiet. */
+.noscript-note {
+    /* min() rather than max-width, so the note keeps a gutter on a phone instead of
+       running edge to edge the way max-width alone would let it. */
+    width: min(46rem, calc(100% - 2.5rem));
+    margin: 1.5rem auto 0;
+    padding: 0.85rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--card);
+    color: var(--ink);
+    font-size: 0.95rem;
+    line-height: 1.55;
+}
 
 /* ─── COVER: title overlaid on a 24-hour clock, night sky ─── */
 /* Short of a full viewport on purpose: the opener below should be partly
@@ -2095,7 +2134,22 @@ html.bdg-locked, html.bdg-locked body { overflow: hidden; }
     width: 100%; height: 8px; border-radius: 999px; cursor: pointer;
     /* filled portion (copper) up to --fill, groove after */
     background: linear-gradient(90deg, var(--accent) 0 var(--fill, 50%), var(--line) var(--fill, 50%) 100%);
+    /* `outline: none` stood here unconditionally, which left the four dials — the only
+       real input on the page — with no visible focus at all: a keyboard reader could
+       tab into the quiz and not know which dial they were about to move. The outline is
+       suppressed only for the mouse now, and :focus-visible puts a ring on the thumb
+       below, where the eye already is. */
     outline: none;
+}
+/* The ring goes on the THUMB, not the 8px track: the thumb is what moves and what the
+   arrow keys act on, so that is where a keyboard reader looks. Vendor-prefixed
+   selectors cannot be combined in one rule — a browser that does not know one of them
+   discards the whole block — so the two are written out separately. */
+.dna-slider input[type="range"]:focus-visible::-webkit-slider-thumb {
+    box-shadow: 0 0 0 3px var(--paper), 0 0 0 6px var(--accent);
+}
+.dna-slider input[type="range"]:focus-visible::-moz-range-thumb {
+    box-shadow: 0 0 0 3px var(--paper), 0 0 0 6px var(--accent);
 }
 .dna-slider input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none; appearance: none;
@@ -2132,6 +2186,12 @@ html.bdg-locked, html.bdg-locked body { overflow: hidden; }
 }
 .dna-next { margin-left: auto; }
 .dna-go:hover { transform: translateY(-1px); filter: brightness(1.06); }
+/* The one control the global currentColor ring gets wrong. This button is white type on
+   accent red, and the ring sits 2px OUTSIDE the button — on paper — so currentColor
+   painted it white on near-white: 1.03:1, i.e. no ring at all on the quiz's primary
+   action. --ink-deep measures 17:1 there and reads as a deliberate outline next to the
+   red rather than a second border on it. */
+.dna-go:focus-visible { outline-color: var(--ink-deep); }
 
 .dna-result {
     text-align: center;
