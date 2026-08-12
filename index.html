@@ -18,6 +18,22 @@
     <meta property="og:title" content="A Day in the Life of the World">
     <meta property="og:description" content="Eight billion people. One planet.
         1,440 shared minutes. How 35 countries spend the same day.">
+    <!-- The tab mark: the cover's own clock, so the tab and the page are one object
+         instead of the default globe, which says "a website" and nothing else.
+
+         Three files rather than one, because no single format covers everything. The SVG
+         is what modern browsers take, and it stays sharp at any size a tab strip, a
+         bookmark bar or a hi-dpi display asks for. The 32px PNG is the fallback for
+         browsers that ignore rel="icon" with an SVG type — Safari until recently, and
+         anything older. apple-touch-icon is the 180px one iOS uses when the page is added
+         to a home screen; without it iOS screenshots the page and uses that, which at
+         icon size is an unreadable grey rectangle.
+
+         All three are the same drawing. Sizes on the PNG are declared so a browser picks
+         rather than guesses, and the SVG is listed first: the first usable match wins. -->
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>

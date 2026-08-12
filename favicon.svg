@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+    <!-- The tab mark, and it is the cover's clock reduced to what survives at 16px.
+
+         Same object as #cover-clock in index.html, drawn by buildCoverClock() in
+         js/app.js: a full track, one hand, a hub. Deliberately the same, so the tab and
+         the page read as one thing rather than two unrelated marks.
+
+         What is NOT here is the arc. The cover's clock has a second, heavier circle
+         sweeping the track — at 16px it is a second ring one pixel from the first, and
+         two rings that close together turn into one thick fuzzy ring. Cut.
+
+         Held to a 64 box rather than the cover's 300 because every favicon size a browser
+         asks for (16, 32, 48) divides into 64, so the geometry lands on whole pixels
+         instead of straddling them.
+
+         Colours are literal hex, which is the one place in this project that is allowed:
+         a favicon is loaded as its own document and cannot see the page's custom
+         properties. #1A1A1A is the ink-deep token, #C0392B is accent, #FCFCFB is paper.
+         If those tokens ever change, this file has to be changed by hand.
+
+         (Note for editing: no double hyphen anywhere in these comments. XML forbids it
+         inside a comment, and writing the token names with their leading dashes made the
+         whole file fail to parse — a favicon that silently does not render.)
+
+         The dark disc is the point: the cover sits on the darkest ink, so a filled circle
+         is what makes the mark legible against both a light and a dark browser theme
+         without needing a prefers-color-scheme variant. -->
+    <circle cx="32" cy="32" r="32" fill="#1A1A1A"/>
+
+    <!-- The face. r=20 leaves 12px of dark margin, which is what keeps the ring off the
+         edge once a browser rounds the whole thing into a squircle.
+
+         Opacity 0.22 and not more. Rendered at 16px the ring and the hand are each about
+         one pixel wide, and at 0.28 the ring was the brightest thing in the icon — the
+         mark read as an empty circle with a smudge in it. The ring's job is to say
+         "clock"; the hand's job is to be seen. Dimming the ring is what lets the hand
+         carry at tab size. -->
+    <circle cx="32" cy="32" r="20" fill="none" stroke="#FCFCFB" stroke-width="3"
+            stroke-opacity="0.22"/>
+
+    <!-- The hand, in the signal red, pointing where the cover's does. Not a pair of
+         hands: two hands at this size cross into a single blob, and one hand still reads
+         unmistakably as a clock. Rounded cap so the tip does not look clipped.
+
+         Width 5, up from 4, and it reaches y=13 rather than y=15 — at 16px a 4px hand on
+         a 64 grid lands on one screen pixel and the red vanished into the hub. Longer and
+         heavier is the whole difference between a clock and a dark dot in the tab strip.
+         The hub is r=3 rather than 3.5 for the same reason: any bigger and it swallows the
+         base of the hand instead of anchoring it. -->
+    <line x1="32" y1="32" x2="32" y2="13" stroke="#C0392B" stroke-width="5"
+          stroke-linecap="round"/>
+    <circle cx="32" cy="32" r="3" fill="#C0392B"/>
+</svg>
