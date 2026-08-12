@@ -12,7 +12,7 @@ Each section ends on a "huh, I had no idea" beat.
 > page was built that way first: a picker for each of two countries, diverging bars, a
 > closing that multiplied one day's gap over a lifetime. It went because two countries
 > cannot show a distribution, and every finding worth printing here turned out to be a
-> statement about the whole set — sleep barely moving while paid work moves 3.6× as much,
+> statement about the whole set — sleep varying by 22% while paid work varies by 70%,
 > four different countries coming first on four measures. One country at a time survives,
 > in the day card.
 

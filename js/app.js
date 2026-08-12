@@ -1448,7 +1448,7 @@ function initMetricStrips() {
                the figure in index.html, so this caption answers "what am I looking at" and
                nothing else. capTitle sets as its own line: .fig-cap b is display:block. */
             capTitle: 'Every dot is one country.',
-            capBody: 'The farther right, the happier people rate their own lives.'
+            capBody: 'The farther right a country is, the happier its residents rate their own lives.'
         }
     ];
 
@@ -2443,8 +2443,155 @@ function initDayUS() {
        not go; the page stopped announcing them in advance. */
 }
 
+/* ══════════════════════════════════════════════════════════════════════════════
+   FOOTER CREDITS — the note each AI pill opens in place
+
+   The five AI pills carry a one-line answer in data-note. Clicking one opens that line
+   under its row rather than navigating to a document, because a footer link that throws
+   the reader into another file mid-sentence costs them the story to satisfy a passing
+   curiosity — and on file://, which is how this page is meant to be opened, a .md link
+   renders as raw text or offers to download.
+
+   The data row is not openable. Both rows were briefly, and the data notes only restated
+   their own labels with a column definition attached: "OECD Time Use · 35 countries" is
+   already the answer, and anyone who wants the column definitions wants SOURCES.md, not a
+   footer. "Claude · drafting" is not an answer, which is why that row stayed openable.
+
+   Nothing here is keyed to the row, though — it is keyed to [data-note] on the pill. So
+   this stays correct if a data pill ever earns a note, and it does nothing at all to a
+   pill that has none.
+
+   ONE note element per row, reused, inserted after that row's <ul>. Not one per pill:
+   five hidden divs to maintain, and a note that opens between the pills would reflow the
+   row it belongs to and move the thing you just clicked out from under the cursor. After
+   the <ul>, the row's shape never changes.
+   ══════════════════════════════════════════════════════════════════════════════ */
+function initCredits() {
+    const credits = document.querySelector('.credits');
+    if (!credits) return;
+
+    let open = null;   // the <button> whose note is showing, or null
+
+    /* The note lives in the row, so it inherits the row's colour — the AI row's note is
+       drawn in accent like its pills — and so the arrow can point up at a real pill. */
+    function noteFor(row) {
+        let note = row.querySelector('.cr-note');
+        if (note) return note;
+        note = document.createElement('div');
+        note.className = 'cr-note';
+        note.hidden = true;
+        /* role="status" rather than an alert: an alert interrupts, and this is an answer
+           to something the reader just asked for. aria-live means a screen reader hears
+           the new text when it swaps between pills, which a plain div would not announce
+           because the element itself never appears or disappears — only its contents. */
+        note.setAttribute('role', 'status');
+        note.setAttribute('aria-live', 'polite');
+        note.innerHTML = '<p class="cr-note-text"></p>' +
+            '<button class="cr-note-x" type="button" aria-label="Close this note">&times;</button>';
+        note.querySelector('.cr-note-x').addEventListener('click', () => {
+            const was = open;
+            close();
+            /* Focus goes back to the pill that opened the note. Closing a thing should
+               not dump the reader at the top of the document. */
+            if (was) was.focus();
+        });
+        row.appendChild(note);
+        return note;
+    }
+
+    function close() {
+        if (!open) return;
+        const note = open.closest('.cr-row').querySelector('.cr-note');
+        if (note) { note.hidden = true; note.classList.remove('in'); }
+        open.setAttribute('aria-expanded', 'false');
+        open.closest('li').classList.remove('cr-on');
+        open = null;
+    }
+
+    function show(btn) {
+        const row = btn.closest('.cr-row');
+        const note = noteFor(row);
+        const same = open === btn;
+        close();
+        if (same) return;          // clicking the open pill again closes it
+
+        note.querySelector('.cr-note-text').textContent = btn.dataset.note;
+        note.hidden = false;
+        /* The class is added on the next frame, not in the same one: a transition from
+           display:none does not run, because the element has no starting style to move
+           from until it has been laid out once. */
+        requestAnimationFrame(() => note.classList.add('in'));
+
+        /* Which pill the note belongs to: the note slides under that pill and a caret
+           points up at it. Without this, a note under a row of five gives no sign which
+           one it answers.
+
+           Both numbers are measured relative to the ROW, and both are needed. The note is
+           narrower than the row, so centring it and then setting the caret from the pill's
+           row-relative centre put every caret 182px right of its pill — `left` on the caret
+           resolves against the NOTE's box, not the row's. So the note is positioned first,
+           then the caret is measured inside it.
+
+           The note is nudged so its centre sits under the pill's, then pulled back inside
+           the row: a pill at either end would otherwise hang the note off the edge. When
+           the row is wider than the note there is room to slide, and when it isn't the
+           clamp collapses to 0 and the note simply fills the row. */
+        const b = btn.getBoundingClientRect(), r = row.getBoundingClientRect();
+        /* The note is width: fit-content, so its width and its offset are circular: the
+           margin eats into the space it sizes itself in. Measured with the margin cleared,
+           then pinned, so setting the offset cannot resize the box that offset was computed
+           from. Without the reset a leftover margin from the previous pill wrapped the note;
+           without the pin, the last pill's note lost a pixel and wrapped anyway.
+
+           getBoundingClientRect(), not offsetWidth: offsetWidth is rounded to a whole pixel,
+           and rounding a 417.4px box down to 417 pushed the shift 1px too far right, leaving
+           the text 1px less than it needed. Fractional in, fractional out. */
+        note.style.marginLeft = '';
+        note.style.width = '';
+        const nw = note.getBoundingClientRect().width;
+        note.style.width = nw + 'px';
+        const centre = b.left + b.width / 2 - r.left;
+        const shift = Math.min(Math.max(centre - nw / 2, 0), Math.max(r.width - nw, 0));
+        note.style.marginLeft = shift + 'px';
+        note.style.setProperty('--caret', (centre - shift) + 'px');
+
+        btn.setAttribute('aria-expanded', 'true');
+        btn.closest('li').classList.add('cr-on');
+        open = btn;
+    }
+
+    /* Delegated, so the ten pills need no per-element listeners and the markup stays the
+       single place a pill is declared. */
+    credits.addEventListener('click', e => {
+        const btn = e.target.closest('.cr-row li button[data-note]');
+        if (btn) show(btn);
+    });
+
+    /* Escape closes, and a click anywhere outside dismisses — the two things a reader
+       will try without being told. Both keep focus on the pill rather than losing it. */
+    addEventListener('keydown', e => {
+        if (e.key === 'Escape' && open) { const was = open; close(); was.focus(); }
+    });
+    addEventListener('click', e => {
+        if (open && !e.target.closest('.credits')) close();
+    });
+
+    /* aria-expanded from the start, not just once opened: a screen reader should say the
+       pill is collapsed before it is pressed, which is the announcement that tells the
+       reader it opens something at all rather than navigating. */
+    credits.querySelectorAll('li button[data-note]').forEach(b => {
+        b.setAttribute('aria-expanded', 'false');
+    });
+}
+
 // ── wire everything up ──
 (function init() {
+    /* Ahead of the ADL guard on purpose: the footer's notes are written in the markup and
+       read nothing from the data, so they should still open on a page whose data file
+       failed to load — that is exactly when a reader wants to know where the numbers
+       were meant to come from. */
+    initCredits();
+
     if (!ADL) return;
 
     // Cover clock

@@ -369,7 +369,7 @@
         <section class="section notes reveal" id="sec-happy">
             <div class="txt">
                 <span class="sec-num">A simple question</span>
-                <h2 class="sec-title">Happiness isn&rsquo;t measured.<br>It&rsquo;s answered.</h2>
+                <h2 class="sec-title">Happiness isn&rsquo;t measured;<br>it&rsquo;s answered.</h2>
                 <hr class="rule">
                 <!-- Flowed, not hard-broken, and that is measured rather than preferred: this
                      sticky column is 228px wide at desktop, while these sentences need 206, 268,
@@ -710,26 +710,176 @@
             <!-- One paragraph, not two. The .lead and the .body said the same thing twice
                  — both opened on everyone being handed the same 1,440 minutes, and the
                  second then listed five nouns and closed on a question the page has spent
-                 four chapters refusing to answer for the reader. -->
-            <p class="lead">Everyone is handed the same 1,440 minutes. What changes, from Osaka to
-                Mexico City to Rome, is what becomes of them.</p>
+                 four chapters refusing to answer for the reader.
+
+                 The two figures are the whole of Chapter One restated in one line, and they
+                 are hard-coded because this is the closing and nothing here is live. Both
+                 re-derived from data/adl-data.js: the spread is taken over the MEAN, which
+                 is the definition that gives 22% and 70% (146m over a 665m mean for sleep
+                 and self-care, 191m over a 272m mean for paid work). Over the low end
+                 instead they would read 24% and 108% — a real difference, so if these ever
+                 need rechecking, check them the same way.
+
+                 "sleep", though the OECD category it comes from is sleep AND self-care pooled,
+                 and the day bar upstairs labels it that way. The plain word is kept here
+                 because this is the closing and the sentence is already carrying two figures;
+                 the honest label is one panel-scroll away, on the chart the figure comes from.
+                 Worth knowing if this line is ever quoted on its own.
+
+                 The paragraph stops at the figures. Its conclusion is the .closing-last below,
+                 not a third sentence here — the finding and what the finding means want
+                 different sizes of type, and putting both in the .lead buried the second one.
+
+                 Neither line states a multiplier, on purpose. 70/22 reads as "3.2× as much",
+                 and in shares that is right, but in MINUTES the two spreads are 146m and 191m
+                 — only 1.3× apart. The 3.2 is a proportional effect of sleep's mean being 665m
+                 against work's 272m. Any phrasing built on "three times as much" would be true
+                 of one measure and false of the other.
+
+                 Note for the next edit: README.md and PLAN.md both say 3.6×, which is the
+                 ratio of coefficients of variation (16.8/4.7) rather than of range-over-mean
+                 (70.3/21.9 = 3.2). Both are correct for what they measure; they just are not
+                 the same statistic, and the two documents should not be read as disagreeing. -->
+
+            <p class="lead">Everyone is handed the same 1,440 minutes. From the country that sleeps
+                least to the country that sleeps most, sleep varies by 22%. Paid work varies by
+                70%.</p>
             <!-- The last line, and it closes the loop: the opening asked "What becomes of
-                 those minutes?", and this is the answer, given only after the reader has
-                 seen someone else's day. -->
-            <p class="closing-last">Every day is ordinary.<br>Until you compare it with someone
-                else&rsquo;s.</p>
+                 those minutes?", and this is the answer, given only after the reader has seen
+                 someone else's day — rest is the part that was never really theirs to set,
+                 work is the part that was.
+
+                 It replaces "Every day is ordinary. / Until you compare it with someone
+                 else's.", which closed on the ACT of comparing rather than on what the
+                 comparison found. Four chapters of comparison earn a conclusion here, not an
+                 invitation to do the thing the reader has just finished doing.
+
+                 Two sentences, deliberately parallel and deliberately short: this is set in
+                 the page's largest closing type, and the symmetry is doing the work that the
+                 figures above cannot do on their own. -->
+            <p class="closing-last">Rest is what a body needs.<br>Work is what a country
+                decides.</p>
         </section>
     </main>
 
     <footer class="site-footer">
         <p>A Day in the Life of the World · A VizCon 2026 entry</p>
-        <p class="src">Sources. Daily time use: OECD Time Use Database (minutes per day, both sexes;
-            “Work” combines paid and unpaid work), all 35 countries it covers. Happiness: World
-            Happiness Report (34 countries; Luxembourg has no score). GDP per person and tourism:
-            World Bank (international arrivals, 2019). Population: UN via world_population.csv (2022).
-            American leisure detail and the hourly panel: American Time Use Survey microdata,
-            2003–2015.</p>
+
+        <!-- Two rows: where the numbers came from, and where the AI was used. A third
+             row for the toolchain was drawn and cut — nobody reads a page to learn it
+             was written in HTML, and listing the obvious next to the two rows that
+             carry a claim made both look like decoration.
+
+             This replaces the prose "Sources." paragraph that used to sit below. That
+             note and these pills said the same five names twice, and the note's caveats
+             (which years, how many countries, what "work" counts as) are carried in the
+             pill labels themselves and in full in data/SOURCES.md — which is where a
+             reader who wants a column definition is actually going.
+
+             Only the AI row is clickable. The two rows look alike but are not doing the
+             same job: the data row is a citation, and a citation is read, not operated —
+             its publisher and vintage are the whole answer, and the column definitions
+             behind them belong in data/SOURCES.md rather than in a footer. The AI row is
+             a claim about how the thing was made, and "Claude · drafting" on its own says
+             almost nothing; that one has to be openable to be worth putting on the page.
+             So the data pills are plain <span>s with no cursor, no hover and no tab stop —
+             nothing offers an interaction that isn't there — and the five AI pills are
+             <button>s carrying their own answer in data-note.
+
+             Those answers open in place rather than navigating away. A footer link that
+             throws the reader into another document mid-sentence costs them the story to
+             satisfy a passing curiosity, and these are passing curiosities, one line each.
+             The honest destination is a .md file, which on file:// shows as raw text or
+             offers to download. Answering here is kinder and more truthful, and each note
+             still names the longer document at the end, so the full version is a sentence
+             away rather than the only way in.
+
+             They are <button>s, not links: they change this page rather than going
+             anywhere, which is what a button means.
+
+             Every icon is aria-hidden and every pill carries its own text, so a screen
+             reader hears each name once. Real <ul>s under real <h3>s, so this arrives as
+             two named groups rather than ten loose items. -->
+        <div class="credits">
+            <div class="cr-row">
+                <h3><svg class="cr-ico" aria-hidden="true"><use href="#i-data"/></svg>Data</h3>
+                <ul>
+                    <!-- The qualifier on each pill is the caveat the deleted prose note
+                         carried: the coverage, or the vintage. It is the whole of what this
+                         row has to say, which is why these are spans and not controls —
+                         each was briefly a button opening a longer note, and the notes only
+                         restated the label with a column definition attached. Checked
+                         against the files: 35 days and 34 ladder scores in adl-data.js, GDP
+                         against the World Bank's 2023 column and arrivals against its 2019
+                         one, 170,842 diaries per day-us.js. -->
+                    <li><span><svg class="cr-ico" aria-hidden="true"><use href="#i-data"/></svg>OECD Time Use <span class="cr-q">35 countries</span></span></li>
+                    <li><span><svg class="cr-ico" aria-hidden="true"><use href="#i-diary"/></svg>American Time Use Survey <span class="cr-q">2003&ndash;15</span></span></li>
+                    <li><span><svg class="cr-ico" aria-hidden="true"><use href="#i-ladder"/></svg>World Happiness Report <span class="cr-q">34 scored</span></span></li>
+                    <li><span><svg class="cr-ico" aria-hidden="true"><use href="#i-globe"/></svg>World Bank <span class="cr-q">GDP &rsquo;23 &middot; arrivals &rsquo;19</span></span></li>
+                    <li><span><svg class="cr-ico" aria-hidden="true"><use href="#i-people"/></svg>UN population <span class="cr-q">2022</span></span></li>
+                </ul>
+            </div>
+            <div class="cr-row cr-ai">
+                <h3><svg class="cr-ico" aria-hidden="true"><use href="#i-ai"/></svg>AI in the workflow</h3>
+                <ul>
+                    <!-- One line per kind of work, each ending at the document that holds
+                         the long version. Specific on purpose: a vague "AI was used" tells
+                         a judge nothing, and the last pill is the one that says what it
+                         did not do. These notes are condensed from the README's own
+                         disclosure rather than written fresh, so the two cannot disagree. -->
+                    <li><button type="button" data-note="Claude wrote most of the code. Every line was reviewed."><svg class="cr-ico" aria-hidden="true"><use href="#i-ai"/></svg>Claude · code</button></li>
+                    <li><button type="button" data-note="431 activity codes rolled up to 44 groups. Nothing dropped."><svg class="cr-ico" aria-hidden="true"><use href="#i-ai"/></svg>Claude · data cleaning</button></li>
+                    <li><button type="button" data-note="Claude proposed findings. The ones that failed checking were cut."><svg class="cr-ico" aria-hidden="true"><use href="#i-ai"/></svg>Claude · drafting</button></li>
+                    <li><button type="button" data-note="Every figure re-derived from the data. Contrast measured."><svg class="cr-ico" aria-hidden="true"><use href="#i-ai"/></svg>Claude · verification</button></li>
+                    <li><button type="button" data-note="What the story argues, and what got cut. More rejected than kept."><svg class="cr-ico" aria-hidden="true"><use href="#i-ai"/></svg>Claude · what wasn&rsquo;t delegated</button></li>
+                </ul>
+            </div>
+        </div>
     </footer>
+
+    <!-- The footer's icon set. Inline SVG symbols: no icon font, no sprite file, no
+         request, and nothing to fail to load. Defined once and referenced by <use>, so
+         the same glyph cannot drift between the label and the pills.
+
+         Stroked in currentColor, so each icon takes the colour of the text beside it and
+         needs no rule per row. The whole block is aria-hidden and unfocusable: it renders
+         nothing itself, and every icon that references it sits next to its own label. -->
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true" focusable="false">
+        <defs>
+            <!-- data: a table -->
+            <symbol id="i-data" viewBox="0 0 24 24">
+                <rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/>
+            </symbol>
+            <!-- the diary a time-use survey is actually collected on -->
+            <symbol id="i-diary" viewBox="0 0 24 24">
+                <path d="M6 3h12a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/>
+                <path d="M9 8h6M9 12h6M9 16h3"/>
+            </symbol>
+            <!-- happiness: the ladder the question literally asks about -->
+            <symbol id="i-ladder" viewBox="0 0 24 24">
+                <path d="M8 3v18M16 3v18M8 8h8M8 13h8M8 18h8"/>
+            </symbol>
+            <!-- World Bank: a globe -->
+            <symbol id="i-globe" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9"/>
+                <path d="M3 12h18M12 3c2.5 2.6 2.5 15.4 0 18M12 3c-2.5 2.6-2.5 15.4 0 18"/>
+            </symbol>
+            <!-- population: two people -->
+            <symbol id="i-people" viewBox="0 0 24 24">
+                <circle cx="9" cy="8" r="3"/>
+                <path d="M3 20a6 6 0 0 1 12 0M16 5.5a3 3 0 0 1 0 5M17.5 20a5.5 5.5 0 0 0-2-4.3"/>
+            </symbol>
+            <!-- AI: a four-point spark, the same ✦ family as the callout marks, and the
+                 only FILLED icon here. Three stroked drawings were tried at the 14px this
+                 actually renders at: strokes crossing at the centre read as a plus sign,
+                 and both a second small spark and a spark-with-dot collapse into a comma.
+                 At this size fill carries a shape that stroke cannot. -->
+            <symbol id="i-ai" viewBox="0 0 24 24">
+                <path d="M12 2 14.2 9.8 22 12 14.2 14.2 12 22 9.8 14.2 2 12 9.8 9.8Z"
+                      fill="currentColor" stroke="none"/>
+            </symbol>
+        </defs>
+    </svg>
 
     <script src="data/adl-data.js"></script>
     <script src="data/atus-hours.js"></script>

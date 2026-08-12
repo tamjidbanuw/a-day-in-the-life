@@ -27,13 +27,13 @@ data/*.js           the data, baked from the raw sources
 
 Four chapters and a coda, each ending on a finding rather than a summary:
 
-1. **Sleep Is the Only Constant** — 35 countries' days side by side. Paid work moves
-   3.6× as much as sleep does.
+1. **Sleep Is the Only Constant** — 35 countries' days side by side. Sleep varies by 22%
+   across them; paid work varies by 70%.
 2. **The Only Number That Asks** — the happiness ladder, the one measure that asks
    people instead of counting them. Then: no country finishes first on more than one of
    four measures.
 3. **Inside an Ordinary Day** — the American day opened to the minute. Five blocks,
-   fifty activities, every one splittable by age and sex, summing to exactly 1,440.
+   fifty activities, every one splittable by age and sex, accounting for the whole 1,440.
 4. **Somebody Lives Like You** — four dials, and the country whose day is nearest yours.
 5. **Right Now** — the only live thing on the page: what America is doing at your
    current local hour.
@@ -48,6 +48,15 @@ whether the story actually reads it. In short: OECD Time Use for the spine, the 
 Happiness Report for the ladder, World Bank for GDP and arrivals, and American Time Use
 Survey microdata (170,842 respondents, 2003–2015) for Chapter Three and the coda.
 
+The page's footer names the same five publishers as a row of pills, each carrying its
+coverage or vintage — a citation, read rather than operated, with the column definitions
+left to `SOURCES.md` where someone looking for them would go. The AI pills beside them do
+open: one per section of the disclosure below, condensed from it rather than written
+separately, because "Claude · drafting" on its own says almost nothing. Those notes open in
+place rather than navigating away — a passing curiosity is worth one line, not the loss of
+your place in the story, and the honest destination would be a `.md` file that a `file://`
+reader sees as raw text.
+
 The copy deck lives in [`COPY.md`](COPY.md) — every string on the page, in reading
 order, round-trippable back into the source. [`PLAN.md`](PLAN.md) is the blueprint,
 including the ideas that were tried and cut.
@@ -60,39 +69,48 @@ This project was built in close collaboration with **Claude** (Anthropic), used 
 working partner across the whole build rather than for one isolated task. Being specific
 about that, since a vague "AI was used" tells a reader nothing:
 
-**Code generation — the large majority of the code.** All five source files were written
-primarily by Claude, iteratively, in conversation: the SVG chart rendering, the badge
-system with its flight-and-reveal animation, the Chapter Three drill-down, the
-scroll-driven cover, the quiz's nearest-neighbour matching, and the entire stylesheet.
-The long explanatory comments throughout the source are part of that process — the
-reasoning behind a decision was written down at the moment it was made, which is why the
-files read the way they do.
+### Code generation — the large majority of the code
 
-**Data discovery and cleaning.** Rolling 431 ATUS activity codes up to the survey's own
-second tier and getting 44 groups to sum to exactly 1,440 minutes; reconciling
-country-name mismatches across five datasets with different conventions; deciding which
-of the gathered files to drop once the story's shape settled. The build scripts were
-throwaway and are not committed — the baked outputs are, with provenance headers.
+All five source files were written primarily by Claude, iteratively, in conversation: the
+SVG chart rendering, the badge system with its flight-and-reveal animation, the Chapter
+Three drill-down, the scroll-driven cover, the quiz's nearest-neighbour matching, and the
+entire stylesheet. The long explanatory comments throughout the source are part of that
+process — the reasoning behind a decision was written down at the moment it was made,
+which is why the files read the way they do.
 
-**Narrative drafting and insight generation.** Claude proposed candidate findings from
-the data, and the ones that survived are the ones that held up when checked. Several did
-not: an income-and-mood argument was cut for overclaiming, and a two-country contrast —
-the original locked concept — was cut because two countries cannot show a distribution.
-`PLAN.md` records those reversals.
+### Data discovery and cleaning
 
-**Editing and verification.** Line-by-line copy editing, and adversarial checking of the
-page against itself: figures in prose re-derived from the data files, contrast ratios
-computed, the copy deck round-tripped against the rendered DOM, and behaviour probed in
-headless Chrome. That last one caught real bugs, including a stray `*/` that had been
-silently disabling a chart's entrance animation and an animation keyframe that made the
-badge rail jump half its own height.
+Rolling 431 ATUS activity codes up to the survey's own second tier and getting 44 groups
+to account for the whole 1,440 minutes — 1,439.9 once each group is rounded to a tenth,
+and nothing dropped along the way; reconciling country-name mismatches across five
+datasets with different conventions; deciding which of the gathered files to drop once the
+story's shape settled. The build scripts were throwaway and are not committed — the baked
+outputs are, with provenance headers.
 
-**What was not delegated.** Every figure that appears in the prose was verified against
-the source data before it shipped, and where a claim could not be substantiated it was
-cut rather than softened. The editorial judgment — what the story argues, what earns a
-chapter, what gets deleted — was directed throughout, and AI-proposed findings were
-rejected more often than they were kept. The commit history is the honest record of
-that: every commit states what changed and why, including the reversals.
+### Narrative drafting and insight generation
+
+Claude proposed candidate findings from the data, and the ones that survived are the ones
+that held up when checked. Several did not: an income-and-mood argument was cut for
+overclaiming, and a two-country contrast — the original locked concept — was cut because
+two countries cannot show a distribution. `PLAN.md` records those reversals.
+
+### Editing and verification
+
+Line-by-line copy editing, and adversarial checking of the page against itself: figures in
+prose re-derived from the data files, contrast ratios computed, the copy deck
+round-tripped against the rendered DOM, and behaviour probed in headless Chrome. That last
+one caught real bugs, including a stray `*/` that had been silently disabling a chart's
+entrance animation and an animation keyframe that made the badge rail jump half its own
+height.
+
+### What was not delegated
+
+Every figure that appears in the prose was verified against the source data before it
+shipped, and where a claim could not be substantiated it was cut rather than softened. The
+editorial judgment — what the story argues, what earns a chapter, what gets deleted — was
+directed throughout, and AI-proposed findings were rejected more often than they were
+kept. The commit history is the honest record of that: every commit states what changed
+and why, including the reversals.
 
 ## Accessibility
 

@@ -19,11 +19,13 @@ hand the file back, and it goes into the right place in the page.
 
 | | blocks |
 |---|---|
-| **Part 1 — written in the page** | 91 |
+| **Part 1 — written in the page** | 94 |
 | The browser title, the share description, the no-JavaScript note | |
 | Cover, chapter marks, section titles and prose | |
 | The Chapter One at-a-glance sheet | |
-| Captions, callouts, the stat band, the footer | |
+| Captions, callouts, the stat band | |
+| The footer's data and AI credit pills | |
+| The one-line note each AI pill opens | |
 | **Part 2 — built while the page runs** | 45 |
 | The six badge cards | |
 | The day card, the happiness strip, the rank chart | |
@@ -262,8 +264,8 @@ A simple question
 
 ### 50. Section · TITLE  `[sec-title]`
 
-Happiness isn’t measured.
-It’s answered.
+Happiness isn’t measured;
+it’s answered.
 
 ### 51. Section · lead  `[lead]`
 
@@ -455,26 +457,72 @@ Different lives.
 
 ### 88. Section · lead  `[lead]`
 
-Everyone is handed the same 1,440 minutes. What changes, from Osaka to
-Mexico City to Rome, is what becomes of them.
+Everyone is handed the same 1,440 minutes. From the country that sleeps least to the
+country that sleeps most, sleep varies by 22%. Paid work varies by 70%.
 
 ### 89. Closing · the last line  `[closing-last]`
 
-Every day is ordinary.
-Until you compare it with someone else’s.
+Rest is what a body needs.
+Work is what a country decides.
 
 ### 90. site-footer  `[site-footer]`
 
 A Day in the Life of the World · A VizCon 2026 entry
 
-### 91. Footer · sources  `[src]`
+### 91. Footer · credits, row labels  `[cr-row-labels]`
 
-Sources. Daily time use: OECD Time Use Database (minutes per day, both sexes;
-“Work” combines paid and unpaid work), all 35 countries it covers. Happiness: World
-Happiness Report (34 countries; Luxembourg has no score). GDP per person and tourism:
-World Bank (international arrivals, 2019). Population: UN via world_population.csv (2022).
-American leisure detail and the hourly panel: American Time Use Survey microdata,
-2003–2015.
+Data
+AI in the workflow
+
+### 92. Footer · data credits  `[cr-data]`
+
+Each line is one pill: the publisher, then the coverage or vintage that used to sit in a
+prose sources note below. Keep them short — they are labels, not sentences — and keep one
+per line. This row is read, not clicked: the label is the whole answer, and anyone who
+wants a column definition wants `data/SOURCES.md`.
+
+**These five have to fit one row across.** All five together measure 1,057px including
+gaps, against a footer of 1,200px, so there are about 140 characters of pill in total and
+roughly 80px of slack. Lengthening any one of these wraps the row into 3+2 and costs the
+footer 37px of height. That is why the years are elided (`2003–15`, `’23`) — but not past
+the point of sense: dropping `GDP` and `arrivals` would fit in a much narrower footer and
+was rejected, because two bare years beside two unnamed measures says less than nothing.
+Same for the publisher names: `ATUS` is not a citation.
+
+OECD Time Use · 35 countries
+American Time Use Survey · 2003–15
+World Happiness Report · 34 scored
+World Bank · GDP ’23 · arrivals ’19
+UN population · 2022
+
+### 93. Footer · AI credits  `[cr-ai]`
+
+One pill per kind of work, and unlike the data row above, each of these opens a one-line
+answer in place rather than sending the reader to the README — those sentences are block
+94. "Claude · drafting" says almost nothing on its own, which is why this is the row that
+had to be openable. The names still want to match the README's own section headings, so
+the two accounts can be read against each other.
+
+Claude · code
+Claude · data cleaning
+Claude · drafting
+Claude · verification
+Claude · what wasn’t delegated
+
+### 94. Footer · what each AI pill answers  `[cr-ai-notes]`
+
+One line per pill, opening under the pill when it is pressed. **One line is the format, not
+a target** — the box sizes itself to the sentence, and the longest of these is 65
+characters, which is what fits on a single rendered line at the note's type size. A longer
+one wraps and stops being a glance. Say what was done and what it cost; no hedging, and no
+restating the label. The figures are checked against the files: 431 codes and 44 groups in
+`data/day-us.js`.
+
+Claude wrote most of the code. Every line was reviewed.
+431 activity codes rolled up to 44 groups. Nothing dropped.
+Claude proposed findings. The ones that failed checking were cut.
+Every figure re-derived from the data. Contrast measured.
+What the story argues, and what got cut. More rejected than kept.
 
 ## Part 2 · Built while the page runs
 
@@ -616,7 +664,7 @@ Finland leads at 7.82, India trails at 3.78. All 34 average 6.45.
 
 ### Happiness strip · caption  `[app.js:1450 → #mt-happy-cap]`
 
-Every dot is one country. The farther right, the happier people rate their own lives.
+Every dot is one country. The farther right a country is, the happier its residents rate their own lives.
 
 ### Rank chart · readout  `[app.js:1869 → #pc-read]`
 

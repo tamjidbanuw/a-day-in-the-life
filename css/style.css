@@ -2037,7 +2037,238 @@ html.bdg-locked, html.bdg-locked body { overflow: hidden; }
     font-size: 0.82rem;
     border-top: 1px solid var(--line);
 }
-.site-footer .src { margin-top: 0.4rem; font-size: 0.72rem; max-width: 560px; margin-left: auto; margin-right: auto; }
+/* ─── FOOTER CREDITS ────────────────────────────────────────
+   Two labelled rows of pills: where the numbers came from, and where the AI was used.
+   These replaced a prose "Sources." paragraph that named the same five publishers a
+   second time; its .src rule went with it.
+
+   Icons are inline SVG referenced from the sprite at the end of index.html — no icon
+   font, no sprite file, no request. Stroked in currentColor so each one takes the colour
+   of the text beside it and needs no rule per row, and aria-hidden in the markup because
+   the label next to every icon already says the same thing; an icon that repeats its own
+   label is noise to a screen reader. */
+.cr-ico {
+    width: 14px; height: 14px;
+    /* flex: none — otherwise the icon is a flex item inside the pill and shrinks before
+       the text does, so the same glyph is a different size in a long pill and a short. */
+    flex: none;
+    stroke: currentColor; stroke-width: 1.6; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* The content column's own measure, and it is set by the data row's five pills rather
+   than by anything to do with reading length. It started at 720px on the theory that a
+   footnote wants a short line, then 900px because that balanced the row at 3+2 with the
+   AI row unbroken. Both of those accepted a wrapped data row.
+
+   One line per row is the better answer: five publishers reading straight across is
+   legible as a citation in a way that three-then-two is not, and it takes 37px off the
+   footer (195 → 158). What it costs is width. Measured, the five pills come to 1057px
+   including gaps even after the qualifiers were cut to '2003–15' and 'GDP ’23 ·
+   arrivals ’19', so nothing under ~1105px fits them. 1200px is the next measure the page
+   already uses (the .notes grid at the top of this file), which is why it is this and not
+   a number invented for the footer.
+
+   The qualifiers were cut but not gutted. 'GDP ’23 · arrivals 2019' → '2023 · 2019' would
+   have fit at 960px and was rejected: it drops which year belongs to which figure, and
+   two bare years next to two unnamed measures is worse than a wider footer. Same reason
+   'American Time Use Survey' is not 'ATUS' — the publisher's name IS the citation. */
+.credits {
+    max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem 0;
+    display: grid; gap: 1rem;
+}
+
+/* One row = one label above its pills. A real <h3>, not a bold span, so the footer has an
+   outline; sized down to a small-caps rule so it labels the row without competing with
+   it. */
+.cr-row h3 {
+    font-size: 0.63rem; font-weight: 700; letter-spacing: 0.09em;
+    text-transform: uppercase; color: var(--ink-soft);
+    display: flex; align-items: center; justify-content: center;
+    gap: 0.35rem; margin-bottom: 0.5rem;
+}
+.cr-row h3 .cr-ico { width: 12px; height: 12px; }
+
+.cr-row ul {
+    list-style: none;
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem;
+}
+/* The <li> is the pill's shape — border, radius, fill — and carries NO padding. The child
+   inside takes the padding and fills the shell, so on the AI row the whole pill is the
+   click target rather than just the words. Putting the border on the child instead draws a
+   second bordered box inside the first: a pill within a pill. */
+.cr-row li {
+    display: inline-flex;
+    border: 1px solid var(--line); border-radius: 999px;
+    /* --white, not --paper: the pills need to lift off the footer's paper tone, and a
+       pale fill does that without a heavier border. */
+    background: var(--white);
+    font-size: 0.73rem;
+    /* A name that wraps mid-pill stops looking like one thing. Better to wrap the row. */
+    white-space: nowrap;
+}
+/* The two rows share one pill shape, so the inner box is styled for span and button alike
+   and only the AI row's button adds the interactive part. font: inherit and the reset of
+   the UA's button styling, so a button looks like the page rather than a form control. */
+.cr-row li > span,
+.cr-row li > button {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.32rem 0.68rem;
+    font: inherit; font-size: 1em; text-align: left;
+    color: var(--ink-soft); background: none; border: 0;
+    /* Matches the shell, so a focus ring or a hover fill follows the pill's curve
+       instead of cornering inside it. */
+    border-radius: 999px;
+}
+/* Only the thing that actually does something gets the hand. The data pills are citations:
+   a pointer cursor on them promises a click that leads nowhere. */
+.cr-row li > button { cursor: pointer; }
+
+/* Undecorated at rest on purpose. Five underlines per row in a footer reads as a link
+   farm, and on the AI row the pill shape and the accent already say "this is a thing you
+   can press". Hover and focus are where the affordance is spelled out — and hover fills
+   the shell rather than underlining, so the whole pill responds and stays legible for a
+   reader who cannot pick out an underline.
+
+   Scoped to :has(button), not to .cr-row li: a hover response on a pill that cannot be
+   pressed is the same false promise as the cursor. */
+.cr-row li:has(button):hover { border-color: var(--support-pale); }
+.cr-row li button:hover { color: var(--ink); background: var(--card); }
+/* The ring goes on the button, which is what takes focus, and needs no offset: the button
+   fills its shell, so an inset ring traces the pill exactly. currentColor would put an
+   ink-soft ring on the card tone; --ink-deep measures 15.9:1 there. */
+.cr-row li button:focus-visible { outline: 2px solid var(--ink-deep); outline-offset: -1px; }
+
+/* The open pill, held in the hover treatment while its note is showing. Without this the
+   pill returns to rest the moment the pointer leaves, and a note appears below with
+   nothing above it looking pressed. Colour is not the only channel: the caret on the note
+   points at this pill, and aria-expanded says so out loud. */
+.cr-row li.cr-on { border-color: var(--support-pale); }
+.cr-row li.cr-on button { color: var(--ink); background: var(--card); }
+
+/* The caveat the deleted prose note used to carry — coverage or vintage — set quieter than
+   the publisher's name so the name is what you read and the qualifier is what you check.
+   --ink-faint on the pill's white is 5.12:1, so it clears AA at this size rather than
+   relying on being decorative. */
+.cr-q { color: var(--ink-faint); }
+
+/* The AI row is the one a judge is looking for, so it is the one that carries the accent —
+   and it carries it three ways at once (tint, border, weight), never colour alone, so the
+   row still reads as a group in greyscale or to a colour-blind eye.
+   accent-deep on accent-wash measures 7.08:1. */
+.cr-ai li { border-color: var(--accent-pale); background: var(--accent-wash); }
+/* The accent row is also the only openable one, and its weight is the fourth channel
+   separating a pill you can press from a pill you read. */
+.cr-ai li button { color: var(--accent-deep); font-weight: 600; }
+.cr-ai h3 { color: var(--accent-deep); }
+/* Deepening the tint rather than switching to --card, so the AI row stays the accent row
+   under the pointer instead of turning grey on hover. */
+.cr-ai li:has(button):hover, .cr-ai li.cr-on { border-color: var(--accent); }
+.cr-ai li button:hover,
+.cr-ai li.cr-on button { color: var(--accent-deep); background: var(--accent-pale); }
+/* The ink-deep ring reads as a foreign colour on the accent row, and accent-deep on
+   accent-pale is only 4.2:1 as a ring. --accent on the wash it sits inside measures 4.9:1
+   and stays in the row's own palette. */
+.cr-ai li button:focus-visible { outline-color: var(--accent-deep); }
+
+/* ── the note a pill opens ──
+   One per row, reused, sitting after the row's <ul> so opening it never reflows the pills
+   and moves the thing you just clicked. Left-aligned even though the row above it is
+   centred: this is a sentence to read, not a label to scan. */
+.cr-note {
+    position: relative;
+    /* Sized to its own sentence, not to a fixed measure. Each note is one line — the
+       longest is 65 characters — so a 62ch box left a third of itself empty and made a
+       one-line answer look like a paragraph that had been cut short. fit-content shrinks
+       to the text and the 62ch becomes the cap for a longer note rather than the target.
+
+       margin-left is overwritten in JS to slide the box under its pill; the auto on the
+       right is the fallback for the one case JS does not set it. */
+    width: fit-content; max-width: min(62ch, 100%); margin: 0.75rem auto 0;
+    padding: 0.7rem 2.2rem 0.7rem 0.9rem;
+    background: var(--white); border: 1px solid var(--line);
+    border-radius: 10px;
+    text-align: left;
+}
+.cr-note-text {
+    font-size: 0.78rem; line-height: 1.55; color: var(--ink-soft);
+    /* 8.97:1 on white. The note is the one part of the footer meant to be read as prose,
+       so it gets more leading than the pills and a darker ink than the footer default. */
+}
+/* The caret, pointing up at the pill this note answers. --caret is set in JS from the
+   pill's measured centre, so it follows the pill through a wrap. Two triangles, the outer
+   one a pixel larger, so the arrow keeps the note's border rather than floating free.
+   clamp keeps it inside the note's own corners when the pill is at either end of a row. */
+.cr-note::before, .cr-note::after {
+    content: ''; position: absolute; bottom: 100%;
+    left: clamp(14px, var(--caret, 50%), calc(100% - 14px));
+    transform: translateX(-50%);
+    border: 7px solid transparent;
+}
+.cr-note::before { border-bottom-color: var(--line); }
+.cr-note::after  { border-width: 6px; border-bottom-color: var(--white); }
+
+.cr-ai .cr-note { border-color: var(--accent-pale); background: var(--accent-wash); }
+.cr-ai .cr-note-text { color: var(--accent-deep); }
+.cr-ai .cr-note::before { border-bottom-color: var(--accent-pale); }
+.cr-ai .cr-note::after  { border-bottom-color: var(--accent-wash); }
+
+/* Its own close, so dismissing does not depend on knowing about Escape or on guessing
+   that the pill toggles. 28px square: comfortably tappable without becoming a feature of
+   the note. Absolutely placed so it does not indent the text it sits beside. */
+.cr-note-x {
+    position: absolute; top: 0.28rem; right: 0.3rem;
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    font: inherit; font-size: 1.05rem; line-height: 1;
+    color: var(--ink-faint); background: none; border: 0; border-radius: 50%;
+    cursor: pointer;
+}
+.cr-note-x:hover { color: var(--ink); background: var(--card); }
+.cr-ai .cr-note-x { color: var(--accent-deep); }
+.cr-ai .cr-note-x:hover { background: var(--accent-pale); }
+
+/* A short fade and rise. The note is a small thing appearing next to what you pressed, so
+   it should look like it came from there rather than being switched on. */
+.cr-note { opacity: 0; transform: translateY(-4px); transition: opacity 0.18s ease, transform 0.18s ease; }
+.cr-note.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+    .cr-note { transition: none; transform: none; }
+}
+
+@media (max-width: 560px) {
+    /* Left-aligned on a phone. Centred pills wrap into a ragged stack of ones and twos,
+       and a left edge gives the eye one line to come back to instead of a new centre per
+       row. The footer's other lines stay centred — they are short enough to. */
+    .credits { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .cr-row h3 { justify-content: flex-start; }
+
+    /* One pill per line, full width. Measured at 390px: with the qualifiers on, the data
+       pills are too wide to pair up and wrap to one per line regardless — so a grid makes
+       that stack deliberate instead of incidental, and the AI row matches rather than
+       being the one row that still wraps 2-2-1. Full-width pills also give a thumb a
+       342px target instead of a 130px one. */
+    /* grid-template-columns: 1fr, not bare `grid`. A single implicit column is sized to
+       max-content, and the base rule's justify-content: center then centres that column —
+       so the pills came out content-width and at a different left edge per row, which is
+       the ragged look the left-align was meant to fix. An explicit 1fr fills the measure. */
+    .cr-row ul { display: grid; grid-template-columns: 1fr; gap: 0.35rem; }
+    /* And the inner box has to grow into the shell it shares: as the <li>'s only flex item
+       it keeps its content width by default, so the pill would be full width while the tap
+       target inside it stayed as narrow as the words. The span needs it too, or the data
+       pills' qualifiers stop reaching the right edge. */
+    .cr-row li > span, .cr-row li > button { flex: 1; }
+    /* The caret is centred on a pill that now spans the whole measure, which points at
+       nothing in particular — so on a phone the note is a plain box and the open pill's
+       own fill is what marks the pairing. */
+    .cr-note::before, .cr-note::after { display: none; }
+    /* Only the qualifier is pushed to the right edge, so the vintages line up in a column
+       of their own rather than trailing each name at a different x. margin-left: auto
+       rather than justify-content: space-between on the <a> — the icon, the name and the
+       qualifier are three flex items, and space-between would scatter all three, leaving
+       the name floating in the middle away from its own icon. */
+    .cr-q { margin-left: auto; padding-left: 0.6rem; }
+}
 
 /* ─── SCROLL REVEAL ─────────────────────────────────────── */
 .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22,1,0.36,1); }
